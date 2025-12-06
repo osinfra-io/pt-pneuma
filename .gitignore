@@ -1,0 +1,22 @@
+# .gitignore
+# https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# Local .tofu directories
+**/.tofu/*
+**/.terraform/*
+
+# Ignore plan output files
+plan.out
+
+# Ignore state files
+*.tfstate
+*.tfstate.*
+
+# Other Files
+*.log
+*.bak
+*.swp
+*.tmp
+*.gz
+*.tgz
+*.tar

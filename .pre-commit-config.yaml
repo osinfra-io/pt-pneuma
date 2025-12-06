@@ -1,0 +1,25 @@
+# Pre-commit
+# https://github.com/pre-commit/pre-commit
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # frozen: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-symlinks
+
+  - repo: https://github.com/osinfra-io/pre-commit-hooks
+    rev: 55243c9fc3556620122b1ffaef067bb7c7c4ae9d # frozen: v0.1.1
+    hooks:
+      - id: tofu-fmt
+        verbose: true
+
+      # To speed up local validation:
+      # mkdir -p $HOME/.opentofu.d/plugin-cache
+      # Add the following to your ~/.zshrc:
+      # export TF_PLUGIN_CACHE_DIR=$HOME/.opentofu.d/plugin-cache
+
+      - id: tofu-validate
+        verbose: true
