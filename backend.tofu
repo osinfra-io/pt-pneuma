@@ -1,12 +1,13 @@
 # Backend Configuration
-# https://opentofu.org/docs/language/settings/backends/gcs
-
-# pt-pneuma uses state storage infrastructure created by pt-corpus.
-# The bucket pt-pneuma-state-{env} is created in the pt-corpus project.
+# https://opentofu.org/docs/language/settings/backends/configuration
 
 terraform {
+  # Google Cloud Storage
+  # https://opentofu.org/docs/language/settings/backends/gcs
+
   backend "gcs" {
-    bucket = "pt-pneuma-state-prod"
-    prefix = "pt-pneuma"
+    bucket             = var.state_bucket
+    kms_encryption_key = var.state_kms_encryption_key
+    prefix             = var.state_prefix
   }
 }
