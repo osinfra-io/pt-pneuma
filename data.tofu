@@ -5,9 +5,10 @@
 # Find the Kubernetes project created by pt-corpus for this team using a filter
 # Project naming pattern: {team_key}-k8s-{random_suffix}-{env}
 # Uses parent.id to scope to team's environment folder for reliable discovery
+# Note: Projects are created by pt-corpus, so labels.repository will be "pt-corpus", not the team name
 
 data "google_projects" "kubernetes" {
-  filter = "parent.id:${module.helpers.environment_folder_id} labels.repository:${module.helpers.repository} lifecycleState:ACTIVE"
+  filter = "parent.id:${module.helpers.environment_folder_id} labels.repository:pt-corpus lifecycleState:ACTIVE"
 }
 
 # Data Source: Google Project (Kubernetes)
