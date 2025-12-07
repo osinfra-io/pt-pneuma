@@ -82,11 +82,6 @@ terraform {
   }
 }
 
-provider "datadog" {
-  api_key = var.datadog_api_key
-  app_key = var.datadog_app_key
-}
-
 # Google Cloud Provider
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs
 

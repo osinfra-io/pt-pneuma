@@ -1,18 +1,6 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
-variable "datadog_api_key" {
-  description = "Datadog API key"
-  sensitive   = true
-  type        = string
-}
-
-variable "datadog_app_key" {
-  description = "Datadog APP key"
-  sensitive   = true
-  type        = string
-}
-
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 
