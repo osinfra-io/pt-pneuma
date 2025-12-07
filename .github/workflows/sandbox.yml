@@ -135,7 +135,7 @@ jobs:
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   cert_manager_us_east1_a:
-    name: "Cert Manager: us-east1-a"
+    name: "cert-manager: us-east1-a"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
     if: github.actor != 'dependabot[bot]'
     needs: us_east1_a
@@ -152,7 +152,7 @@ jobs:
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   cert_manager_us_east1_b:
-    name: "Cert Manager: us-east1-b"
+    name: "cert-manager: us-east1-b"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
     if: github.actor != 'dependabot[bot]'
     needs: us_east1_b
@@ -169,7 +169,7 @@ jobs:
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   cert_manager_us_east1_c:
-    name: "Cert Manager: us-east1-c"
+    name: "cert-manager: us-east1-c"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
     if: github.actor != 'dependabot[bot]'
     needs: us_east1_c
@@ -186,7 +186,7 @@ jobs:
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   cert_manager_us_east4_a:
-    name: "Cert Manager: us-east4-a"
+    name: "cert-manager: us-east4-a"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
     if: github.actor != 'dependabot[bot]'
     needs: us_east4_a
@@ -203,7 +203,7 @@ jobs:
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   cert_manager_us_east4_b:
-    name: "Cert Manager: us-east4-b"
+    name: "cert-manager: us-east4-b"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
     if: github.actor != 'dependabot[bot]'
     needs: us_east4_b
@@ -220,7 +220,7 @@ jobs:
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   cert_manager_us_east4_c:
-    name: "Cert Manager: us-east4-c"
+    name: "cert-manager: us-east4-c"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
     if: github.actor != 'dependabot[bot]'
     needs: us_east4_c
