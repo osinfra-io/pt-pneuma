@@ -11,11 +11,6 @@ variable "kubernetes_engine_namespaces" {
   }))
 }
 
-variable "kubernetes_engine_shared_vpc_host_project_id" {
-  description = "The project ID of the shared VPC host project"
-  type        = string
-}
-
 variable "kubernetes_istio_gateway_dns" {
   description = "Map of attributes for the Istio gateway domain names, it is also used to create the managed certificate resource"
   default     = {}
