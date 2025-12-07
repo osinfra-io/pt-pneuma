@@ -18,8 +18,6 @@ data "google_projects" "kubernetes" {
 # Reference the single Kubernetes project from the filtered results
 
 data "google_project" "kubernetes" {
-  count = length(data.google_projects.kubernetes.projects) > 0 ? 1 : 0
-
   project_id = data.google_projects.kubernetes.projects[0].project_id
 }
 
@@ -39,7 +37,5 @@ data "google_projects" "shared_vpc_host" {
 # Reference the single shared VPC host project from the filtered results
 
 data "google_project" "shared_vpc_host" {
-  count = length(data.google_projects.shared_vpc_host.projects) > 0 ? 1 : 0
-
   project_id = data.google_projects.shared_vpc_host.projects[0].project_id
 }
