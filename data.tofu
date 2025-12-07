@@ -9,9 +9,9 @@
 # The labels.description:k8s filter distinguishes Kubernetes projects from other pt-corpus projects
 
 data "google_projects" "kubernetes" {
-  # Use contains operator (:) to match random suffix by prefix and env suffix
-  # Ensures we only pick projects like: pt-pneuma-<random>-sb
-  filter = "parent.id:${module.helpers.environment_folder_id} labels.repository:pt-corpus labels.description:k8s project_id:pt-pneuma- project_id:-${module.helpers.env} lifecycleState:ACTIVE"
+  # Use supported fields: parent.id, labels, lifecycleState
+  # Matches Kubernetes projects created by pt-corpus in this team's environment folder
+  filter = "parent.id:${module.helpers.environment_folder_id} labels.repository:pt-corpus lifecycleState:ACTIVE"
 }
 
 # Data Source: Google Project (Kubernetes)
@@ -30,9 +30,9 @@ data "google_project" "kubernetes" {
 # Excludes k8s projects by filtering out labels.description:k8s
 
 data "google_projects" "shared_vpc_host" {
-  # Match random-suffix pt-corpus main project by prefix and env suffix
+  # Use supported fields: parent.id, labels, lifecycleState
   # Exclude Kubernetes projects via description label
-  filter = "parent.id:${module.helpers.teams["pt-corpus"].environments[local.environment_key]} labels.repository:pt-corpus -labels.description:k8s project_id:pt-corpus- project_id:-${module.helpers.env} lifecycleState:ACTIVE"
+  filter = "parent.id:${module.helpers.teams["pt-corpus"].environments[local.environment_key]} labels.repository:pt-corpus lifecycleState:ACTIVE"
 }
 
 # Data Source: Google Project (Shared VPC Host)
