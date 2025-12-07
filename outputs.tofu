@@ -7,11 +7,11 @@ output "gke_clusters" {
 }
 
 output "project_id" {
-  description = "The Kubernetes project ID from pt-corpus"
-  value       = data.terraform_remote_state.corpus.outputs.teams["pt-pneuma"].kubernetes_project.id
+  description = "The Kubernetes project ID"
+  value       = data.google_project.kubernetes.project_id
 }
 
 output "project_number" {
-  description = "The Kubernetes project number from pt-corpus"
-  value       = data.terraform_remote_state.corpus.outputs.teams["pt-pneuma"].kubernetes_project.number
+  description = "The Kubernetes project number"
+  value       = data.google_project.kubernetes.number
 }
