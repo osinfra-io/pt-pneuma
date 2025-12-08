@@ -13,8 +13,8 @@ module "kubernetes_engine" {
 
   labels                     = module.helpers.labels
   namespaces                 = var.kubernetes_engine_namespaces
-  project                    = data.google_project.kubernetes.project_id
-  shared_vpc_host_project_id = data.google_project.shared_vpc_host.project_id
+  project                    = data.google_project.kubernetes[0].project_id
+  shared_vpc_host_project_id = data.google_project.shared_vpc_host[0].project_id
 }
 
 # Kubernetes Istio Module (osinfra.io)
@@ -25,5 +25,5 @@ module "kubernetes_istio" {
 
   gateway_dns = var.kubernetes_istio_gateway_dns
   labels      = module.helpers.labels
-  project     = data.google_project.kubernetes.project_id
+  project     = data.google_project.kubernetes[0].project_id
 }

@@ -19,10 +19,10 @@ output "gke_clusters" {
 
 output "project_id" {
   description = "The Kubernetes project ID"
-  value       = data.google_project.kubernetes.project_id
+  value       = data.google_project.kubernetes[0].project_id
 }
 
 output "project_number" {
   description = "The Kubernetes project number"
-  value       = data.google_project.kubernetes.number
+  value       = data.google_project.kubernetes[0].number
 }
