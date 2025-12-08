@@ -10,7 +10,8 @@
 data "google_projects" "kubernetes" {
   # Use supported fields: parent.id, labels, lifecycleState
   # Matches Kubernetes projects created by pt-corpus in this team's environment folder
-  filter = "parent.id:${module.helpers.environment_folder_id} labels.repository:pt-corpus lifecycleState:ACTIVE"
+  # Strip 'folders/' prefix from folder ID since API expects just the numeric ID
+  filter = "parent.id:${replace(module.helpers.environment_folder_id, "folders/", "")} labels.repository:pt-corpus lifecycleState:ACTIVE"
 }
 
 # Data Source: Google Project (Kubernetes)
@@ -30,7 +31,8 @@ data "google_project" "kubernetes" {
 data "google_projects" "shared_vpc_host" {
   # Use supported fields: parent.id, labels, lifecycleState
   # Finds the pt-corpus main project in pt-corpus environment folder
-  filter = "parent.id:${module.helpers.teams["pt-corpus"].environments[local.environment_key]} labels.repository:pt-corpus lifecycleState:ACTIVE"
+  # Strip 'folders/' prefix from folder ID since API expects just the numeric ID
+  filter = "parent.id:${replace(module.helpers.teams["pt-corpus"].environments[local.environment_key], "folders/", "")} labels.repository:pt-corpus lifecycleState:ACTIVE"
 }
 
 # Data Source: Google Project (Shared VPC Host)
