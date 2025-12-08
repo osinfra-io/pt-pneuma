@@ -29,7 +29,7 @@ data "google_project" "kubernetes" {
 
 data "google_projects" "shared_vpc_host" {
   # Use supported fields: parent.id, labels, lifecycleState
-  # Exclude Kubernetes projects via description label
+  # Finds the pt-corpus main project in pt-corpus environment folder
   filter = "parent.id:${module.helpers.teams["pt-corpus"].environments[local.environment_key]} labels.repository:pt-corpus lifecycleState:ACTIVE"
 }
 
