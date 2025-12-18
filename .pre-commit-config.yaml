@@ -11,7 +11,7 @@ repos:
       - id: check-symlinks
 
   - repo: https://github.com/osinfra-io/pre-commit-hooks
-    rev: 55243c9fc3556620122b1ffaef067bb7c7c4ae9d # frozen: v0.1.1
+    rev: 9c95dd95971d6f78e315ad1de8d5fae3ae1059f6  # frozen: v0.1.1
     hooks:
       - id: tofu-fmt
         verbose: true
