@@ -6,11 +6,6 @@ variable "kubernetes_engine_master_ipv4_cidr_block" {
   type        = string
 }
 
-variable "kubernetes_engine_network" {
-  description = "The network to use for the GKE cluster"
-  type        = string
-}
-
 variable "kubernetes_engine_vpc_host_project_id" {
   description = "Host project for the shared VPC"
   type        = string

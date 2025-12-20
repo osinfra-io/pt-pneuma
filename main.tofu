@@ -9,13 +9,11 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/opentofu-google-kubernetes-engine
 
 module "kubernetes_engine" {
-  # source = "github.com/osinfra-io/opentofu-google-kubernetes-engine?ref=e67d2b9113d150efd7a68bb599795343f9e3620c" # v0.2.5
-  source = "github.com/osinfra-io/opentofu-google-kubernetes-engine?ref=prep"
+  source = "github.com/osinfra-io/opentofu-google-kubernetes-engine?ref=f56d2d830d0cc4f690c1791de46bc683fe2fa2b6" # v0.2.7
 
-  labels                     = module.helpers.labels
-  namespaces                 = var.kubernetes_engine_namespaces
-  project                    = data.google_project.kubernetes[0].project_id
-  shared_vpc_host_project_id = data.google_project.shared_vpc_host[0].project_id
+  labels     = module.helpers.labels
+  namespaces = var.kubernetes_engine_namespaces
+  project    = data.google_project.kubernetes[0].project_id
 }
 
 # Kubernetes Istio Module (osinfra.io)
