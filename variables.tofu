@@ -11,16 +11,6 @@ variable "kubernetes_engine_namespaces" {
   }))
 }
 
-variable "kubernetes_istio_gateway_dns" {
-  description = "Map of attributes for the Istio gateway domain names, it is also used to create the managed certificate resource"
-  default     = {}
-
-  type = map(object({
-    managed_zone = string
-    project      = string
-  }))
-}
-
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

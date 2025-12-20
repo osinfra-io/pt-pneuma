@@ -24,7 +24,7 @@ module "kubernetes_engine" {
 module "kubernetes_istio" {
   source = "github.com/osinfra-io/opentofu-kubernetes-istio?ref=a325290911bdb8085ea29ff922d2e00f00834f4a" # v0.2.0
 
-  gateway_dns = var.kubernetes_istio_gateway_dns
+  gateway_dns = local.gateway_dns
   labels      = module.helpers.labels
   project     = data.google_project.kubernetes[0].project_id
 }
