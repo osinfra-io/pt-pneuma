@@ -3,7 +3,7 @@
 
 locals {
   # Docker repositories with registry IAM members from team identity groups
-  # Only created in us-east1-a region (multi-region repositories) when enabled via variable
+  # Only created in us-east1-d region (multi-region repositories) when enabled via variable
   docker_repositories = var.enable_google_artifact_registries && contains(keys(local.main.team.identity_groups), "registry-readers") && contains(keys(local.main.team.identity_groups), "registry-writers") ? {
     pneuma = {
       registry_readers = [
