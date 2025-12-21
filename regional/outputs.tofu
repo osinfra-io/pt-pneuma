@@ -6,10 +6,10 @@ output "gke_clusters" {
   value = {
     for cluster_name, cluster in module.kubernetes_engine_regional :
     cluster_name => {
-      ca_certificate = cluster.ca_certificate
-      endpoint       = cluster.endpoint
-      id             = cluster.id
-      name           = cluster.name
+      ca_certificate = cluster.container_cluster_ca_certificate
+      endpoint       = cluster.container_cluster_endpoint
+      id             = cluster.container_cluster_id
+      name           = cluster.container_cluster_name
     }
   }
   sensitive = true
