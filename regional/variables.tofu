@@ -11,6 +11,12 @@ variable "kubernetes_engine_vpc_host_project_id" {
   type        = string
 }
 
+variable "enable_google_artifact_registries" {
+  description = "Enable Google Artifact Registry repositories (multi-region, only deploy in one region)"
+  type        = bool
+  default     = false
+}
+
 variable "remote_bucket" {
   description = "The remote bucket the `terraform_remote_state` data source retrieves the state from"
   type        = string

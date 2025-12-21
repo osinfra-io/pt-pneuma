@@ -15,3 +15,8 @@ output "project_number" {
   description = "The Kubernetes project number"
   value       = data.google_project.kubernetes[0].number
 }
+
+output "team" {
+  description = "The team data from helpers module"
+  value       = module.helpers.teams[module.helpers.team]
+}
