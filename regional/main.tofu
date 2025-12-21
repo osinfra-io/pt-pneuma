@@ -5,7 +5,7 @@ module "kubernetes_engine_regional" {
   for_each = local.gke_clusters
   source   = "github.com/osinfra-io/opentofu-google-kubernetes-engine//regional?ref=f56d2d830d0cc4f690c1791de46bc683fe2fa2b6" # v0.2.7
 
-  cluster_prefix             = "plt"
+  cluster_prefix             = module.helpers.team
   enable_deletion_protection = false
   enable_gke_hub_host        = lookup(each.value, "enable_gke_hub_host", false)
   gke_hub_memberships        = lookup(each.value, "gke_hub_memberships", {})
@@ -24,7 +24,7 @@ module "kubernetes_engine_regional" {
 resource "google_artifact_registry_repository" "docker_standard" {
   for_each = local.docker_repositories
 
-  description   = "Registry for multi-region - US Standard : ${each.key}"
+  description   = "Registry for multi-region - US Standard : ${module.helpers.team}"
   format        = "DOCKER"
   labels        = module.helpers.labels
   location      = "us"
@@ -55,7 +55,7 @@ resource "google_artifact_registry_repository" "docker_remote" {
 resource "google_artifact_registry_repository" "docker_virtual" {
   for_each = local.docker_repositories
 
-  description   = "Registry for multi-region - US Virtual : ${each.key}"
+  description   = "Registry for multi-region - US Virtual : ${module.helpers.team}"
   format        = "DOCKER"
   labels        = module.helpers.labels
   location      = "us"
