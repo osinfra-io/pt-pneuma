@@ -6,11 +6,6 @@ variable "kubernetes_engine_master_ipv4_cidr_block" {
   type        = string
 }
 
-variable "kubernetes_engine_vpc_host_project_id" {
-  description = "Host project for the shared VPC"
-  type        = string
-}
-
 variable "enable_google_artifact_registries" {
   description = "Enable Google Artifact Registry repositories (multi-region, only deploy in one region)"
   type        = bool

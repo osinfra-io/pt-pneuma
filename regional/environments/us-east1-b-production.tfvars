@@ -1,4 +1,3 @@
 kubernetes_engine_master_ipv4_cidr_block = "10.63.240.208/28"
 
-kubernetes_engine_vpc_host_project_id = "pt-corpus-tf16-prod"
-remote_bucket                         = "pt-pneuma-state-prod"
+remote_bucket = "pt-pneuma-state-prod"

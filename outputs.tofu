@@ -16,6 +16,11 @@ output "project_number" {
   value       = data.google_project.kubernetes[0].number
 }
 
+output "shared_vpc_host_project_id" {
+  description = "The shared VPC host project ID from pt-corpus"
+  value       = data.google_project.shared_vpc_host[0].project_id
+}
+
 output "team" {
   description = "The team data from helpers module"
   value       = module.helpers.teams[module.helpers.team]

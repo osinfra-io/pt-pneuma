@@ -15,7 +15,7 @@ module "kubernetes_engine_regional" {
   project                    = local.main.project_id
   resource_labels            = module.helpers.labels
   subnet                     = local.subnet
-  vpc_host_project_id        = var.kubernetes_engine_vpc_host_project_id
+  vpc_host_project_id        = local.main.shared_vpc_host_project_id
 }
 
 # Google Artifact Registry Repository
