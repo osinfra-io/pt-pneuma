@@ -39,7 +39,7 @@ jobs:
       github_environment: "Non-Production: us-east1-a"
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-a-non-production.tfvars -var="zone=us-east1-a"
+      opentofu_plan_args: -var-file=environments/us-east1-a-non-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-a-non-production
@@ -55,7 +55,7 @@ jobs:
       github_environment: "Non-Production: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-b-non-production.tfvars -var="zone=us-east1-b"
+      opentofu_plan_args: -var-file=environments/us-east1-b-non-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-non-production
@@ -71,7 +71,7 @@ jobs:
       github_environment: "Non-Production: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-c-non-production.tfvars -var="zone=us-east1-c"
+      opentofu_plan_args: -var-file=environments/us-east1-c-non-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-non-production
@@ -87,7 +87,7 @@ jobs:
       github_environment: "Non-Production: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-a-non-production.tfvars -var="zone=us-east4-a"
+      opentofu_plan_args: -var-file=environments/us-east4-a-non-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-non-production
@@ -103,7 +103,7 @@ jobs:
       github_environment: "Non-Production: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars -var="zone=us-east4-b"
+      opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-non-production
@@ -119,7 +119,7 @@ jobs:
       github_environment: "Non-Production: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-c-non-production.tfvars -var="zone=us-east4-c"
+      opentofu_plan_args: -var-file=environments/us-east4-c-non-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-non-production
