@@ -54,29 +54,18 @@ terraform {
       source = "hashicorp/google"
     }
 
-    helm = {
-      source = "hashicorp/helm"
-    }
-
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
   }
 }
 
-# Helm Provider
-# https://search.opentofu.org/provider/hashicorp/helm/latest
+# Google Cloud Platform Provider
+# https://search.opentofu.org/provider/hashicorp/google/latest
 
-provider "helm" {
-  kubernetes = {
-
-    cluster_ca_certificate = base64decode(
-      data.google_container_cluster.this.master_auth.0.cluster_ca_certificate
-    )
-
-    host  = data.google_container_cluster.this.endpoint
-    token = data.google_client_config.this.access_token
-  }
+provider "google" {
+  add_terraform_attribution_label = false
+  user_project_override           = true
 }
 
 # Kubernetes Provider

@@ -47,15 +47,15 @@ terraform {
 
   required_providers {
 
+    datadog = {
+      source = "datadog/datadog"
+    }
+
     # Google Cloud Platform Provider
     # https://search.opentofu.org/provider/hashicorp/google/latest/docs
 
     google = {
       source = "hashicorp/google"
-    }
-
-    helm = {
-      source = "hashicorp/helm"
     }
 
     kubernetes = {
@@ -64,19 +64,20 @@ terraform {
   }
 }
 
-# Helm Provider
-# https://search.opentofu.org/provider/hashicorp/helm/latest
+# Datadog Provider
+# https://search.opentofu.org/provider/opentofu/datadog/latest
 
-provider "helm" {
-  kubernetes = {
+provider "datadog" {
+  api_key = var.datadog_api_key
+  app_key = var.datadog_app_key
+}
 
-    cluster_ca_certificate = base64decode(
-      data.google_container_cluster.this.master_auth.0.cluster_ca_certificate
-    )
+# Google Cloud Platform Provider
+# https://search.opentofu.org/provider/hashicorp/google/latest
 
-    host  = data.google_container_cluster.this.endpoint
-    token = data.google_client_config.this.access_token
-  }
+provider "google" {
+  add_terraform_attribution_label = false
+  user_project_override           = true
 }
 
 # Kubernetes Provider

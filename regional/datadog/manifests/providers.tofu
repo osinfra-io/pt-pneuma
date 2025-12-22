@@ -12,8 +12,8 @@ terraform {
     method "unencrypted" "migrate" {}
 
     key_provider "gcp_kms" "default" {
-      kms_encryption_key = var.state_kms_encryption_key
       key_length         = 32
+      kms_encryption_key = var.state_kms_encryption_key
     }
 
     method "aes_gcm" "default" {
@@ -86,6 +86,7 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(
     data.google_container_cluster.this.master_auth.0.cluster_ca_certificate
   )
+
   host  = "https://${data.google_container_cluster.this.endpoint}"
   token = data.google_client_config.this.access_token
 }
