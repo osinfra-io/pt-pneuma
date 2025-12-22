@@ -6,7 +6,6 @@ module "helpers" {
 
   cost_center         = "x001"
   data_classification = "public"
-  logos_workspaces    = ["pt-corpus-main-production", "pt-logos-main-production", "pt-pneuma-main-production", "st-ethos-main-production"]
   repository          = "pt-pneuma"
   team                = "pt-pneuma"
 }
