@@ -24,7 +24,7 @@ data "terraform_remote_state" "regional" {
   config = {
     bucket             = var.state_bucket
     kms_encryption_key = var.state_kms_encryption_key
-    prefix             = "pt-pneuma-regional"
+    prefix             = "pt-pneuma"
   }
 
   workspace = "${local.region}-${local.zone}-${module.helpers.environment}"
