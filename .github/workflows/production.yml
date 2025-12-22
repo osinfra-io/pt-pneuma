@@ -31,7 +31,7 @@ jobs:
       opentofu_workspace: main-production
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  us_east1_a:
+  us_east1_d:
     name: "Regional: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
     needs: main
@@ -127,10 +127,10 @@ jobs:
       working_directory: regional
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  cert_manager_us_east1_a:
+  cert_manager_us_east1_d:
     name: "cert-manager: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: us_east1_a
+    needs: us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Production cert-manager: us-east1-d"
@@ -217,10 +217,10 @@ jobs:
       working_directory: regional/cert-manager
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  cert_manager_istio_csr_us_east1_a:
+  cert_manager_istio_csr_us_east1_d:
     name: "cert-manager Istio CSR: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: cert_manager_us_east1_a
+    needs: cert_manager_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Production cert-manager Istio CSR: us-east1-d"
@@ -313,10 +313,10 @@ jobs:
       working_directory: regional/cert-manager/istio-csr
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  datadog_us_east1_a:
+  datadog_us_east1_d:
     name: "Datadog: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: cert_manager_istio_csr_us_east1_a
+    needs: cert_manager_istio_csr_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Production Datadog: us-east1-d"
@@ -403,10 +403,10 @@ jobs:
       working_directory: regional/datadog
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  datadog_manifests_us_east1_a:
+  datadog_manifests_us_east1_d:
     name: "Datadog Manifests: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: datadog_us_east1_a
+    needs: datadog_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Production Datadog Manifests: us-east1-d"
@@ -517,11 +517,11 @@ jobs:
         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 
-  istio_manifests_us_east1_a:
+  istio_manifests_us_east1_d:
     name: "Istio Manifests: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
     if: github.actor != 'dependabot[bot]'
-    needs: datadog_manifests_us_east1_a
+    needs: datadog_manifests_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Production Istio Manifests: us-east1-d"
@@ -534,11 +534,11 @@ jobs:
       working_directory: regional/istio/manifests
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  istio_test_us_east1_a:
+  istio_test_us_east1_d:
     name: "Istio Test: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
     if: github.actor != 'dependabot[bot]'
-    needs: istio_manifests_us_east1_a
+    needs: istio_manifests_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Production Istio Test: us-east1-d"
@@ -555,10 +555,10 @@ jobs:
         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 
-  istio_us_east1_a:
+  istio_us_east1_d:
     name: "Istio: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_test_us_east1_a
+    needs: istio_test_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Production Istio: us-east1-d"
@@ -841,10 +841,10 @@ jobs:
       working_directory: regional/istio
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  onboarding_us_east1_a:
+  onboarding_us_east1_d:
     name: "Onboarding: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_us_east1_a
+    needs: istio_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Production Onboarding: us-east1-d"
@@ -937,10 +937,10 @@ jobs:
       working_directory: regional/onboarding
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  opa_gatekeeper_us_east1_a:
+  opa_gatekeeper_us_east1_d:
     name: "OPA Gatekeeper: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: onboarding_us_east1_a
+    needs: onboarding_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Production OPA Gatekeeper: us-east1-d"
