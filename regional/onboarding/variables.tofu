@@ -2,11 +2,13 @@
 # https://opentofu.org/docs/language/values/variables
 
 variable "kubernetes_engine_namespaces" {
+  default     = {}
   description = "Map of namespaces and service accounts to onboard to GKE"
   type        = map(any)
 }
 
 variable "remote_bucket" {
+  default     = ""
   description = "The remote bucket the `terraform_remote_state` data source retrieves the state from"
   type        = string
 }
