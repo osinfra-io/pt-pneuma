@@ -27,6 +27,12 @@ terraform {
       method   = method.aes_gcm.default
     }
 
+    remote_state_data_sources {
+      default {
+        method = method.aes_gcm.default
+      }
+    }
+
     state {
       enforced = true
       method   = method.aes_gcm.default
