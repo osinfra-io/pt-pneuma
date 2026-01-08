@@ -126,10 +126,100 @@ jobs:
       working_directory: regional
       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  us_east1_d_onboarding:
+    name: "Onboarding: us-east1-d"
+    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+    needs: us_east1_d
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Non-Production Onboarding: us-east1-d"
+      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-nonprod
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-d-onboarding-non-production
+      working_directory: regional/onboarding
+      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  us_east1_b_onboarding:
+    name: "Onboarding: us-east1-b"
+    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+    needs: us_east1_b
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Non-Production Onboarding: us-east1-b"
+      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-nonprod
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-b-onboarding-non-production
+      working_directory: regional/onboarding
+      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  us_east1_c_onboarding:
+    name: "Onboarding: us-east1-c"
+    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+    needs: us_east1_c
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Non-Production Onboarding: us-east1-c"
+      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-nonprod
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-c-onboarding-non-production
+      working_directory: regional/onboarding
+      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  us_east4_a_onboarding:
+    name: "Onboarding: us-east4-a"
+    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+    needs: us_east4_a
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Non-Production Onboarding: us-east4-a"
+      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-nonprod
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-a-onboarding-non-production
+      working_directory: regional/onboarding
+      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  us_east4_b_onboarding:
+    name: "Onboarding: us-east4-b"
+    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+    needs: us_east4_b
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Non-Production Onboarding: us-east4-b"
+      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-nonprod
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-b-onboarding-non-production
+      working_directory: regional/onboarding
+      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  us_east4_c_onboarding:
+    name: "Onboarding: us-east4-c"
+    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+    needs: us_east4_c
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Non-Production Onboarding: us-east4-c"
+      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-nonprod
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-c-onboarding-non-production
+      working_directory: regional/onboarding
+      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   cert_manager_us_east1_d:
     name: "cert-manager: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: us_east1_d
+    needs: us_east1_d_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production cert-manager: us-east1-d"
@@ -144,7 +234,7 @@ jobs:
   cert_manager_us_east1_b:
     name: "cert-manager: us-east1-b"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: us_east1_b
+    needs: us_east1_b_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production cert-manager: us-east1-b"
@@ -159,7 +249,7 @@ jobs:
   cert_manager_us_east1_c:
     name: "cert-manager: us-east1-c"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: us_east1_c
+    needs: us_east1_c_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production cert-manager: us-east1-c"
@@ -174,7 +264,7 @@ jobs:
   cert_manager_us_east4_a:
     name: "cert-manager: us-east4-a"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: us_east4_a
+    needs: us_east4_a_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production cert-manager: us-east4-a"
@@ -189,7 +279,7 @@ jobs:
   cert_manager_us_east4_b:
     name: "cert-manager: us-east4-b"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: us_east4_b
+    needs: us_east4_b_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production cert-manager: us-east4-b"
@@ -204,7 +294,7 @@ jobs:
   cert_manager_us_east4_c:
     name: "cert-manager: us-east4-c"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: us_east4_c
+    needs: us_east4_c_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production cert-manager: us-east4-c"
