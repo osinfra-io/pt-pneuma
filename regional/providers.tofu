@@ -8,8 +8,18 @@ terraform {
       key_length         = 32
     }
 
+    key_provider "gcp_kms" "logos" {
+      encrypted_metadata_alias = "key_provider.gcp_kms.default"
+      kms_encryption_key       = "projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default"
+      key_length               = 32
+    }
+
     method "aes_gcm" "default" {
       keys = key_provider.gcp_kms.default
+    }
+
+    method "aes_gcm" "logos" {
+      keys = key_provider.gcp_kms.logos
     }
 
     plan {
@@ -19,7 +29,7 @@ terraform {
 
     remote_state_data_sources {
       default {
-        method = method.aes_gcm.default
+        method = method.aes_gcm.logos
       }
     }
 
