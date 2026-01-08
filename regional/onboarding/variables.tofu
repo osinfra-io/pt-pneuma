@@ -7,12 +7,6 @@ variable "kubernetes_engine_namespaces" {
   type        = map(any)
 }
 
-variable "remote_bucket" {
-  default     = ""
-  description = "The remote bucket the `terraform_remote_state` data source retrieves the state from"
-  type        = string
-}
-
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

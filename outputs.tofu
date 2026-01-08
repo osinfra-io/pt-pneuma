@@ -6,6 +6,11 @@ output "gke_clusters" {
   value       = local.gke_clusters
 }
 
+output "kubernetes_engine_workload_identity_service_account_emails" {
+  description = "The email addresses of the service accounts for the Kubernetes namespace workload identity"
+  value       = module.kubernetes_engine.workload_identity_service_account_emails
+}
+
 output "project_id" {
   description = "The Kubernetes project ID"
   value       = data.google_project.kubernetes[0].project_id

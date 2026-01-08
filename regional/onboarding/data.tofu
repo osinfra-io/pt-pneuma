@@ -10,36 +10,33 @@ data "google_client_config" "this" {}
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/container_cluster
 
 data "google_container_cluster" "this" {
-  location = local.zone
-  name     = local.cluster_name
-  project  = data.terraform_remote_state.regional.outputs.project_id
+  location = module.helpers.zone
+  name     = "cluster-${module.helpers.env}"
+  project  = data.google_project.this.project_id
 }
 
-# OpenTofu Remote State Data Source - Regional
-# https://opentofu.org/docs/language/state/remote-state-data
+# Google Project Data Source
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/project
 
-data "terraform_remote_state" "regional" {
-  backend = "gcs"
-
-  config = {
-    bucket             = var.state_bucket
-    kms_encryption_key = var.state_kms_encryption_key
-    prefix             = "pt-pneuma"
-  }
-
-  workspace = "${local.region}-${local.zone}-${module.helpers.environment}"
+data "google_project" "this" {
+  project_id = data.google_projects.this.projects[0].project_id
 }
 
-# OpenTofu Remote State Data Source - Main
+# Google Projects Data Source
+# https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/projects
+
+data "google_projects" "this" {
+  filter = "parent.id:${module.helpers.environment_folder_id} labels.type=k8s labels.env=${module.helpers.env}"
+}
+
+# Terraform Remote State Data Source - Main
 # https://opentofu.org/docs/language/state/remote-state-data
 
 data "terraform_remote_state" "main" {
   backend = "gcs"
 
   config = {
-    bucket             = var.remote_bucket != "" ? var.remote_bucket : var.state_bucket
-    kms_encryption_key = var.state_kms_encryption_key
-    prefix             = "pt-pneuma"
+    bucket = var.state_bucket
   }
 
   workspace = "main-${module.helpers.environment}"
