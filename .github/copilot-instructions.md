@@ -141,6 +141,24 @@ Meta-arguments (`for_each`, `count`, `depends_on`, `lifecycle`, `provider`) MUST
 - **lifecycle blocks**: Are meta-arguments and must be positioned before all regular resource configuration arguments
 - **Nested block ordering**: Within nested blocks (lifecycle, provisioner, etc.), use normal alphabetical ordering
 
+**Example**:
+```hcl
+resource "google_service_account" "github_actions" {
+  for_each = local.service_accounts
+
+  depends_on = [google_project_service.this]
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  # Regular arguments in strict alphabetical order
+  account_id   = "${each.key}-github"
+  display_name = "Service account for GitHub Actions"
+  project      = module.project.id
+}
+```
+
 ### Resource Arguments
 - **All remaining arguments**: Must be in strict alphabetical order after meta-arguments, regardless of whether they're required or optional
 - **No exceptions**: Alphabetical ordering applies to all standard resource arguments
@@ -148,6 +166,17 @@ Meta-arguments (`for_each`, `count`, `depends_on`, `lifecycle`, `provider`) MUST
 ### Formatting Rules
 - **List/Map formatting**: Always have an empty newline before any list, map, or logic block unless it's the first argument. Always have an empty newline after any list, map, or logic block unless it's the last argument.
 - **Function formatting**: Use single-line formatting for simple function calls. For complex functions with long lines or multiple arguments, break into multiple lines for readability.
+
+**Function formatting examples**:
+```hcl
+# Simple function - single line
+name = upper(var.environment)
+
+# Complex function - multiple lines for readability
+attribute_condition = module.helpers.env == "sb" ?
+  "assertion.repository_owner_id==\"104685378\"" :
+  "assertion.repository_owner_id==\"104685378\" && assertion.ref==\"refs/heads/main\""
+```
 
 ## Separation of Concerns
 
