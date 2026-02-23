@@ -12,7 +12,7 @@ data "google_client_config" "this" {}
 data "google_container_cluster" "this" {
   location = module.helpers.region
   name     = "${module.helpers.team}-${module.helpers.region}-${module.helpers.zone}"
-  project  = data.google_project.kubernetes[0].project_id
+  project  = data.google_project.kubernetes.project_id
 }
 
 # Data Source: Google Projects (Kubernetes)
@@ -32,7 +32,9 @@ data "google_projects" "kubernetes" {
 # Reference the single Kubernetes project from the filtered results
 
 data "google_project" "kubernetes" {
-  count = length(data.google_projects.kubernetes.projects) > 0 ? 1 : 0
+  lifecycle {
+    enabled = length(data.google_projects.kubernetes.projects) > 0
+  }
 
   project_id = data.google_projects.kubernetes.projects[0].project_id
 }

@@ -13,17 +13,17 @@ output "kubernetes_engine_workload_identity_service_account_emails" {
 
 output "project_id" {
   description = "The Kubernetes project ID"
-  value       = data.google_project.kubernetes[0].project_id
+  value       = data.google_project.kubernetes.project_id
 }
 
 output "project_number" {
   description = "The Kubernetes project number"
-  value       = data.google_project.kubernetes[0].number
+  value       = data.google_project.kubernetes.number
 }
 
 output "shared_vpc_host_project_id" {
   description = "The shared VPC host project ID from pt-corpus"
-  value       = data.google_project.shared_vpc_host[0].project_id
+  value       = data.google_project.shared_vpc_host.project_id
 }
 
 output "team" {

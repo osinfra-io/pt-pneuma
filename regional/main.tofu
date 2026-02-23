@@ -33,7 +33,9 @@ resource "google_artifact_registry_repository" "docker_standard" {
 }
 
 resource "google_artifact_registry_repository" "docker_remote" {
-  count = var.enable_google_artifact_registries ? 1 : 0
+  lifecycle {
+    enabled = var.enable_google_artifact_registries
+  }
 
   description = "Registry for multi-region - US Docker Hub"
   format      = "DOCKER"
@@ -73,7 +75,7 @@ resource "google_artifact_registry_repository" "docker_virtual" {
     upstream_policies {
       id         = "docker"
       priority   = 10
-      repository = google_artifact_registry_repository.docker_remote[0].id
+      repository = google_artifact_registry_repository.docker_remote.id
     }
   }
 }
