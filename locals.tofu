@@ -18,7 +18,7 @@ locals {
   gateway_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
     (module.helpers.env == "prod" ? "${replace(module.helpers.team, "/^[a-z]+-/", "")}.osinfra.io" : "${module.helpers.env}.${replace(module.helpers.team, "/^[a-z]+-/", "")}.osinfra.io") = {
       managed_zone = module.helpers.env == "prod" ? "${replace(module.helpers.team, "/^[a-z]+-/", "")}-osinfra-io" : "${module.helpers.env}-${replace(module.helpers.team, "/^[a-z]+-/", "")}-osinfra-io"
-      project      = data.google_project.shared_vpc_host[0].project_id
+      project      = data.google_project.shared_vpc_host.project_id
     }
   } : {}
 }
