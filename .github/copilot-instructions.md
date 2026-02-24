@@ -72,7 +72,7 @@ Workspace configuration files (`*.code-workspace`) are stored locally outside th
 
 **IMPORTANT - Instruction File Synchronization:**
 
-The `.github/copilot-instructions.md` file **MUST be identical across all kubexx platform repositories**. When making changes to this instructions file:
+The `.github/copilot-instructions.md` file **MUST be identical across all platform team repositories**. When making changes to this instructions file:
 - Apply the same changes to **all platform repositories** in the current workspace
 - Do not wait to be asked - automatically update all repos when modifying instructions
 - Maintain consistency to ensure Copilot behavior is uniform across the platform
