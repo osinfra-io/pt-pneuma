@@ -9,7 +9,7 @@ This file defines simple, persistent coding standards and repository practices f
 
 ### Automated Pre-Commit Execution
 
-**CRITICAL: Copilot must automatically run pre-commit hooks after making ANY changes to OpenTofu files** (`.tofu`, `.tfvars`, or any file in a OpenTofu directory).
+**CRITICAL: Copilot must automatically run pre-commit hooks after making ANY changes to OpenTofu files** (`.tofu`, `.tfvars`, or any file in an OpenTofu directory).
 
 This ensures:
 - Hooks are updated to latest versions with pinned commit hashes
@@ -19,7 +19,7 @@ This ensures:
 - All validations succeed
 
 **Workflow:**
-1. Make Terraform code changes
+1. Make OpenTofu code changes
 2. Run `pre-commit autoupdate --freeze` to update hooks and pin to commit hashes
 3. Run `pre-commit run -a` to execute all hooks
 4. Report any errors or fixes applied

@@ -108,7 +108,7 @@ resource "example" "this" {
 
 ### Module References
 
-- Pin versions using git refs: `source = "github.com/org/repo//path?ref=v1.2.3"`
+- Pin versions using git refs: `source = "github.com/org/repo//path?ref=<commit_sha>  # v1.2.3"`
 - Document version in comment: `# v1.2.3`
 - Access outputs: `module.<name>.<output>`
 - Never hardcode values available from modules
@@ -117,7 +117,7 @@ resource "example" "this" {
 
 ```hcl
 module "example" {
-  source = "github.com/org/module-repo//path?ref=<version>"
+  source = "github.com/org/module-repo//path?ref=<commit_sha>  # v1.2.3"
 
   attribute_one = var.input_value
   attribute_two = local.computed_value
