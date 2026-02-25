@@ -41,7 +41,7 @@ terraform {
 
     remote_state_data_sources {
       default {
-        method = method.aes_gcm.logos
+        method = method.aes_gcm.default
       }
     }
 
