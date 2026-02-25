@@ -32,7 +32,7 @@ Kubernetes/GKE infrastructure and cluster management layer.
 
 ```mermaid
 graph LR
-    A[Trigger] --> B[Main]
+    B[Main]
 
     B --> C1[Regional:<br/>us-east1-b]
     B --> C2[Regional:<br/>us-east1-c]
@@ -70,27 +70,49 @@ graph LR
     J2 --> K2[Istio]
     J3 --> K3[Istio]
 
-    K1 --> L1[Onboarding]
-    K2 --> L2[Onboarding]
-    K3 --> L3[Onboarding]
+    K1 --> L1[OPA<br/>Gatekeeper]
+    K2 --> L2[OPA<br/>Gatekeeper]
+    K3 --> L3[OPA<br/>Gatekeeper]
 
-    L1 --> M1[OPA<br/>Gatekeeper]
-    L2 --> M2[OPA<br/>Gatekeeper]
-    L3 --> M3[OPA<br/>Gatekeeper]
-
-    style A fill:#e1f5ff
-    style B fill:#fff4e6
-    style C1 fill:#d4edda
-    style C2 fill:#d4edda
-    style C3 fill:#d4edda
+    style B fill:#fff4e6,color:#000
+    style C1 fill:#d4edda,color:#000
+    style C2 fill:#d4edda,color:#000
+    style C3 fill:#d4edda,color:#000
+    style D1 fill:#e6d9f5,color:#000
+    style D2 fill:#e6d9f5,color:#000
+    style D3 fill:#e6d9f5,color:#000
+    style E1 fill:#d1ecf1,color:#000
+    style E2 fill:#d1ecf1,color:#000
+    style E3 fill:#d1ecf1,color:#000
+    style F1 fill:#d1ecf1,color:#000
+    style F2 fill:#d1ecf1,color:#000
+    style F3 fill:#d1ecf1,color:#000
+    style G1 fill:#fff3cd,color:#000
+    style G2 fill:#fff3cd,color:#000
+    style G3 fill:#fff3cd,color:#000
+    style H1 fill:#fff3cd,color:#000
+    style H2 fill:#fff3cd,color:#000
+    style H3 fill:#fff3cd,color:#000
+    style I1 fill:#f8d7e5,color:#000
+    style I2 fill:#f8d7e5,color:#000
+    style I3 fill:#f8d7e5,color:#000
+    style J1 fill:#f8d7e5,color:#000
+    style J2 fill:#f8d7e5,color:#000
+    style J3 fill:#f8d7e5,color:#000
+    style K1 fill:#f8d7e5,color:#000
+    style K2 fill:#f8d7e5,color:#000
+    style K3 fill:#f8d7e5,color:#000
+    style L1 fill:#ffdab9,color:#000
+    style L2 fill:#ffdab9,color:#000
+    style L3 fill:#ffdab9,color:#000
 ```
 
 **Workflow Details:**
 
 - **Three Workflows**: Sandbox, Non-Production, Production (identical job structure)
-- **Total Jobs**: 73 (1 Main + 72 regional zone jobs across 6 zones)
+- **Total Jobs**: 67 (1 Main + 66 regional zone jobs across 6 zones)
 - **Zones**: us-east1-b, us-east1-c, us-east1-d, us-east4-a, us-east4-b, us-east4-c (diagram shows 3 for clarity)
-- **Job Chain per Zone** (12 jobs): Regional → Onboarding → cert-manager → cert-manager Istio CSR → Datadog → Datadog Manifests → Istio Manifests → Istio Test → Istio → Onboarding → OPA Gatekeeper
+- **Job Chain per Zone** (11 jobs): Regional → Onboarding → cert-manager → cert-manager Istio CSR → Datadog → Datadog Manifests → Istio Manifests → Istio Test → Istio → OPA Gatekeeper
 - **Triggers**:
   - Sandbox: Pull request (opened, synchronize), excluding .md files
   - Non-Production: Push to main, excluding .md files

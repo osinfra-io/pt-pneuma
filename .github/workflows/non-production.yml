@@ -930,106 +930,10 @@ jobs:
       working_directory: regional/istio
       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  onboarding_us_east1_d:
-    name: "Onboarding: us-east1-d"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_us_east1_d
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Onboarding: us-east1-d"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east1-d-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east1-d-onboarding-non-production
-      working_directory: regional/onboarding
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
-  onboarding_us_east1_b:
-    name: "Onboarding: us-east1-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_us_east1_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Onboarding: us-east1-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east1-b-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east1-b-onboarding-non-production
-      working_directory: regional/onboarding
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
-  onboarding_us_east1_c:
-    name: "Onboarding: us-east1-c"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_us_east1_c
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Onboarding: us-east1-c"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east1-c-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east1-c-onboarding-non-production
-      working_directory: regional/onboarding
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
-  onboarding_us_east4_a:
-    name: "Onboarding: us-east4-a"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_us_east4_a
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Onboarding: us-east4-a"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east4-a-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-a-onboarding-non-production
-      working_directory: regional/onboarding
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
-  onboarding_us_east4_b:
-    name: "Onboarding: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_us_east4_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Onboarding: us-east4-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east4-b-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-onboarding-non-production
-      working_directory: regional/onboarding
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
-  onboarding_us_east4_c:
-    name: "Onboarding: us-east4-c"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_us_east4_c
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Onboarding: us-east4-c"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east4-c-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-c-onboarding-non-production
-      working_directory: regional/onboarding
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
   opa_gatekeeper_us_east1_d:
     name: "OPA Gatekeeper: us-east1-d"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: onboarding_us_east1_d
+    needs: istio_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production OPA Gatekeeper: us-east1-d"
@@ -1045,7 +949,7 @@ jobs:
   opa_gatekeeper_us_east1_b:
     name: "OPA Gatekeeper: us-east1-b"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: onboarding_us_east1_b
+    needs: istio_us_east1_b
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production OPA Gatekeeper: us-east1-b"
@@ -1061,7 +965,7 @@ jobs:
   opa_gatekeeper_us_east1_c:
     name: "OPA Gatekeeper: us-east1-c"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: onboarding_us_east1_c
+    needs: istio_us_east1_c
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production OPA Gatekeeper: us-east1-c"
@@ -1077,7 +981,7 @@ jobs:
   opa_gatekeeper_us_east4_a:
     name: "OPA Gatekeeper: us-east4-a"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: onboarding_us_east4_a
+    needs: istio_us_east4_a
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production OPA Gatekeeper: us-east4-a"
@@ -1093,7 +997,7 @@ jobs:
   opa_gatekeeper_us_east4_b:
     name: "OPA Gatekeeper: us-east4-b"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: onboarding_us_east4_b
+    needs: istio_us_east4_b
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production OPA Gatekeeper: us-east4-b"
@@ -1109,7 +1013,7 @@ jobs:
   opa_gatekeeper_us_east4_c:
     name: "OPA Gatekeeper: us-east4-c"
     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: onboarding_us_east4_c
+    needs: istio_us_east4_c
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production OPA Gatekeeper: us-east4-c"

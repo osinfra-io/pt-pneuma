@@ -50,6 +50,16 @@ This ensures:
 - **Update deliberately** - When updating an action, update both the hash and the version comment
 - **Verify hashes** - Ensure the commit hash matches the tagged version you intend to use
 
+## Mermaid Diagrams
+
+- Workflow diagrams use Mermaid graph syntax to visualize GitHub Actions job dependencies
+- When modifying workflows, keep diagrams in sync with actual job structure
+- **Diagram Style Guidelines**:
+  - Use horizontal layout: `graph LR` (left-to-right)
+  - Always include `color:#000` for text readability on colored backgrounds
+  - Use consistent color coding across repositories to differentiate job types
+  - Example: `style A fill:#e1f5ff,color:#000`
+
 ## Repository Practices
 - Local development does not have access to OpenTofu state. Tests are run in GitHub Actions workflows.
 - Use symlinks for shared configuration files to avoid duplication.
