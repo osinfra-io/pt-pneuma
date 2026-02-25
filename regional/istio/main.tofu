@@ -4,7 +4,7 @@
 module "kubernetes_istio" {
   source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional?ref=a325290911bdb8085ea29ff922d2e00f00834f4a" # v0.2.0
 
-  artifact_registry          = "us-docker.pkg.dev/pt-corpus-tf16-prod/pt-docker-virtual"
+  artifact_registry          = "us-docker.pkg.dev/${local.main.project_id}/pt-pneuma-virtual"
   cluster_prefix             = "pt-pneuma"
   enable_istio_gateway       = true
   gateway_cpu_limits         = var.kubernetes_istio_gateway_cpu_limits
@@ -28,7 +28,7 @@ module "kubernetes_istio" {
   pilot_cpu_requests                          = var.kubernetes_istio_pilot_cpu_requests
   pilot_memory_limits                         = var.kubernetes_istio_pilot_memory_limits
   pilot_memory_requests                       = var.kubernetes_istio_pilot_memory_requests
-  project                                     = data.google_project.this.project_id
+  project                                     = data.terraform_remote_state.main.outputs.project_id
   proxy_cpu_limits                            = var.kubernetes_istio_proxy_cpu_limits
   proxy_cpu_requests                          = var.kubernetes_istio_proxy_cpu_requests
   proxy_memory_limits                         = var.kubernetes_istio_proxy_memory_limits

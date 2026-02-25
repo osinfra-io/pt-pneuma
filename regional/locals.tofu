@@ -7,7 +7,8 @@ locals {
   docker_repositories = var.enable_google_artifact_registries && contains(keys(local.main.team.identity_groups), "registry-readers") && contains(keys(local.main.team.identity_groups), "registry-writers") ? {
     pt-pneuma = {
       registry_readers = [
-        "group:${local.main.team.identity_groups["registry-readers"].email}"
+        "group:${local.main.team.identity_groups["registry-readers"].email}",
+        "serviceAccount:${local.main.project_number}-compute@developer.gserviceaccount.com"
       ]
       registry_writers = [
         "group:${local.main.team.identity_groups["registry-writers"].email}"

@@ -15,13 +15,6 @@ data "google_container_cluster" "this" {
   project  = data.terraform_remote_state.main.outputs.project_id
 }
 
-# Google Project Data Source
-# https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/project
-
-data "google_project" "this" {
-  project_id = data.terraform_remote_state.main.outputs.project_id
-}
-
 # OpenTofu Remote State Data Source - Regional
 # https://opentofu.org/docs/language/state/remote-state-data
 
