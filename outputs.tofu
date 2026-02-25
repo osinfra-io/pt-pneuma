@@ -30,3 +30,14 @@ output "team" {
   description = "The team data from helpers module"
   value       = module.helpers.teams[module.helpers.team]
 }
+
+output "kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert" {
+  description = "The self-signed certificate for the cert-manager root certificate"
+  value       = module.kubernetes_cert_manager.tls_self_signed_cert_cert_manager_root_cert
+}
+
+output "kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key" {
+  description = "The private key for the cert-manager root certificate"
+  value       = module.kubernetes_cert_manager.tls_self_signed_cert_cert_manager_root_key
+  sensitive   = true
+}
