@@ -10,7 +10,7 @@ data "google_client_config" "this" {}
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/container_cluster
 
 data "google_container_cluster" "this" {
-  location = local.zone
+  location = module.helpers.region
   name     = local.cluster_name
   project  = data.terraform_remote_state.main.outputs.project_id
 }
