@@ -12,14 +12,14 @@ data "google_client_config" "this" {}
 data "google_container_cluster" "this" {
   location = local.zone
   name     = local.cluster_name
-  project  = data.terraform_remote_state.regional.outputs.project_id
+  project  = data.terraform_remote_state.main.outputs.project_id
 }
 
 # Google Project Data Source
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/project
 
 data "google_project" "this" {
-  project_id = data.terraform_remote_state.regional.outputs.project_id
+  project_id = data.terraform_remote_state.main.outputs.project_id
 }
 
 # OpenTofu Remote State Data Source - Regional

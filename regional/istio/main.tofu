@@ -10,7 +10,7 @@ module "kubernetes_istio" {
   gateway_cpu_limits         = var.kubernetes_istio_gateway_cpu_limits
   gateway_cpu_requests       = var.kubernetes_istio_gateway_cpu_requests
   gateway_dns                = var.kubernetes_istio_gateway_dns
-  gateway_mci_global_address = local.main.kubernetes_istio_gateway_mci_global_address
+  gateway_mci_global_address = try(local.main.kubernetes_istio_gateway_mci_global_address, null)
   gateway_memory_limits      = var.kubernetes_istio_gateway_memory_limits
   gateway_memory_requests    = var.kubernetes_istio_gateway_memory_requests
   labels                     = module.helpers.labels
