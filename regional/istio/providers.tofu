@@ -43,6 +43,14 @@ terraform {
       default {
         method = method.aes_gcm.logos
       }
+
+      remote_state_data_source "regional" {
+        method = method.aes_gcm.default
+      }
+
+      remote_state_data_source "main" {
+        method = method.aes_gcm.default
+      }
     }
 
     state {
