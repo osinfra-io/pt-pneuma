@@ -2,7 +2,8 @@
 # https://github.com/osinfra-io/opentofu-kubernetes-cert-manager
 
 module "kubernetes_cert_manager_istio_csr" {
-  source = "github.com/osinfra-io/opentofu-kubernetes-cert-manager//regional/istio-csr?ref=6d8932f1f50f2688a2132feab870c9fef3b4e709" # v0.1.7
+  # source = "github.com/osinfra-io/opentofu-kubernetes-cert-manager//regional/istio-csr?ref=6d8932f1f50f2688a2132feab870c9fef3b4e709" # v0.1.7
+  source = "github.com/osinfra-io/opentofu-kubernetes-cert-manager//regional/istio-csr?ref=bump"
 
   artifact_registry                           = "us-docker.pkg.dev/pt-lz-services-prod/pt-docker-virtual"
   cluster_prefix                              = "pt"

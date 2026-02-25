@@ -2,7 +2,8 @@
 # https://github.com/osinfra-io/opentofu-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional?ref=a325290911bdb8085ea29ff922d2e00f00834f4a" # v0.2.0
+  # source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional?ref=a325290911bdb8085ea29ff922d2e00f00834f4a" # v0.2.0
+  source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional?ref=bump"
 
   artifact_registry          = "us-docker.pkg.dev/${local.main.project_id}/pt-pneuma-virtual"
   cluster_prefix             = "pt-pneuma"
