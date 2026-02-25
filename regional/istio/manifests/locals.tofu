@@ -2,5 +2,5 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  kubernetes_project = data.google_project.kubernetes.project_id
+  # Removed local.kubernetes_project - now using data.terraform_remote_state.main.outputs.project_id directly
 }

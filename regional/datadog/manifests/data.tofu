@@ -10,20 +10,21 @@ data "google_client_config" "this" {
 
 data "google_container_cluster" "this" {
   location = module.helpers.region
-  name     = "pt-${module.helpers.region}-${module.helpers.zone}"
-  project  = data.google_project.this.project_id
+  name     = "${module.helpers.team}-${module.helpers.region}-${module.helpers.zone}"
+  project  = data.terraform_remote_state.main.outputs.project_id
 }
 
-# Google Projects Data Source
-# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/projects
+# Terraform Remote State Data Source - Main
+# https://opentofu.org/docs/language/state/remote-state-data
 
-data "google_projects" "this" {
-  filter = "name:pt-k8s-* labels.env:${module.helpers.environment}"
-}
+data "terraform_remote_state" "main" {
+  backend = "gcs"
 
-# Google Project Data Source
-# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/project
+  config = {
+    bucket             = var.state_bucket
+    kms_encryption_key = var.state_kms_encryption_key
+    prefix             = module.helpers.repository
+  }
 
-data "google_project" "this" {
-  project_id = data.google_projects.this.projects.0.project_id
+  workspace = "main-${module.helpers.environment}"
 }

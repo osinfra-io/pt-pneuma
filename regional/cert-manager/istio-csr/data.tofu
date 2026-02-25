@@ -10,22 +10,8 @@ data "google_client_config" "this" {
 
 data "google_container_cluster" "this" {
   location = module.helpers.region
-  name     = "pt-${module.helpers.region}-${module.helpers.zone}"
-  project  = data.google_project.this.project_id
-}
-
-# Google Projects Data Source
-# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/projects
-
-data "google_projects" "this" {
-  filter = "name:pt-k8s-* labels.env:${module.helpers.environment}"
-}
-
-# Google Project Data Source
-# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/project
-
-data "google_project" "this" {
-  project_id = data.google_projects.this.projects.0.project_id
+  name     = "${module.helpers.team}-${module.helpers.region}-${module.helpers.zone}"
+  project  = data.terraform_remote_state.main.outputs.project_id
 }
 
 # OpenTofu Remote State Datasource
