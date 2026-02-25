@@ -11,7 +11,7 @@ data "google_client_config" "this" {}
 
 data "google_container_cluster" "this" {
   location = module.helpers.region
-  name     = local.cluster_name
+  name     = "${module.helpers.team}-${module.helpers.region}-${module.helpers.zone}"
   project  = data.terraform_remote_state.main.outputs.project_id
 }
 
