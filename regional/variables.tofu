@@ -1,15 +1,15 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
+variable "enable_google_artifact_registries" {
+  default     = false
+  description = "Enable Google Artifact Registry repositories (multi-region, only deploy in one region)"
+  type        = bool
+}
+
 variable "kubernetes_engine_master_ipv4_cidr_block" {
   description = "The IP range in CIDR notation to use for the hosted master network"
   type        = string
-}
-
-variable "enable_google_artifact_registries" {
-  description = "Enable Google Artifact Registry repositories (multi-region, only deploy in one region)"
-  type        = bool
-  default     = false
 }
 
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.

@@ -1,7 +1,14 @@
 # GitHub Copilot Repository Instructions
 
-## Purpose
-This file defines simple, persistent coding standards and repository practices for GitHub Copilot. These instructions are synchronized across all related OpenTofu root module repositories.
+## Platform Architecture
+
+These repositories form a three-layer dependency hierarchy:
+
+1. **pt-logos** (foundational) - Creates the organizational structure: GCP folder hierarchy, Google Identity groups, GitHub teams and repositories, Datadog teams, and user management. All downstream layers depend on its outputs.
+2. **pt-corpus** (stratum) - Creates team infrastructure: GCP projects, shared VPC/networking, GitHub Actions service accounts, workload identity pools, and state storage buckets. Consumes pt-logos team and folder data via `opentofu-core-helpers`.
+3. **pt-pneuma** (Kubernetes) - Creates GKE clusters, cluster add-ons (cert-manager, Datadog, Istio, OPA Gatekeeper), and onboarding. Consumes pt-corpus networking and pt-logos team data via `opentofu-core-helpers`.
+
+**Deployment order**: pt-logos → pt-corpus → pt-pneuma. Changes to foundational layers must be applied before dependent layers.
 
 ## Coding Standards
 - Always run pre-commit validation after changing OpenTofu files: `pre-commit run -a`.
@@ -57,22 +64,29 @@ This ensures:
 - **Diagram Style Guidelines**:
   - Use horizontal layout: `graph LR` (left-to-right)
   - Always include `color:#000` for text readability on colored backgrounds
-  - Use consistent color coding across repositories to differentiate job types
-  - Example: `style A fill:#e1f5ff,color:#000`
+  - Color palette (use consistently across repos; refer to the existing diagram in each repo's README for how they're applied):
+    `#fff4e6`, `#d4edda`, `#e6d9f5`, `#d1ecf1`, `#fff3cd`, `#f8d7e5`, `#ffdab9`
+
+
+## Commit and PR Conventions
+
+- **No Conventional Commits** — do not prefix messages with `feat:`, `fix:`, `chore:`, `refactor:`, etc.
+- Write commit messages and PR titles in clear, natural language using sentence case.
+- Keep titles concise but descriptive.
+- Use GitHub labels (e.g., `enhancement`, `bug`, `refactor`, `docs`) to categorize PRs instead of encoding type in the title.
+- PR descriptions should explain what changed, why it changed, and any impact or migration considerations.
+
+✅ **Good:** `Improve metadata validation for GKE handler`
+❌ **Avoid:** `feat: add metadata endpoint`
 
 ## Repository Practices
 - Local development does not have access to OpenTofu state. Tests are run in GitHub Actions workflows.
 - Use symlinks for shared configuration files to avoid duplication.
+- For OpenTofu-specific conventions (file structure, module pinning, resource patterns, workspace naming), refer to `.github/skills/opentofu.md`.
 
-### VS Code Workspaces
+### Workspace Workflow Patterns
 
-Workspace configuration files (`*.code-workspace`) are stored locally outside the repository and managed by individual developers.
-
-**Cross-repository bulk operations are common** - changes often need to be applied consistently across multiple platform repositories.
-
-#### Workspace Workflow Patterns
-
-- **Simultaneous multi-repo editing** - Apply standardization, updates, or patterns across all platform repos at once
+- **Simultaneous multi-repo editing** - Apply standardization, updates, or patterns across all child module repos at once
 - **Consistent changes** - Ensure configurations, workflows, or infrastructure patterns are aligned
 - **Workspace-wide search and replace** - Use VS Code's multi-root capabilities to find and update patterns across repos
 - **Parallel PR management** - Create and manage pull requests across multiple repositories for coordinated changes

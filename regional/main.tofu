@@ -2,8 +2,8 @@
 # https://github.com/osinfra-io/opentofu-google-kubernetes-engine
 
 module "kubernetes_engine_regional" {
+  source   = "github.com/osinfra-io/opentofu-google-kubernetes-engine//regional?ref=8923c6a8829093f830050c48b25ddeab5d1b5363" # v0.3.0
   for_each = local.gke_clusters
-  source   = "github.com/osinfra-io/opentofu-google-kubernetes-engine//regional?ref=f56d2d830d0cc4f690c1791de46bc683fe2fa2b6" # v0.2.7
 
   cluster_prefix             = module.helpers.team
   enable_deletion_protection = false
@@ -20,17 +20,6 @@ module "kubernetes_engine_regional" {
 
 # Google Artifact Registry Repository
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/artifact_registry_repository
-
-resource "google_artifact_registry_repository" "docker_standard" {
-  for_each = local.docker_repositories
-
-  description   = "Registry for multi-region - US Standard : ${module.helpers.team}"
-  format        = "DOCKER"
-  labels        = module.helpers.labels
-  location      = "us"
-  project       = local.main.project_id
-  repository_id = "${each.key}-standard"
-}
 
 resource "google_artifact_registry_repository" "docker_remote" {
   lifecycle {
@@ -52,6 +41,17 @@ resource "google_artifact_registry_repository" "docker_remote" {
   }
 
   repository_id = "docker-remote"
+}
+
+resource "google_artifact_registry_repository" "docker_standard" {
+  for_each = local.docker_repositories
+
+  description   = "Registry for multi-region - US Standard : ${module.helpers.team}"
+  format        = "DOCKER"
+  labels        = module.helpers.labels
+  location      = "us"
+  project       = local.main.project_id
+  repository_id = "${each.key}-standard"
 }
 
 resource "google_artifact_registry_repository" "docker_virtual" {
@@ -83,16 +83,6 @@ resource "google_artifact_registry_repository" "docker_virtual" {
 # Google Artifact Registry IAM Binding
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/artifact_registry_repository_iam
 
-resource "google_artifact_registry_repository_iam_binding" "docker_virtual_readers" {
-  for_each = local.docker_repositories
-
-  location   = "us"
-  members    = each.value.registry_readers
-  project    = local.main.project_id
-  repository = google_artifact_registry_repository.docker_virtual[each.key].id
-  role       = "roles/artifactregistry.reader"
-}
-
 resource "google_artifact_registry_repository_iam_binding" "docker_standard_writers" {
   for_each = local.docker_repositories
 
@@ -101,4 +91,14 @@ resource "google_artifact_registry_repository_iam_binding" "docker_standard_writ
   project    = local.main.project_id
   repository = google_artifact_registry_repository.docker_standard[each.key].id
   role       = "roles/artifactregistry.writer"
+}
+
+resource "google_artifact_registry_repository_iam_binding" "docker_virtual_readers" {
+  for_each = local.docker_repositories
+
+  location   = "us"
+  members    = each.value.registry_readers
+  project    = local.main.project_id
+  repository = google_artifact_registry_repository.docker_virtual[each.key].id
+  role       = "roles/artifactregistry.reader"
 }

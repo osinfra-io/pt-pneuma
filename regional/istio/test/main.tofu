@@ -21,14 +21,14 @@ resource "datadog_synthetics_test" "this" {
   name      = "${each.value.name} ${each.value.region} ${module.helpers.environment}"
 
   options_list {
-    tick_every = 300
+    monitor_priority = each.value.message_priority
 
     retry {
       count    = 2
       interval = 120
     }
 
-    monitor_priority = each.value.message_priority
+    tick_every = 300
   }
 
   request_definition {
@@ -45,8 +45,8 @@ resource "datadog_synthetics_test" "this" {
 
   tags = [
     "env:${module.helpers.environment}",
-    "service:${each.value.service}",
     "region:${each.value.region}",
+    "service:${each.value.service}",
     "team:${module.helpers.team}"
   ]
 
@@ -145,45 +145,49 @@ resource "kubernetes_deployment_v1" "istio_test" {
 
           image             = "${local.registry}/istio-test:${var.istio_test_version}"
           image_pull_policy = "Always"
-          name              = "istio-test"
 
-          resources {
-            requests = {
-              cpu    = "10m"
-              memory = "32Mi"
+          liveness_probe {
+            failure_threshold = 5
+
+            http_get {
+              path = "/istio-test/health"
+              port = "8080"
             }
-            limits = {
-              cpu    = "20m"
-              memory = "64Mi"
-            }
+
+            initial_delay_seconds = 10
+            period_seconds        = 10
+            timeout_seconds       = 5
           }
+
+          name = "istio-test"
 
           port {
             container_port = 8080
           }
 
-          liveness_probe {
+          readiness_probe {
+            failure_threshold = 5
+
             http_get {
               path = "/istio-test/health"
               port = "8080"
             }
 
-            failure_threshold     = 5
             initial_delay_seconds = 10
             period_seconds        = 10
             timeout_seconds       = 5
           }
 
-          readiness_probe {
-            http_get {
-              path = "/istio-test/health"
-              port = "8080"
+          resources {
+            limits = {
+              cpu    = "20m"
+              memory = "64Mi"
             }
 
-            failure_threshold     = 5
-            initial_delay_seconds = 10
-            period_seconds        = 10
-            timeout_seconds       = 5
+            requests = {
+              cpu    = "10m"
+              memory = "32Mi"
+            }
           }
         }
 
@@ -267,16 +271,17 @@ resource "kubernetes_service_v1" "istio_test" {
   }
 
   spec {
-    type = "ClusterIP"
-    selector = {
-      app = "istio-test"
-    }
-
     port {
       name        = "http"
       port        = 8080
       target_port = 8080
     }
+
+    selector = {
+      app = "istio-test"
+    }
+
+    type = "ClusterIP"
   }
 }
 
@@ -287,15 +292,16 @@ resource "kubernetes_service_v1" "istio_test_regional" {
   }
 
   spec {
-    type = "ClusterIP"
-    selector = {
-      app = "istio-test"
-    }
-
     port {
       name        = "http"
       port        = 8080
       target_port = 8080
     }
+
+    selector = {
+      app = "istio-test"
+    }
+
+    type = "ClusterIP"
   }
 }

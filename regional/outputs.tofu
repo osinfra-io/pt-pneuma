@@ -3,6 +3,8 @@
 
 output "gke_clusters" {
   description = "GKE cluster information"
+  sensitive   = true
+
   value = {
     for cluster_name, cluster in module.kubernetes_engine_regional :
     cluster_name => {
@@ -12,5 +14,4 @@ output "gke_clusters" {
       name           = cluster.container_cluster_name
     }
   }
-  sensitive = true
 }

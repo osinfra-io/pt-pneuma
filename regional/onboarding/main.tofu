@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/opentofu-google-kubernetes-engine
 
 module "kubernetes_engine_onboarding" {
-  source = "github.com/osinfra-io/opentofu-google-kubernetes-engine//regional/onboarding?ref=f56d2d830d0cc4f690c1791de46bc683fe2fa2b6" # v0.2.7
+  source = "github.com/osinfra-io/opentofu-google-kubernetes-engine//regional/onboarding?ref=8923c6a8829093f830050c48b25ddeab5d1b5363" # v0.3.0
 
   namespaces                               = var.kubernetes_engine_namespaces
   project                                  = data.terraform_remote_state.main.outputs.project_id

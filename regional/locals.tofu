@@ -10,6 +10,7 @@ locals {
         "group:${local.main.team.identity_groups["registry-readers"].email}",
         "serviceAccount:${local.main.project_number}-compute@developer.gserviceaccount.com"
       ]
+
       registry_writers = [
         "group:${local.main.team.identity_groups["registry-writers"].email}"
       ]
@@ -23,5 +24,5 @@ locals {
   main = data.terraform_remote_state.main.outputs
 
   # Subnet name constructed from team, region, and zone
-  subnet = "pt-pneuma-${module.helpers.region}-${module.helpers.zone}"
+  subnet = "${module.helpers.team}-${module.helpers.region}-${module.helpers.zone}"
 }

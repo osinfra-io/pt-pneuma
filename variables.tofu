@@ -2,8 +2,8 @@
 # https://opentofu.org/docs/language/values/variables
 
 variable "kubernetes_engine_namespaces" {
-  description = "A map of namespaces with the Google service account used for the namespace administrator and whether Istio injection is enabled or disabled"
   default     = {}
+  description = "A map of namespaces with the Google service account used for the namespace administrator and whether Istio injection is enabled or disabled"
 
   type = map(object({
     google_service_account = string

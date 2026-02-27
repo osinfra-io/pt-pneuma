@@ -2,8 +2,7 @@
 # https://github.com/osinfra-io/opentofu-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  # source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional/manifests?ref=a325290911bdb8085ea29ff922d2e00f00834f4a" # v0.2.0
-  source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional/manifests?ref=bump"
+  source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional/manifests?ref=c0dab0ba4e7951eee3445a66e8e8bacb1e025c89" # v0.3.0
 
   common_istio_test_virtual_services = var.kubernetes_istio_common_istio_test_virtual_services
   common_virtual_services            = var.kubernetes_istio_common_virtual_services

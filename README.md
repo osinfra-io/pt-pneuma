@@ -1,24 +1,76 @@
-# pt-pneuma
+# Pneuma
 
-[![Dependabot](https://img.shields.io/github/actions/workflow/status/osinfra-io/pt-pneuma/dependabot.yml?branch=main&style=for-the-badge&logo=github&label=Dependabot)](https://github.com/osinfra-io/pt-pneuma/actions/workflows/dependabot.yml)
+[![Dependabot](https://img.shields.io/github/actions/workflow/status/osinfra-io/pt-pneuma/dependabot.yml?style=for-the-badge&logo=github&color=2088FF&label=Dependabot)](https://github.com/osinfra-io/pt-pneuma/actions/workflows/dependabot.yml)
 
-Kubernetes/GKE infrastructure and cluster management layer.
+## 📄 Repository Description
+
+This repository contains the Infrastructure as Code (IaC) that shapes the Pneuma domain — the breathing, dynamic layer of the platform where structure comes alive. In the wider hierarchy of the Platform Team, Pneuma serves as the stratum where Corpus projects and networking become animated workload environments capable of receiving and running application teams.
+
+Here, Kubernetes clusters are called into being across multiple zones; certificate management, service mesh, and policy enforcement are woven into each cluster; and Datadog observability extends its reach into the runtime so the platform can perceive and regulate itself at the application layer.
+
+The Pneuma layer is where infrastructure breathes — where the static order established by Logos and the tangible form given by Corpus are joined by living workloads, dynamic routing, and continuous delivery. It is the atmosphere within which application teams move, build, and ship.
+
+The infrastructure automates the creation of:
+
+- **GKE Clusters** deployed across multiple zones for high availability and geographic redundancy
+- **Artifact Registry** repositories (Docker standard, remote proxy, and virtual) with team IAM bindings
+- **Certificate Management** with cert-manager and Istio CSR for mTLS and workload identity
+- **Service Mesh** with Istio for traffic management, observability, and secure service-to-service communication
+- **Datadog Integration** with cluster-level monitoring, APM, and infrastructure visibility
+- **Policy Enforcement** with OPA Gatekeeper for admission control and governance
+- **Namespace Onboarding** with workload identity setup for application teams
+
+This establishes the Kubernetes runtime layer, providing a consistent, secure, and observable environment for all application workloads running on the platform.
+
+## 🏭 Platform Information
+
+- Documentation: [docs.osinfra.io](https://docs.osinfra.io/product-guides/google-cloud-platform/pneuma)
+- Service Interfaces: [github.com](https://github.com/osinfra-io/pt-pneuma/issues/new/choose)
+
+## <img align="left" width="35" height="35" src="https://github.com/osinfra-io/github-organization-management/assets/1610100/39d6ae3b-ccc2-42db-92f1-276a5bc54e65"> Development
+
+Our focus is on the core fundamental practice of platform engineering, Infrastructure as Code.
+
+>Open Source Infrastructure (as Code) is a development model for infrastructure that focuses on open collaboration and applying relative lessons learned from software development practices that organizations can use internally at scale. - [Open Source Infrastructure (as Code)](https://www.osinfra.io)
+
+To avoid slowing down stream-aligned teams, we want to open up the possibility for contributions. The Open Source Infrastructure (as Code) model allows team members external to the platform team to contribute with only a slight increase in cognitive load. This section is for developers who want to contribute to this repository, describing the tools used, the skills, and the knowledge required, along with OpenTofu documentation.
+
+See the [documentation](https://docs.osinfra.io/fundamentals/development-setup) for setting up a development environment.
+
+### 🛠️ Tools
+
+- [pre-commit](https://github.com/pre-commit/pre-commit)
+- [osinfra-pre-commit-hooks](https://github.com/osinfra-io/pre-commit-hooks)
+
+### 📋 Skills and Knowledge
+
+Links to documentation and other resources required to develop and iterate in this repository successfully.
+
+- [cert-manager](https://cert-manager.io/docs/)
+- [datadog kubernetes monitoring](https://docs.datadoghq.com/containers/kubernetes/)
+- [google kubernetes engine](https://cloud.google.com/kubernetes-engine/docs)
+- [istio service mesh](https://istio.io/latest/docs/)
+- [kubernetes](https://kubernetes.io/docs/home/)
+- [opa gatekeeper](https://open-policy-agent.github.io/gatekeeper/website/docs/)
 
 ## Architecture
 
 **Main Deployment** (`main.tofu`):
 
-- Creates Google Cloud projects per environment (sandbox, non-production, production) for Kubernetes workloads
-- Integrates with Datadog for monitoring
+- Reads existing Google Cloud project created by pt-corpus via data sources
+- Creates the main GKE cluster via the `kubernetes_engine` module
+- Installs cert-manager for certificate management
+- Installs Istio service mesh for traffic management and observability
 - Consumes team and folder data from pt-logos via helpers module
 - Uses GitHub Actions infrastructure (service accounts, workload identity, state storage) from pt-corpus
 
 **Regional Deployment** (`regional/`):
 
-- Creates GKE clusters in zones across multiple regions (us-east1-a/b/c, us-east4-a/b/c)
+- Creates GKE clusters in zones across multiple regions (us-east1-b/c/d, us-east4-a/b/c)
 - Consumes project information from pt-pneuma main workspace via remote state
 - Consumes networking (VPC, subnets) from pt-corpus projects
 - Aggregates GKE cluster configurations from all teams via pt-logos
+- Creates Artifact Registry repositories (standard, remote proxy, and virtual) per team with IAM bindings
 
 **Regional Subdirectories** (deployed after cluster creation):
 
@@ -110,9 +162,9 @@ graph LR
 **Workflow Details:**
 
 - **Three Workflows**: Sandbox, Non-Production, Production (identical job structure)
-- **Total Jobs**: 67 (1 Main + 66 regional zone jobs across 6 zones)
+- **Total Jobs**: 61 (1 Main + 60 regional zone jobs across 6 zones)
 - **Zones**: us-east1-b, us-east1-c, us-east1-d, us-east4-a, us-east4-b, us-east4-c (diagram shows 3 for clarity)
-- **Job Chain per Zone** (11 jobs): Regional → Onboarding → cert-manager → cert-manager Istio CSR → Datadog → Datadog Manifests → Istio Manifests → Istio Test → Istio → OPA Gatekeeper
+- **Job Chain per Zone** (10 jobs): Regional → Onboarding → cert-manager → cert-manager Istio CSR → Datadog → Datadog Manifests → Istio Manifests → Istio Test → Istio → OPA Gatekeeper
 - **Triggers**:
   - Sandbox: Pull request (opened, synchronize), excluding .md files
   - Non-Production: Push to main, excluding .md files
@@ -122,7 +174,7 @@ graph LR
 
 ## Deployment Flow
 
-1. **Main** → Creates Kubernetes project for environment (sandbox/non-production/production)
+1. **Main** → Reads existing Kubernetes project (created by pt-corpus), deploys GKE cluster, cert-manager, and Istio
 2. **Regional/Zonal** → Deploys GKE clusters in the project across multiple zones
 3. **Regional Subdirectories** → Deploy cluster add-ons and configurations:
    - cert-manager → Certificate management
@@ -134,5 +186,5 @@ graph LR
 ## Separation of Concerns
 
 - **pt-logos**: Foundational platform (teams, folders, identity groups, team configurations)
-- **pt-corpus**: Networking infrastructure (VPC, subnets, DNS, NAT) in separate networking project
-- **pt-pneuma**: Kubernetes infrastructure (projects) and GKE clusters (zonal deployments)
+- **pt-corpus**: Networking infrastructure (VPC, subnets, DNS, NAT) and Kubernetes projects — GKE clusters are created by pt-pneuma against these projects
+- **pt-pneuma**: Kubernetes infrastructure (GKE clusters, cert-manager, Istio) and cluster add-ons (zonal deployments)

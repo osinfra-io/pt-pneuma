@@ -7,7 +7,7 @@ data "terraform_remote_state" "main" {
   config = {
     bucket             = var.state_bucket
     kms_encryption_key = var.state_kms_encryption_key
-    prefix             = "pt-pneuma"
+    prefix             = module.helpers.repository
   }
 
   workspace = "main-${module.helpers.environment}"

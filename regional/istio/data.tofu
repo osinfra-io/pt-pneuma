@@ -15,21 +15,6 @@ data "google_container_cluster" "this" {
   project  = data.terraform_remote_state.main.outputs.project_id
 }
 
-# OpenTofu Remote State Data Source - Regional
-# https://opentofu.org/docs/language/state/remote-state-data
-
-data "terraform_remote_state" "regional" {
-  backend = "gcs"
-
-  config = {
-    bucket             = var.state_bucket
-    kms_encryption_key = var.state_kms_encryption_key
-    prefix             = "pt-pneuma"
-  }
-
-  workspace = "${local.region}-${local.zone}-${module.helpers.environment}"
-}
-
 # OpenTofu Remote State Data Source - Main
 # https://opentofu.org/docs/language/state/remote-state-data
 
@@ -39,8 +24,23 @@ data "terraform_remote_state" "main" {
   config = {
     bucket             = var.state_bucket
     kms_encryption_key = var.state_kms_encryption_key
-    prefix             = "pt-pneuma"
+    prefix             = module.helpers.repository
   }
 
   workspace = "main-${module.helpers.environment}"
+}
+
+# OpenTofu Remote State Data Source - Regional
+# https://opentofu.org/docs/language/state/remote-state-data
+
+data "terraform_remote_state" "regional" {
+  backend = "gcs"
+
+  config = {
+    bucket             = var.state_bucket
+    kms_encryption_key = var.state_kms_encryption_key
+    prefix             = module.helpers.repository
+  }
+
+  workspace = "${module.helpers.region}-${module.helpers.zone}-${module.helpers.environment}"
 }

@@ -1,3 +1,6 @@
+# Input Variables
+# https://opentofu.org/docs/language/values/variables
+
 variable "datadog_api_key" {
   description = "Datadog API key"
   sensitive   = true
