@@ -50,6 +50,14 @@ This ensures:
 - When modifying workflows, update the Mermaid diagram in the root README.md to reflect the changes.
 - All GitHub Actions must use commit hashes instead of version tags for security and reproducibility.
 
+### Branching Workflow
+
+Always `checkout main` and `git pull` before creating a new branch:
+
+```bash
+git checkout main && git pull && git checkout -b <branch-name>
+```
+
 ### Commit Hash Guidelines
 
 - **Use full 40-character SHA** - Never use short hashes; they can be ambiguous
