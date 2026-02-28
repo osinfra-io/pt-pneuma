@@ -7,11 +7,6 @@ variable "enable_google_artifact_registries" {
   type        = bool
 }
 
-variable "kubernetes_engine_master_ipv4_cidr_block" {
-  description = "The IP range in CIDR notation to use for the hosted master network"
-  type        = string
-}
-
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 
