@@ -9,7 +9,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/opentofu-google-kubernetes-engine
 
 module "kubernetes_engine" {
-  source = "github.com/osinfra-io/opentofu-google-kubernetes-engine?ref=8923c6a8829093f830050c48b25ddeab5d1b5363" # v0.3.0
+  source = "github.com/osinfra-io/opentofu-google-kubernetes-engine?ref=ab31391eb90a38670c84af1119c271714b14bda3" # v0.3.1
 
   labels     = module.helpers.labels
   namespaces = var.kubernetes_engine_namespaces
