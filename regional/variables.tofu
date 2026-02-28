@@ -1,19 +1,14 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
-variable "kubernetes_engine_master_ipv4_cidr_block" {
-  description = "The IP range in CIDR notation to use for the hosted master network"
-  type        = string
-}
-
 variable "enable_google_artifact_registries" {
+  default     = false
   description = "Enable Google Artifact Registry repositories (multi-region, only deploy in one region)"
   type        = bool
-  default     = false
 }
 
-variable "remote_bucket" {
-  description = "The remote bucket the `terraform_remote_state` data source retrieves the state from"
+variable "kubernetes_engine_master_ipv4_cidr_block" {
+  description = "The IP range in CIDR notation to use for the hosted master network"
   type        = string
 }
 

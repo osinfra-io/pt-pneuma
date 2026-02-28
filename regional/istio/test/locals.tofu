@@ -103,6 +103,6 @@ locals {
     }
   } : {}
 
-  kubernetes_project = data.google_project.kubernetes.project_id
+  kubernetes_project = data.terraform_remote_state.main.outputs.project_id
   registry           = "us-docker.pkg.dev/pt-lz-services-prod/pt-docker-virtual"
 }

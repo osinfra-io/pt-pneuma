@@ -5,9 +5,9 @@ data "terraform_remote_state" "main" {
   backend = "gcs"
 
   config = {
-    bucket             = var.remote_bucket
+    bucket             = var.state_bucket
     kms_encryption_key = var.state_kms_encryption_key
-    prefix             = "pt-pneuma"
+    prefix             = module.helpers.repository
   }
 
   workspace = "main-${module.helpers.environment}"

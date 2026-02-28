@@ -2,9 +2,9 @@
 # https://github.com/osinfra-io/opentofu-kubernetes-datadog-operator
 
 module "kubernetes_datadog_operator" {
-  source = "github.com/osinfra-io/opentofu-kubernetes-datadog-operator//regional?ref=ae46c0b60f4167c02bbde0554efdc28dd3c036c0" # v0.2.0
+  source = "github.com/osinfra-io/opentofu-kubernetes-datadog-operator//regional?ref=0a962026ce8e59d7e290b97cdd652d31d16d9ffe" # v0.3.0
 
   api_key        = var.datadog_api_key
   app_key        = var.datadog_app_key
-  cluster_prefix = "pt-pneuma"
+  cluster_prefix = module.helpers.team
 }

@@ -12,14 +12,14 @@ terraform {
     method "unencrypted" "migrate" {}
 
     key_provider "gcp_kms" "default" {
-      kms_encryption_key = var.state_kms_encryption_key
       key_length         = 32
+      kms_encryption_key = var.state_kms_encryption_key
     }
 
     key_provider "gcp_kms" "logos" {
       encrypted_metadata_alias = "key_provider.gcp_kms.default"
-      kms_encryption_key       = "projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default"
       key_length               = 32
+      kms_encryption_key       = "projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default"
     }
 
     method "aes_gcm" "default" {
@@ -42,6 +42,10 @@ terraform {
     remote_state_data_sources {
       default {
         method = method.aes_gcm.logos
+      }
+
+      remote_state_data_source "regional" {
+        method = method.aes_gcm.default
       }
     }
 

@@ -10,23 +10,9 @@ data "google_client_config" "this" {}
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/container_cluster
 
 data "google_container_cluster" "this" {
-  location = module.helpers.zone
-  name     = "cluster-${module.helpers.env}"
-  project  = data.google_project.this.project_id
-}
-
-# Google Project Data Source
-# https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/project
-
-data "google_project" "this" {
-  project_id = data.google_projects.this.projects[0].project_id
-}
-
-# Google Projects Data Source
-# https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/projects
-
-data "google_projects" "this" {
-  filter = "parent.id:${module.helpers.environment_folder_id} labels.type=k8s labels.env=${module.helpers.env}"
+  location = module.helpers.region
+  name     = "${module.helpers.team}-${module.helpers.region}-${module.helpers.zone}"
+  project  = data.terraform_remote_state.main.outputs.project_id
 }
 
 # Terraform Remote State Data Source - Main
@@ -38,7 +24,7 @@ data "terraform_remote_state" "main" {
   config = {
     bucket             = var.state_bucket
     kms_encryption_key = var.state_kms_encryption_key
-    prefix             = "pt-pneuma"
+    prefix             = module.helpers.repository
   }
 
   workspace = "main-${module.helpers.environment}"

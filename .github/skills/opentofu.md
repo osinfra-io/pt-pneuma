@@ -13,7 +13,7 @@ Specialized guidance for OpenTofu (Terraform) infrastructure-as-code workflows.
 - `outputs.tofu` - Output values
 - `providers.tofu` - Provider configurations
 - `backend.tofu` - State storage configuration
-- `helpers.tofu` - Helper module integration (when applicable)
+- `helpers.tofu` - Always present; invokes `opentofu-core-helpers` which is the central source for environment detection, labels, team data, and project naming — check here before hardcoding any of those values
 
 ### Alphabetical Ordering Rules
 
@@ -36,9 +36,10 @@ Specialized guidance for OpenTofu (Terraform) infrastructure-as-code workflows.
 ```hcl
 resource "example" "this" {
   depends_on = [example.dependency]
-  for_each = local.items
+  for_each   = local.items
+
   description = each.value.description
-  name = each.key
+  name        = each.key
 }
 ```
 
@@ -49,7 +50,7 @@ resource "example" "this" {
 
 ```hcl
 lifecycle {
-  ignore_changes = [attribute]
+  ignore_changes  = [attribute]
   prevent_destroy = true
 }
 ```
@@ -99,8 +100,8 @@ resource "example" "this" {
     enabled = local.is_primary_workspace && var.resource_id != null
   }
 
+  attribute   = local.computed_value
   resource_id = var.resource_id
-  attribute = local.computed_value
 }
 ```
 
@@ -108,7 +109,8 @@ resource "example" "this" {
 
 ### Module References
 
-- Document version in comment: `# v1.2.3`
+- Always pin `source` to a commit SHA — never use a branch or semver tag
+- The SHA must be followed by a version comment on the same line: `?ref=<sha>  # v1.2.3`
 - Access outputs: `module.<name>.<output>`
 - Never hardcode values available from modules
 
@@ -124,12 +126,18 @@ module "example" {
 }
 ```
 
-Common outputs:
+### `module.helpers` Key Outputs
 
-- `module.example.labels` - Standardized resource labels
-- `module.example.environment` - Environment detection
-- `module.example.naming` - Naming conventions
-- `module.example.computed_values` - Derived configurations
+`module.helpers` (from `opentofu-core-helpers`) is available in every root module and provides:
+
+- `module.helpers.env` - Short environment name: `sb`, `np`, `prod`
+- `module.helpers.environment` - Full environment name: `sandbox`, `non-production`, `production`
+- `module.helpers.environment_folder_id` - GCP folder ID for the current environment
+- `module.helpers.labels` - Standard resource labels map for all GCP resources
+- `module.helpers.region` - Current deployment region
+- `module.helpers.team` - Current team identifier (e.g., `pt-pneuma`)
+- `module.helpers.teams` - Map of all team data from pt-logos (folders, identity groups, GitHub repos, etc.)
+- `module.helpers.zone` - Current deployment zone (regional subdirectory only)
 
 ## Data Transformations
 
@@ -140,10 +148,10 @@ locals {
   flat_items = flatten([
     for parent_key, parent in var.nested_structure : [
       for child_key, child_value in parent.children : {
-        key = "${parent_key}-${child_key}"
-        parent_id = parent_key
-        child_id = child_key
         attributes = child_value
+        child_id   = child_key
+        key        = "${parent_key}-${child_key}"
+        parent_id  = parent_key
       }
     ]
   ])
@@ -165,14 +173,14 @@ locals {
 
 ```hcl
 locals {
-  unique_items = distinct(flatten([
-    for group in var.groups : group.items
-  ]))
-
   non_overlapping = setsubtract(
     local.all_items,
     local.excluded_items
   )
+
+  unique_items = distinct(flatten([
+    for group in var.groups : group.items
+  ]))
 }
 ```
 
@@ -180,10 +188,11 @@ locals {
 
 ### Workspace Pattern
 
-- Workspace naming: `{team}-{component}-{environment}`
-- Examples: `pt-logos-main-production`, `regional-sandbox`
+- Main workspace: `main-{env}` (e.g., `main-production`, `main-sandbox`)
+- Zonal workspace: `{zone}-{env}` (e.g., `us-east1-b-production`)
+- Subdirectory workspace: `{zone}-{subdirectory}-{env}` (e.g., `us-east1-b-cert-manager-production`, `us-east1-b-opa-gatekeeper-sandbox`)
 - Backend: Encrypted GCS buckets with KMS
-- Environment detection: `module.helpers.env` (sb/np/prod)
+- Environment detection: `module.helpers.env` returns short form (`sb`, `np`, `prod`); `module.helpers.environment` returns long form (`sandbox`, `non-production`, `production`)
 
 ### Environment Progression
 
