@@ -36,6 +36,7 @@ resource "null_resource" "pre_warm_workload_identity" {
     command = <<EOT
       gcloud container clusters update dummy-trigger \
         --project=${data.google_project.kubernetes.project_id} \
+        --zone=us-central1-a \
         --workload-pool=${data.google_project.kubernetes.project_id}.svc.id.goog \
         --quiet || true
     EOT
