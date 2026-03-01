@@ -11,6 +11,8 @@ module "kubernetes_cert_manager" {
 module "kubernetes_engine" {
   source = "github.com/osinfra-io/opentofu-google-kubernetes-engine?ref=ab31391eb90a38670c84af1119c271714b14bda3" # v0.3.1
 
+  depends_on = [null_resource.pre_warm_workload_identity]
+
   labels     = module.helpers.labels
   namespaces = var.kubernetes_engine_namespaces
   project    = data.google_project.kubernetes.project_id
@@ -25,4 +27,17 @@ module "kubernetes_istio" {
   gateway_dns = local.gateway_dns
   labels      = module.helpers.labels
   project     = data.google_project.kubernetes.project_id
+}
+
+resource "null_resource" "pre_warm_workload_identity" {
+  provisioner "local-exec" {
+    # This command is idempotent; it 'updates' the project-level config
+    # to include the pool, which triggers its creation if missing.
+    command = <<EOT
+      gcloud container clusters update dummy-trigger \
+        --project=${data.google_project.kubernetes.project_id} \
+        --workload-pool=${data.google_project.kubernetes.project_id}.svc.id.goog \
+        --quiet || true
+    EOT
+  }
 }
