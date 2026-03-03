@@ -15,10 +15,31 @@ Specialized guidance for OpenTofu (Terraform) infrastructure-as-code workflows.
 - `backend.tofu` - State storage configuration
 - `helpers.tofu` - Always present; invokes `opentofu-core-helpers` which is the central source for environment detection, labels, team data, and project naming — check here before hardcoding any of those values
 
+### Logic Belongs in Locals
+
+All conditional logic, string transformations, and computed values **must live in `locals.tofu`**, not inline in resource or module arguments. Module and resource blocks should reference `local.*` values — never contain ternaries, `replace()`, `format()`, or other expressions directly.
+
+```hcl
+# ✅ Correct — logic in locals, module arguments are simple references
+locals {
+  dns_name = var.env == "prod" ? "example.com." : "${var.env}.example.com."
+}
+
+module "dns" {
+  dns_name = local.dns_name
+}
+
+# ❌ Wrong — logic inline in module argument
+module "dns" {
+  dns_name = var.env == "prod" ? "example.com." : "${var.env}.example.com."
+}
+```
+
 ### Alphabetical Ordering Rules
 
 - **Variables, outputs, locals, tfvars**: Strict alphabetical order
-- **Resources/data sources**: Alphabetically by resource type
+- **Modules**: Alphabetically by module name (the label after `module`)
+- **Resources/data sources**: Alphabetically by resource name (the label after the resource type)
 - **All arguments**: Alphabetically ordered at every nesting level
 - **Meta-arguments first**: `count`, `depends_on`, `for_each`, `lifecycle`, `provider` (alphabetically among themselves)
 - **Exception**: Logical grouping allowed only for team membership variables with comment annotation
