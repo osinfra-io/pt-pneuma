@@ -4,7 +4,7 @@
 module "kubernetes_istio" {
   source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional?ref=c0dab0ba4e7951eee3445a66e8e8bacb1e025c89" # v0.3.0
 
-  artifact_registry          = "us-docker.pkg.dev/${local.main.project_id}/${module.helpers.team}-virtual"
+  artifact_registry          = "us-docker.pkg.dev/${local.main.shared_vpc_host_project_id}/${module.helpers.team}-virtual"
   cluster_prefix             = module.helpers.team
   enable_istio_gateway       = true
   gateway_cpu_limits         = var.kubernetes_istio_gateway_cpu_limits
