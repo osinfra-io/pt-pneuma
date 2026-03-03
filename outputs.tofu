@@ -1,6 +1,11 @@
 # Output Values
 # https://opentofu.org/docs/language/values/outputs
 
+output "gateway_dns" {
+  description = "Gateway DNS configuration for Istio, keyed by DNS zone name"
+  value       = local.gateway_dns
+}
+
 output "gke_clusters" {
   description = "GKE clusters aggregated from all teams"
   value       = local.gke_clusters
