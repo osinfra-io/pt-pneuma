@@ -13,16 +13,6 @@ variable "kubernetes_istio_gateway_cpu_requests" {
   type        = string
 }
 
-variable "kubernetes_istio_gateway_dns" {
-  default     = {}
-  description = "Map of attributes for the Istio gateway domain names, it is also used to create the managed certificate resource"
-
-  type = map(object({
-    managed_zone = string
-    project      = string
-  }))
-}
-
 variable "kubernetes_istio_gateway_memory_limits" {
   default     = "64Mi"
   description = "The memory limit for the Istio gateway"
