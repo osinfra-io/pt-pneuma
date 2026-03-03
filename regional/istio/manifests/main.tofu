@@ -4,12 +4,12 @@
 module "kubernetes_istio_manifests" {
   source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional/manifests?ref=c0dab0ba4e7951eee3445a66e8e8bacb1e025c89" # v0.3.0
 
-  common_istio_test_virtual_services = var.kubernetes_istio_common_istio_test_virtual_services
-  common_virtual_services            = var.kubernetes_istio_common_virtual_services
-  failover_from_region               = var.kubernetes_istio_failover_from_region
-  failover_to_region                 = var.kubernetes_istio_failover_to_region
-  istio_test_virtual_services        = var.kubernetes_istio_test_virtual_services
-  virtual_services                   = var.kubernetes_istio_virtual_services
+  common_istio_test_virtual_services = local.common_istio_test_virtual_services
+  common_virtual_services            = {}
+  failover_from_region               = local.failover_from_region
+  failover_to_region                 = local.failover_to_region
+  istio_test_virtual_services        = local.istio_test_virtual_services
+  virtual_services                   = {}
 }
 
 # Kubernetes Manifest Resource
