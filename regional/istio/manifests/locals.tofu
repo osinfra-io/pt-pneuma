@@ -7,7 +7,7 @@ locals {
   common_istio_test_virtual_services = {
     "istio-test" = {
       destination_host = "istio-test.istio-test.svc.cluster.local"
-      host             = "istio-test.${local.dns_zone}"
+      host             = local.dns_zone
     }
   }
 
@@ -17,7 +17,7 @@ locals {
   istio_test_virtual_services = {
     "istio-test-${module.helpers.region}-${module.helpers.zone}" = {
       destination_host = "istio-test-${module.helpers.region}-${module.helpers.zone}.istio-test.svc.cluster.local"
-      host             = "istio-test.${module.helpers.region}-${module.helpers.zone}.${local.dns_zone}"
+      host             = "${module.helpers.region}-${module.helpers.zone}.${local.dns_zone}"
     }
   }
 }
