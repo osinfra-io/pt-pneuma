@@ -1,1 +1,0 @@
-enable_google_artifact_registries = true

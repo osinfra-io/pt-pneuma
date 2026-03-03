@@ -1,12 +1,6 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
-variable "enable_google_artifact_registries" {
-  default     = false
-  description = "Enable Google Artifact Registry repositories (multi-region, only deploy in one region)"
-  type        = bool
-}
-
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 
