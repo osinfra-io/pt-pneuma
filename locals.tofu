@@ -12,7 +12,7 @@ locals {
   # The team DNS zone name and managed zone resource name, following env-first naming convention
   # prod: pneuma.osinfra.io / pneuma-osinfra-io
   # sb:   pneuma.sb.osinfra.io / pneuma-sb-osinfra-io
-  dns_zone_dns_name = module.helpers.env == "prod" ? "${local.dns_subdomain}.osinfra.io." : "${local.dns_subdomain}.${module.helpers.env}.osinfra.io."
+  dns_zone_dns_name = module.helpers.env == "prod" ? "${local.dns_subdomain}.osinfra.io" : "${local.dns_subdomain}.${module.helpers.env}.osinfra.io"
   dns_zone_name     = module.helpers.env == "prod" ? "${local.dns_subdomain}-osinfra-io" : "${local.dns_subdomain}-${module.helpers.env}-osinfra-io"
 
   # Gateway DNS configuration for Istio
