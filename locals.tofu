@@ -25,8 +25,12 @@ locals {
   } : {}
 
   # GKE clusters aggregated from all teams
+  # Flattens the region-based structure: { region: { cluster-name: config } } -> { cluster-name: config }
   gke_clusters = merge([
     for team_key, team in module.helpers.teams :
-    lookup(team, "google_kubernetes_engine_clusters", {})
+    merge([
+      for region, clusters in lookup(team, "google_kubernetes_engine_clusters", {}) :
+      clusters
+    ]...)
   ]...)
 }

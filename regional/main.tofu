@@ -10,7 +10,7 @@ module "kubernetes_engine_regional" {
   enable_gke_hub_host        = lookup(each.value, "enable_gke_hub_host", false)
   gke_hub_memberships        = lookup(each.value, "gke_hub_memberships", {})
   labels                     = module.helpers.labels
-  master_ipv4_cidr_block     = local.master_ipv4_cidr_block
+  master_ipv4_cidr_block     = lookup(each.value, "subnet", {}).master_ipv4_cidr_block
   node_pools                 = lookup(each.value, "node_pools", {})
   project                    = local.main.project_id
   resource_labels            = module.helpers.labels
