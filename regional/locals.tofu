@@ -7,7 +7,7 @@ locals {
   gke_hub_memberships = {
     for cluster_name, cluster_config in local.main.gke_clusters :
     cluster_name => {
-      cluster_id = "projects/${local.main.project_id}/locations/${regex("^${module.helpers.team}-(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]}/${cluster_name}"
+      cluster_id = "projects/${local.main.project_id}/locations/${regex("^${module.helpers.team}-(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]}/clusters/${cluster_name}"
     }
     if cluster_name != local.subnet && lookup(local.main.gke_clusters[local.subnet], "enable_gke_hub_host", false)
   }
