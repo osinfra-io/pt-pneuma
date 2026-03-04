@@ -104,5 +104,5 @@ locals {
   } : {}
 
   kubernetes_project = data.terraform_remote_state.main.outputs.project_id
-  registry           = "us-docker.pkg.dev/pt-lz-services-prod/pt-docker-virtual"
+  registry           = "us-docker.pkg.dev/pt-corpus-tf16-prod/pt-pneuma-standard"
 }
