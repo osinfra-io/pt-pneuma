@@ -12,7 +12,7 @@ locals {
 
   multi_cluster_service_clusters = [
     for cluster_key, cluster_config in local.main.gke_clusters : {
-      link = "${regex("^(.+)-[a-z]$", cluster_key)[0]}/${module.helpers.team}-${cluster_key}"
+      link = "${regex("^${module.helpers.team}-(us-[a-z0-9]+)-[a-z]$", cluster_config.name)[0]}/${cluster_config.name}"
     }
   ]
 }
