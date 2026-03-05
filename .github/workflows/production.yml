@@ -417,6 +417,10 @@ jobs:
       opentofu_workspace: us-east1-b-datadog-production
       working_directory: regional/datadog
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+    secrets:
+      opentofu_plan_secret_args: >-
+        -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
+        -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 
 #   datadog_us_east1_c:
 #     name: "Datadog: us-east1-c"
@@ -432,6 +436,10 @@ jobs:
 #       opentofu_workspace: us-east1-c-datadog-production
 #       working_directory: regional/datadog
 #       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#     secrets:
+#       opentofu_plan_secret_args: >-
+#         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
+#         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 #
 #   datadog_us_east1_d:
 #     name: "Datadog: us-east1-d"
@@ -447,6 +455,10 @@ jobs:
 #       opentofu_workspace: us-east1-d-datadog-production
 #       working_directory: regional/datadog
 #       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#     secrets:
+#       opentofu_plan_secret_args: >-
+#         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
+#         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 #
 #   datadog_us_east4_a:
 #     name: "Datadog: us-east4-a"
@@ -462,6 +474,10 @@ jobs:
 #       opentofu_workspace: us-east4-a-datadog-production
 #       working_directory: regional/datadog
 #       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#     secrets:
+#       opentofu_plan_secret_args: >-
+#         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
+#         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 #
   datadog_us_east4_b:
     name: "Datadog: us-east4-b"
@@ -477,6 +493,10 @@ jobs:
       opentofu_workspace: us-east4-b-datadog-production
       working_directory: regional/datadog
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+    secrets:
+      opentofu_plan_secret_args: >-
+        -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
+        -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 
 #   datadog_us_east4_c:
 #     name: "Datadog: us-east4-c"
@@ -492,6 +512,10 @@ jobs:
 #       opentofu_workspace: us-east4-c-datadog-production
 #       working_directory: regional/datadog
 #       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#     secrets:
+#       opentofu_plan_secret_args: >-
+#         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
+#         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 #
   datadog_manifests_us_east1_b:
     name: "Datadog Manifests: us-east1-b"
