@@ -94,22 +94,22 @@ jobs:
 #       working_directory: regional
 #       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 #
-  us_east4_b:
-    name: "Regional: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: main
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production: us-east4-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-non-production
-      working_directory: regional
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
+#   us_east4_b:
+#     name: "Regional: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: main
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production: us-east4-b"
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars
+#       opentofu_state_bucket: pt-pneuma-state-nonprod
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-non-production
+#       working_directory: regional
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#
 #   us_east4_c:
 #     name: "Regional: us-east4-c"
 #     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
@@ -186,21 +186,21 @@ jobs:
 #       working_directory: regional/onboarding
 #       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 #
-  us_east4_b_onboarding:
-    name: "Onboarding: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: us_east4_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Onboarding: us-east4-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-onboarding-non-production
-      working_directory: regional/onboarding
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
+#   us_east4_b_onboarding:
+#     name: "Onboarding: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: us_east4_b
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production Onboarding: us-east4-b"
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_state_bucket: pt-pneuma-state-nonprod
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-onboarding-non-production
+#       working_directory: regional/onboarding
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#
 #   us_east4_c_onboarding:
 #     name: "Onboarding: us-east4-c"
 #     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
@@ -276,21 +276,21 @@ jobs:
 #       working_directory: regional/cert-manager
 #       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 #
-  cert_manager_us_east4_b:
-    name: "cert-manager: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: us_east4_b_onboarding
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production cert-manager: us-east4-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-cert-manager-non-production
-      working_directory: regional/cert-manager
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
+#   cert_manager_us_east4_b:
+#     name: "cert-manager: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: us_east4_b_onboarding
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production cert-manager: us-east4-b"
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_state_bucket: pt-pneuma-state-nonprod
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-cert-manager-non-production
+#       working_directory: regional/cert-manager
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#
 #   cert_manager_us_east4_c:
 #     name: "cert-manager: us-east4-c"
 #     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
@@ -370,22 +370,22 @@ jobs:
 #       working_directory: regional/cert-manager/istio-csr
 #       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 #
-  cert_manager_istio_csr_us_east4_b:
-    name: "cert-manager Istio CSR: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: cert_manager_us_east4_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production cert-manager Istio CSR: us-east4-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-cert-manager-istio-csr-non-production
-      working_directory: regional/cert-manager/istio-csr
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
+#   cert_manager_istio_csr_us_east4_b:
+#     name: "cert-manager Istio CSR: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: cert_manager_us_east4_b
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production cert-manager Istio CSR: us-east4-b"
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars
+#       opentofu_state_bucket: pt-pneuma-state-nonprod
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-cert-manager-istio-csr-non-production
+#       working_directory: regional/cert-manager/istio-csr
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#
 #   cert_manager_istio_csr_us_east4_c:
 #     name: "cert-manager Istio CSR: us-east4-c"
 #     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
@@ -462,21 +462,21 @@ jobs:
 #       working_directory: regional/datadog
 #       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 #
-  datadog_us_east4_b:
-    name: "Datadog: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: cert_manager_istio_csr_us_east4_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Datadog: us-east4-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-datadog-non-production
-      working_directory: regional/datadog
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
+#   datadog_us_east4_b:
+#     name: "Datadog: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: cert_manager_istio_csr_us_east4_b
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production Datadog: us-east4-b"
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_state_bucket: pt-pneuma-state-nonprod
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-datadog-non-production
+#       working_directory: regional/datadog
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#
 #   datadog_us_east4_c:
 #     name: "Datadog: us-east4-c"
 #     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
@@ -568,25 +568,25 @@ jobs:
 #         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
 #         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 #
-  datadog_manifests_us_east4_b:
-    name: "Datadog Manifests: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: datadog_us_east4_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Datadog Manifests: us-east4-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-datadog-manifests-non-production
-      working_directory: regional/datadog/manifests
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-    secrets:
-      opentofu_plan_secret_args: >-
-        -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
-        -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
-
+#   datadog_manifests_us_east4_b:
+#     name: "Datadog Manifests: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: datadog_us_east4_b
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production Datadog Manifests: us-east4-b"
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_state_bucket: pt-pneuma-state-nonprod
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-datadog-manifests-non-production
+#       working_directory: regional/datadog/manifests
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#     secrets:
+#       opentofu_plan_secret_args: >-
+#         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
+#         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
+#
 #   datadog_manifests_us_east4_c:
 #     name: "Datadog Manifests: us-east4-c"
 #     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
@@ -674,23 +674,23 @@ jobs:
 #       working_directory: regional/istio/manifests
 #       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 #
-  istio_manifests_us_east4_b:
-    if: github.actor != 'dependabot[bot]'
-    name: "Istio Manifests: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: datadog_manifests_us_east4_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Istio Manifests: us-east4-b"
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-np
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-istio-manifests-non-production
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      working_directory: regional/istio/manifests
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
+#   istio_manifests_us_east4_b:
+#     if: github.actor != 'dependabot[bot]'
+#     name: "Istio Manifests: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: datadog_manifests_us_east4_b
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production Istio Manifests: us-east4-b"
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars
+#       opentofu_state_bucket: pt-pneuma-state-np
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-istio-manifests-non-production
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       working_directory: regional/istio/manifests
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#
 #   istio_manifests_us_east4_c:
 #     if: github.actor != 'dependabot[bot]'
 #     name: "Istio Manifests: us-east4-c"
@@ -792,27 +792,27 @@ jobs:
 #         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
 #         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 #
-  istio_test_us_east4_b:
-    if: github.actor != 'dependabot[bot]'
-    name: "Istio Test: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_manifests_us_east4_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Istio Test: us-east4-b"
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-np
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-istio-test-non-production
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      working_directory: regional/istio/test
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-    secrets:
-      opentofu_plan_secret_args: >-
-        -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
-        -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
-
+#   istio_test_us_east4_b:
+#     if: github.actor != 'dependabot[bot]'
+#     name: "Istio Test: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: istio_manifests_us_east4_b
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production Istio Test: us-east4-b"
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_plan_args: -var-file=environments/us-east4-b-non-production.tfvars
+#       opentofu_state_bucket: pt-pneuma-state-np
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-istio-test-non-production
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       working_directory: regional/istio/test
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#     secrets:
+#       opentofu_plan_secret_args: >-
+#         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
+#         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
+#
 #   istio_test_us_east4_c:
 #     if: github.actor != 'dependabot[bot]'
 #     name: "Istio Test: us-east4-c"
@@ -898,22 +898,22 @@ jobs:
 #       working_directory: regional/istio
 #       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 #
-  istio_us_east4_b:
-    name: "Istio: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_test_us_east4_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production Istio: us-east4-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east4-b-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-istio-non-production
-      working_directory: regional/istio
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
+#   istio_us_east4_b:
+#     name: "Istio: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: istio_test_us_east4_b
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production Istio: us-east4-b"
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_plan_args: -var-file=../environments/us-east4-b-non-production.tfvars
+#       opentofu_state_bucket: pt-pneuma-state-nonprod
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-istio-non-production
+#       working_directory: regional/istio
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#
 #   istio_us_east4_c:
 #     name: "Istio: us-east4-c"
 #     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
@@ -994,22 +994,22 @@ jobs:
 #       working_directory: regional/opa-gatekeeper
 #       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 #
-  opa_gatekeeper_us_east4_b:
-    name: "OPA Gatekeeper: us-east4-b"
-    uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
-    needs: istio_us_east4_b
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Non-Production OPA Gatekeeper: us-east4-b"
-      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east4-b-non-production.tfvars
-      opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-b-opa-gatekeeper-non-production
-      working_directory: regional/opa-gatekeeper
-      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
+#   opa_gatekeeper_us_east4_b:
+#     name: "OPA Gatekeeper: us-east4-b"
+#     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
+#     needs: istio_us_east4_b
+#     with:
+#       checkout_ref: ${{ github.ref }}
+#       github_environment: "Non-Production OPA Gatekeeper: us-east4-b"
+#       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+#       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+#       opentofu_plan_args: -var-file=../environments/us-east4-b-non-production.tfvars
+#       opentofu_state_bucket: pt-pneuma-state-nonprod
+#       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+#       opentofu_workspace: us-east4-b-opa-gatekeeper-non-production
+#       working_directory: regional/opa-gatekeeper
+#       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+#
 #   opa_gatekeeper_us_east4_c:
 #     name: "OPA Gatekeeper: us-east4-c"
 #     uses: osinfra-io/github-opentofu-gcp-called-workflows/.github/workflows/plan-and-apply.yml@e3c59e43f2458550c7f13b6369fb6978b6f42c6e # v0.2.9
