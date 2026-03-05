@@ -15,14 +15,7 @@ module "kubernetes_istio" {
   gateway_memory_requests    = var.kubernetes_istio_gateway_memory_requests
   labels                     = module.helpers.labels
 
-  multi_cluster_service_clusters = [
-    {
-      "link" = "us-east1/${module.helpers.team}-us-east1-b"
-    },
-    {
-      "link" = "us-east4/${module.helpers.team}-us-east4-a"
-    }
-  ]
+  multi_cluster_service_clusters = local.multi_cluster_service_clusters
 
   pilot_cpu_limits                            = var.kubernetes_istio_pilot_cpu_limits
   pilot_cpu_requests                          = var.kubernetes_istio_pilot_cpu_requests

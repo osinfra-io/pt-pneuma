@@ -9,4 +9,10 @@ locals {
     for zone, attrs in local.main.gateway_dns :
     "${module.helpers.region}-${module.helpers.zone}.${zone}" => attrs
   }
+
+  multi_cluster_service_clusters = [
+    for cluster_key, cluster_config in local.main.gke_clusters : {
+      link = "${regex("^${module.helpers.team}-(us-[a-z0-9]+)-[a-z]$", cluster_config.name)[0]}/${cluster_config.name}"
+    }
+  ]
 }
