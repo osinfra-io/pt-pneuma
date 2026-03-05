@@ -13,7 +13,6 @@ The Pneuma layer is where infrastructure breathes — where the static order est
 The infrastructure automates the creation of:
 
 - **GKE Clusters** deployed across multiple zones for high availability and geographic redundancy
-- **Artifact Registry** repositories (Docker standard, remote proxy, and virtual) with team IAM bindings
 - **Certificate Management** with cert-manager and Istio CSR for mTLS and workload identity
 - **Service Mesh** with Istio for traffic management, observability, and secure service-to-service communication
 - **Datadog Integration** with cluster-level monitoring, APM, and infrastructure visibility
@@ -66,11 +65,10 @@ Links to documentation and other resources required to develop and iterate in th
 
 **Regional Deployment** (`regional/`):
 
-- Creates GKE clusters in zones across multiple regions (us-east1-b/c/d, us-east4-a/b/c)
+- Creates GKE clusters in zones across multiple regions (us-east1-b, us-east4-a active; us-east1-c, us-east1-d, us-east4-b, us-east4-c commented out pending cluster provisioning)
 - Consumes project information from pt-pneuma main workspace via remote state
 - Consumes networking (VPC, subnets) from pt-corpus projects
 - Aggregates GKE cluster configurations from all teams via pt-logos
-- Creates Artifact Registry repositories (standard, remote proxy, and virtual) per team with IAM bindings
 
 **Regional Subdirectories** (deployed after cluster creation):
 
@@ -87,89 +85,68 @@ graph LR
     B[Main]
 
     B --> C1[Regional:<br/>us-east1-b]
-    B --> C2[Regional:<br/>us-east1-c]
-    B --> C3[Regional:<br/>us-east1-d]
+    B --> C2[Regional:<br/>us-east4-a]
 
     C1 --> D1[Onboarding]
     C2 --> D2[Onboarding]
-    C3 --> D3[Onboarding]
 
     D1 --> E1[cert-manager]
     D2 --> E2[cert-manager]
-    D3 --> E3[cert-manager]
 
     E1 --> F1[cert-manager<br/>Istio CSR]
     E2 --> F2[cert-manager<br/>Istio CSR]
-    E3 --> F3[cert-manager<br/>Istio CSR]
 
     F1 --> G1[Datadog]
     F2 --> G2[Datadog]
-    F3 --> G3[Datadog]
 
     G1 --> H1[Datadog<br/>Manifests]
     G2 --> H2[Datadog<br/>Manifests]
-    G3 --> H3[Datadog<br/>Manifests]
 
     H1 --> I1[Istio<br/>Manifests]
     H2 --> I2[Istio<br/>Manifests]
-    H3 --> I3[Istio<br/>Manifests]
 
     I1 --> J1[Istio Test]
     I2 --> J2[Istio Test]
-    I3 --> J3[Istio Test]
 
     J1 --> K1[Istio]
     J2 --> K2[Istio]
-    J3 --> K3[Istio]
 
     K1 --> L1[OPA<br/>Gatekeeper]
     K2 --> L2[OPA<br/>Gatekeeper]
-    K3 --> L3[OPA<br/>Gatekeeper]
 
     style B fill:#fff4e6,color:#000
     style C1 fill:#d4edda,color:#000
     style C2 fill:#d4edda,color:#000
-    style C3 fill:#d4edda,color:#000
     style D1 fill:#e6d9f5,color:#000
     style D2 fill:#e6d9f5,color:#000
-    style D3 fill:#e6d9f5,color:#000
     style E1 fill:#d1ecf1,color:#000
     style E2 fill:#d1ecf1,color:#000
-    style E3 fill:#d1ecf1,color:#000
     style F1 fill:#d1ecf1,color:#000
     style F2 fill:#d1ecf1,color:#000
-    style F3 fill:#d1ecf1,color:#000
     style G1 fill:#fff3cd,color:#000
     style G2 fill:#fff3cd,color:#000
-    style G3 fill:#fff3cd,color:#000
     style H1 fill:#fff3cd,color:#000
     style H2 fill:#fff3cd,color:#000
-    style H3 fill:#fff3cd,color:#000
     style I1 fill:#f8d7e5,color:#000
     style I2 fill:#f8d7e5,color:#000
-    style I3 fill:#f8d7e5,color:#000
     style J1 fill:#f8d7e5,color:#000
     style J2 fill:#f8d7e5,color:#000
-    style J3 fill:#f8d7e5,color:#000
     style K1 fill:#f8d7e5,color:#000
     style K2 fill:#f8d7e5,color:#000
-    style K3 fill:#f8d7e5,color:#000
     style L1 fill:#ffdab9,color:#000
     style L2 fill:#ffdab9,color:#000
-    style L3 fill:#ffdab9,color:#000
 ```
 
 **Workflow Details:**
 
-- **Three Workflows**: Sandbox, Non-Production, Production (identical job structure)
-- **Total Jobs**: 61 (1 Main + 60 regional zone jobs across 6 zones)
-- **Zones**: us-east1-b, us-east1-c, us-east1-d, us-east4-a, us-east4-b, us-east4-c (diagram shows 3 for clarity)
+- **Three Workflows**: Sandbox, Non-Production, Production (identical job structure) plus Sandbox Destroy (manual teardown)
+- **Active Zones**: us-east1-b, us-east4-a (us-east1-c, us-east1-d, us-east4-b, us-east4-c commented out pending cluster provisioning)
 - **Job Chain per Zone** (10 jobs): Regional → Onboarding → cert-manager → cert-manager Istio CSR → Datadog → Datadog Manifests → Istio Manifests → Istio Test → Istio → OPA Gatekeeper
 - **Triggers**:
   - Sandbox: Pull request (opened, synchronize), excluding .md files
   - Non-Production: Push to main, excluding .md files
   - Production: Triggered when Non-Production workflow completes successfully
-- **Job Dependencies**: All 6 regional jobs run in parallel after main, then each zone follows the same sequential chain
+- **Job Dependencies**: Both regional jobs run in parallel after main, then each zone follows the same sequential chain
 - **Called Workflow**: [osinfra-io/github-opentofu-gcp-called-workflows](https://github.com/osinfra-io/github-opentofu-gcp-called-workflows) (v0.2.9)
 
 ## Deployment Flow

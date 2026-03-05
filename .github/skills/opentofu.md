@@ -160,6 +160,11 @@ module "example" {
 - `module.helpers.teams` - Map of all team data from pt-logos (folders, identity groups, GitHub repos, etc.)
 - `module.helpers.zone` - Current deployment zone (regional subdirectory only)
 
+## Remote State
+
+- `terraform_remote_state` is **only used within the same repository** — a repo's regional or subdirectory code may read its own main or regional state, but never another repo's state directly
+- Cross-repo state (e.g., pt-logos) is **never accessed via `terraform_remote_state`**; it is consumed exclusively through `module.helpers`
+
 ## Data Transformations
 
 ### Flattening Nested Structures
