@@ -9,7 +9,7 @@ locals {
     cluster_name => {
       cluster_id = "projects/${local.main.project_id}/locations/${regex("^${module.helpers.team}-(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]}/clusters/${cluster_name}"
     }
-    if cluster_name != local.subnet && lookup(local.main.gke_clusters[local.subnet], "enable_gke_hub_host", false)
+    if cluster_name != local.subnet && try(local.main.gke_clusters[local.subnet].enable_gke_hub_host, false)
   }
 
   # GKE clusters filtered for this specific region-zone
