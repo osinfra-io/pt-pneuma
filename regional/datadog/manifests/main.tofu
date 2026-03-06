@@ -11,6 +11,6 @@ module "kubernetes_datadog_operator_manifests" {
   api_key        = var.datadog_api_key
   app_key        = var.datadog_app_key
   cluster_prefix = "pt"
-  registry       = "us-docker.pkg.dev/pt-lz-services-prod/pt-docker-virtual"
+  registry       = "us-docker.pkg.dev/pt-corpus-tf16-prod/pt-pneuma-virtual"
   team           = module.helpers.team
 }
