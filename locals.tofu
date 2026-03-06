@@ -7,7 +7,7 @@ locals {
   environment_key = title(module.helpers.environment)
 
   # The DNS subdomain for this team (e.g., "pneuma"), sourced from team config in pt-logos
-  dns_subdomain = lookup(module.helpers.teams[module.helpers.team], "dns_subdomain", replace(module.helpers.team, "/^[a-z]+-/", ""))
+  dns_subdomain = module.helpers.teams[module.helpers.team].dns_subdomain != null ? module.helpers.teams[module.helpers.team].dns_subdomain : replace(module.helpers.team, "/^[a-z]+-/", "")
 
   # The team DNS zone name and managed zone resource name, following env-first naming convention
   # prod: pneuma.osinfra.io / pneuma-osinfra-io
@@ -25,12 +25,11 @@ locals {
   } : {}
 
   # GKE clusters aggregated from all teams
-  # Flattens the region-based structure: { region: { cluster-name: config } } -> { cluster-name: config }
+  # Derives cluster name as {team_key}-{location} from the flat locations map in pt-logos
   gke_clusters = merge([
-    for team_key, team in module.helpers.teams :
-    merge([
-      for region, clusters in lookup(team, "google_kubernetes_engine_clusters", {}) :
-      clusters
-    ]...)
+    for team_key, team in module.helpers.teams : {
+      for location, config in team.google_kubernetes_engine_clusters != null ? team.google_kubernetes_engine_clusters : {} :
+      "${team_key}-${location}" => config
+    }
   ]...)
 }
