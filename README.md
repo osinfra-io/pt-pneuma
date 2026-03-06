@@ -65,7 +65,7 @@ Links to documentation and other resources required to develop and iterate in th
 
 **Regional Deployment** (`regional/`):
 
-- Creates GKE clusters in zones across multiple regions (us-east1-b, us-east4-a active; us-east1-c, us-east1-d, us-east4-b, us-east4-c commented out pending cluster provisioning)
+- Creates GKE clusters in zones across multiple regions (us-east1-b, us-east4-b active; us-east1-c, us-east1-d, us-east4-a, us-east4-c commented out pending cluster provisioning)
 - Consumes project information from pt-pneuma main workspace via remote state
 - Consumes networking (VPC, subnets) from pt-corpus projects
 - Aggregates GKE cluster configurations from all teams via pt-logos
@@ -85,7 +85,7 @@ graph LR
     B[Main]
 
     B --> C1[Regional:<br/>us-east1-b]
-    B --> C2[Regional:<br/>us-east4-a]
+    B --> C2[Regional:<br/>us-east4-b]
 
     C1 --> D1[Onboarding]
     C2 --> D2[Onboarding]
@@ -140,7 +140,7 @@ graph LR
 **Workflow Details:**
 
 - **Three Workflows**: Sandbox, Non-Production, Production (identical job structure) plus Sandbox Destroy (manual teardown)
-- **Active Zones**: us-east1-b, us-east4-a (us-east1-c, us-east1-d, us-east4-b, us-east4-c commented out pending cluster provisioning)
+- **Active Zones**: us-east1-b, us-east4-b (us-east1-c, us-east1-d, us-east4-a, us-east4-c commented out pending cluster provisioning)
 - **Job Chain per Zone** (10 jobs): Regional → Onboarding → cert-manager → cert-manager Istio CSR → Datadog → Datadog Manifests → Istio Manifests → Istio Test → Istio → OPA Gatekeeper
 - **Triggers**:
   - Sandbox: Pull request (opened, synchronize), excluding .md files
