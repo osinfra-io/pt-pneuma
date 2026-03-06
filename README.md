@@ -63,6 +63,10 @@ Links to documentation and other resources required to develop and iterate in th
 - Consumes team and folder data from pt-logos via helpers module
 - Uses GitHub Actions infrastructure (service accounts, workload identity, state storage) from pt-corpus
 
+**Shared Configuration** (`shared/`):
+
+- Contains canonical backend and provider configurations symlinked into every workspace directory (root, `regional/`, and all nested subdirectories). See `shared/README.md` for how to add new workspace directories.
+
 **Regional Deployment** (`regional/`):
 
 - Creates GKE clusters in zones across multiple regions (us-east1-b, us-east4-b active; us-east1-c, us-east1-d, us-east4-a, us-east4-c commented out pending cluster provisioning)
@@ -73,8 +77,12 @@ Links to documentation and other resources required to develop and iterate in th
 **Regional Subdirectories** (deployed after cluster creation):
 
 - `cert-manager/` - Certificate management using cert-manager
+  - `cert-manager/istio-csr/` - Istio CSR integration for mTLS certificate issuance
 - `datadog/` - Datadog operator for cluster monitoring and APM
+  - `datadog/manifests/` - Datadog Kubernetes manifests and configuration
 - `istio/` - Service mesh with Istio for traffic management and observability
+  - `istio/manifests/` - Istio configuration manifests
+  - `istio/test/` - Istio connectivity tests run after mesh deployment
 - `onboarding/` - Namespace and workload identity onboarding for applications
 - `opa-gatekeeper/` - Policy enforcement using Open Policy Agent Gatekeeper
 
@@ -143,11 +151,31 @@ graph LR
 - **Active Zones**: us-east1-b, us-east4-b (us-east1-c, us-east1-d, us-east4-a, us-east4-c commented out pending cluster provisioning)
 - **Job Chain per Zone** (10 jobs): Regional → Onboarding → cert-manager → cert-manager Istio CSR → Datadog → Datadog Manifests → Istio Manifests → Istio Test → Istio → OPA Gatekeeper
 - **Triggers**:
-  - Sandbox: Pull request (opened, synchronize), excluding .md files
+  - Sandbox: Pull request (opened, synchronize), excluding .md files; manual dispatch
   - Non-Production: Push to main, excluding .md files
   - Production: Triggered when Non-Production workflow completes successfully
 - **Job Dependencies**: Both regional jobs run in parallel after main, then each zone follows the same sequential chain
 - **Called Workflow**: [osinfra-io/github-opentofu-gcp-called-workflows](https://github.com/osinfra-io/github-opentofu-gcp-called-workflows) (v0.2.9)
+
+## Interface
+
+### Environment-Specific Configurations
+
+Environment configurations are stored in the `environments/` directory for the main workspace, and in `regional/environments/` for zonal deployments (e.g., `us-east1-b-sandbox.tfvars`).
+
+### Optional Variables
+
+- **`kubernetes_engine_namespaces`** - Map of namespace names to their configuration (default: `{}`). Each entry specifies:
+  - `google_service_account` - The GCP service account used as the namespace administrator
+  - `istio_injection` - Whether Istio sidecar injection is `"enabled"` or `"disabled"` (default: `"disabled"`)
+
+### State Configuration Variables
+
+These variables are required for backend configuration and are provided by GitHub Actions workflows:
+
+- **`state_bucket`** - The name of the GCS bucket to store state files
+- **`state_kms_encryption_key`** - The KMS encryption key for state and plan files
+- **`state_prefix`** - The prefix for state files in the GCS bucket
 
 ## Deployment Flow
 
