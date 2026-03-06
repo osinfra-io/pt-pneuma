@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/opentofu-kubernetes-datadog-operator
 
 module "kubernetes_datadog_operator_manifests" {
-  source = "github.com/osinfra-io/opentofu-kubernetes-datadog-operator//regional/manifests?ref=0a962026ce8e59d7e290b97cdd652d31d16d9ffe" # v0.3.0
+  source = "github.com/osinfra-io/opentofu-kubernetes-datadog-operator//regional/manifests?ref=6f57f25c07ff7553af8fc6dbc77a1398df5a54af" # v0.3.1
 
   lifecycle {
     enabled = true
