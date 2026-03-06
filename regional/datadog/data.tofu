@@ -10,15 +10,15 @@ data "google_client_config" "this" {}
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/container_cluster
 
 data "google_container_cluster" "this" {
-  location = module.helpers.zone
+  location = module.helpers.region
   name     = local.cluster_name
-  project  = data.terraform_remote_state.regional.outputs.project_id
+  project  = data.terraform_remote_state.main.outputs.project_id
 }
 
-# OpenTofu Remote State Data Source
+# OpenTofu Remote State Data Source - Main
 # https://opentofu.org/docs/language/state/remote-state-data
 
-data "terraform_remote_state" "regional" {
+data "terraform_remote_state" "main" {
   backend = "gcs"
 
   config = {
@@ -27,5 +27,5 @@ data "terraform_remote_state" "regional" {
     prefix             = module.helpers.repository
   }
 
-  workspace = "${module.helpers.region}-${module.helpers.zone}-${module.helpers.environment}"
+  workspace = "main-${module.helpers.environment}"
 }
