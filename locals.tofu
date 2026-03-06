@@ -25,12 +25,11 @@ locals {
   } : {}
 
   # GKE clusters aggregated from all teams
-  # Flattens the region-based structure: { region: { cluster-name: config } } -> { cluster-name: config }
+  # Derives cluster name as {team_key}-{location} from the flat locations map in pt-logos
   gke_clusters = merge([
-    for team_key, team in module.helpers.teams :
-    merge([
-      for region, clusters in team.google_kubernetes_engine_clusters != null ? team.google_kubernetes_engine_clusters : {} :
-      clusters
-    ]...)
+    for team_key, team in module.helpers.teams : {
+      for location, config in team.google_kubernetes_engine_clusters != null ? team.google_kubernetes_engine_clusters : {} :
+      "${team_key}-${location}" => config
+    }
   ]...)
 }
