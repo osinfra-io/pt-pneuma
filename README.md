@@ -39,7 +39,7 @@ See the [documentation](https://docs.osinfra.io/fundamentals/development-setup) 
 ### 🛠️ Tools
 
 - [pre-commit](https://github.com/pre-commit/pre-commit)
-- [osinfra-pre-commit-hooks](https://github.com/osinfra-io/pre-commit-hooks)
+- [osinfra-pre-commit-hooks](https://github.com/osinfra-io/pt-techne-pre-commit-hooks)
 
 ### 📋 Skills and Knowledge
 
@@ -155,7 +155,7 @@ graph LR
   - Non-Production: Push to main, excluding .md files
   - Production: Triggered when Non-Production workflow completes successfully
 - **Job Dependencies**: Both regional jobs run in parallel after main, then each zone follows the same sequential chain
-- **Called Workflow**: [osinfra-io/github-opentofu-gcp-called-workflows](https://github.com/osinfra-io/github-opentofu-gcp-called-workflows) (v0.2.9)
+- **Called Workflow**: [osinfra-io/pt-techne-opentofu-workflows](https://github.com/osinfra-io/pt-techne-opentofu-workflows) (v0.2.9)
 
 ## Interface
 
