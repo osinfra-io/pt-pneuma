@@ -5,8 +5,8 @@
 These repositories form a three-layer dependency hierarchy:
 
 1. **pt-logos** (foundational) - Creates the organizational structure: GCP folder hierarchy, Google Identity groups, GitHub teams and repositories, Datadog teams, and user management. All downstream layers depend on its outputs.
-2. **pt-corpus** (stratum) - Creates team infrastructure: GCP projects, shared VPC/networking, GitHub Actions service accounts, workload identity pools, and state storage buckets. Consumes pt-logos team and folder data via `opentofu-core-helpers`.
-3. **pt-pneuma** (Kubernetes) - Creates GKE clusters, cluster add-ons (cert-manager, Datadog, Istio, OPA Gatekeeper), and onboarding. Consumes pt-corpus networking and pt-logos team data via `opentofu-core-helpers`.
+2. **pt-corpus** (stratum) - Creates team infrastructure: GCP projects, shared VPC/networking, GitHub Actions service accounts, workload identity pools, and state storage buckets. Consumes pt-logos team and folder data via `pt-arche-core-helpers`.
+3. **pt-pneuma** (Kubernetes) - Creates GKE clusters, cluster add-ons (cert-manager, Datadog, Istio, OPA Gatekeeper), and onboarding. Consumes pt-corpus networking and pt-logos team data via `pt-arche-core-helpers`.
 
 **Deployment order**: pt-logos → pt-corpus → pt-pneuma. Changes to foundational layers must be applied before dependent layers.
 
