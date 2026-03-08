@@ -1,8 +1,8 @@
 # Kubernetes Istio Module (osinfra.io)
-# https://github.com/osinfra-io/opentofu-kubernetes-istio
+# https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/opentofu-kubernetes-istio//regional/manifests?ref=e6b14fa213f275e4b9081c5414a814d2e05e04ab" # v0.3.1
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=e6b14fa213f275e4b9081c5414a814d2e05e04ab" # v0.3.1
 
   common_istio_test_virtual_services = local.common_istio_test_virtual_services
   common_virtual_services            = {}

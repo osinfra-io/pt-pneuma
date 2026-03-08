@@ -1,8 +1,8 @@
 # Core Helpers Module (osinfra.io)
-# https://github.com/osinfra-io/opentofu-core-helpers
+# https://github.com/osinfra-io/pt-arche-core-helpers
 
 module "helpers" {
-  source = "github.com/osinfra-io/opentofu-core-helpers//root?ref=6e95a998fa8a1d06389a501146bb6717f49dab48" # v0.2.0
+  source = "github.com/osinfra-io/pt-arche-core-helpers//root?ref=6e95a998fa8a1d06389a501146bb6717f49dab48" # v0.2.0
 
   cost_center         = "x001"
   data_classification = "public"
