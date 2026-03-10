@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager
 
 module "kubernetes_cert_manager" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional?ref=679825a8a8e19921c1674b2dafe58e54b7ae792b" # v0.2.1
+  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional?ref=ea72b0d648b5be9b403c0c2946a9022810e9f849" # v0.2.1
 
   artifact_registry = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.helpers.team}-virtual"
 }

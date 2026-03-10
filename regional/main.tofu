@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "kubernetes_engine_regional" {
-  source   = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=da865402f50f151dc70550a2b3cc882932b3257e" # v0.3.2
+  source   = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=340ba79adb758f7ad767aaf383246ec1fa79c964" # v0.3.2
   for_each = local.gke_clusters
 
   cluster_prefix             = module.helpers.team

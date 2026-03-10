@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-datadog-operator
 
 module "kubernetes_datadog_operator_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-datadog-operator//regional/manifests?ref=fa2b1f6593e4ad1c1e5e8614e6510afc3f044c36" # v0.3.2
+  source = "github.com/osinfra-io/pt-arche-kubernetes-datadog-operator//regional/manifests?ref=76e955daac881c316bfcd6d6bb0eb3f9d27d2aa1" # v0.3.2
 
   lifecycle {
     enabled = true
