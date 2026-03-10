@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-core-helpers
 
 module "helpers" {
-  source = "github.com/osinfra-io/pt-arche-core-helpers//root?ref=6e95a998fa8a1d06389a501146bb6717f49dab48" # v0.2.0
+  source = "github.com/osinfra-io/pt-arche-core-helpers//root?ref=9734175404f3c0b26b0a58a6c877828dba2dea70" # v0.2.1
 
   cost_center         = "x001"
   data_classification = "public"
