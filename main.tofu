@@ -2,14 +2,14 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager
 
 module "kubernetes_cert_manager" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=a0f6efd73e0d807358290fab35309c1ae9299a77" # v0.2.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=679825a8a8e19921c1674b2dafe58e54b7ae792b" # v0.2.1
 }
 
 # Google Kubernetes Engine Module (osinfra.io)
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "kubernetes_engine" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=ab31391eb90a38670c84af1119c271714b14bda3" # v0.3.1
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=da865402f50f151dc70550a2b3cc882932b3257e" # v0.3.2
 
   labels     = module.helpers.labels
   namespaces = var.kubernetes_engine_namespaces
@@ -20,7 +20,7 @@ module "kubernetes_engine" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=e6b14fa213f275e4b9081c5414a814d2e05e04ab" # v0.3.1
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=2765d3b14d66505a443629f13f1aa64040bce9c4" # v0.3.2
 
   gateway_dns = local.gateway_dns
   labels      = module.helpers.labels
