@@ -5,7 +5,7 @@ module "kubernetes_datadog_operator_manifests" {
   source = "github.com/osinfra-io/pt-arche-kubernetes-datadog-operator//regional/manifests?ref=76e955daac881c316bfcd6d6bb0eb3f9d27d2aa1" # v0.3.2
 
   lifecycle {
-    enabled = true
+    enabled = false
   }
 
   api_key        = var.datadog_api_key
