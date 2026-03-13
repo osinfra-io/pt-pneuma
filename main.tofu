@@ -20,7 +20,7 @@ module "kubernetes_engine" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=3eba4f88eb463df16a4356323abed555a55f6281" # v0.3.2
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=58e5a5e78db17bf753f5bceb0406aa1e525b8b79" # fix-dns-auto-allocate-deprecation
 
   gateway_dns = local.gateway_dns
   labels      = module.helpers.labels
