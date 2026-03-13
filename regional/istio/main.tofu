@@ -190,3 +190,19 @@ resource "kubernetes_service_v1" "datadog_aap_extproc" {
     type = "ClusterIP"
   }
 }
+
+# Kubernetes Labels Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/labels
+
+resource "kubernetes_labels" "default_namespace_istio_injection" {
+  api_version = "v1"
+  kind        = "Namespace"
+
+  metadata {
+    name = "default"
+  }
+
+  labels = {
+    "istio-injection" = "disabled"
+  }
+}
