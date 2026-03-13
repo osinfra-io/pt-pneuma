@@ -1,6 +1,6 @@
 # Pneuma
 
-[![Dependabot](https://img.shields.io/github/actions/workflow/status/osinfra-io/pt-pneuma/dependabot.yml?style=for-the-badge&logo=github&color=2088FF&label=Dependabot)](https://github.com/osinfra-io/pt-pneuma/actions/workflows/dependabot.yml)
+[![Dependabot](https://img.shields.io/github/actions/workflow/status/osinfra-io/pt-pneuma/dependabot.yml?style=for-the-badge&logo=github&color=2088FF&label=Dependabot)](https://github.com/osinfra-io/pt-pneuma/actions/workflows/dependabot.yml) [![Datadog Security Enabled](https://img.shields.io/badge/Datadog%20Security-Enabled-632CA6?style=for-the-badge&logo=datadog)](https://app.datadoghq.com/security/code-security/repositories?repository_id=pt-pneuma)
 
 ## 📄 Repository Description
 
@@ -26,7 +26,7 @@ This establishes the Kubernetes runtime layer, providing a consistent, secure, a
 - Documentation: [docs.osinfra.io](https://docs.osinfra.io/product-guides/google-cloud-platform/pneuma)
 - Service Interfaces: [github.com](https://github.com/osinfra-io/pt-pneuma/issues/new/choose)
 
-## <img align="left" width="35" height="35" src="https://github.com/osinfra-io/github-organization-management/assets/1610100/39d6ae3b-ccc2-42db-92f1-276a5bc54e65"> Development
+## <img align="left" width="35" height="35" src="https://github.com/user-attachments/assets/eb98a3be-2ffe-4c05-91a4-072fe795a167"> Development
 
 Our focus is on the core fundamental practice of platform engineering, Infrastructure as Code.
 
@@ -87,63 +87,6 @@ Links to documentation and other resources required to develop and iterate in th
 - `opa-gatekeeper/` - Policy enforcement using Open Policy Agent Gatekeeper
 
 ## GitHub Actions Workflow
-
-```mermaid
-graph LR
-    B[Main]
-
-    B --> C1[Regional:<br/>us-east1-b]
-    B --> C2[Regional:<br/>us-east4-b]
-
-    C1 --> D1[Onboarding]
-    C2 --> D2[Onboarding]
-
-    D1 --> E1[cert-manager]
-    D2 --> E2[cert-manager]
-
-    E1 --> F1[cert-manager<br/>Istio CSR]
-    E2 --> F2[cert-manager<br/>Istio CSR]
-
-    F1 --> G1[Datadog]
-    F2 --> G2[Datadog]
-
-    G1 --> H1[Datadog<br/>Manifests]
-    G2 --> H2[Datadog<br/>Manifests]
-
-    H1 --> I1[Istio<br/>Manifests]
-    H2 --> I2[Istio<br/>Manifests]
-
-    I1 --> J1[Istio Test]
-    I2 --> J2[Istio Test]
-
-    J1 --> K1[Istio]
-    J2 --> K2[Istio]
-
-    K1 --> L1[OPA<br/>Gatekeeper]
-    K2 --> L2[OPA<br/>Gatekeeper]
-
-    style B fill:#fff4e6,color:#000
-    style C1 fill:#d4edda,color:#000
-    style C2 fill:#d4edda,color:#000
-    style D1 fill:#e6d9f5,color:#000
-    style D2 fill:#e6d9f5,color:#000
-    style E1 fill:#d1ecf1,color:#000
-    style E2 fill:#d1ecf1,color:#000
-    style F1 fill:#d1ecf1,color:#000
-    style F2 fill:#d1ecf1,color:#000
-    style G1 fill:#fff3cd,color:#000
-    style G2 fill:#fff3cd,color:#000
-    style H1 fill:#fff3cd,color:#000
-    style H2 fill:#fff3cd,color:#000
-    style I1 fill:#f8d7e5,color:#000
-    style I2 fill:#f8d7e5,color:#000
-    style J1 fill:#f8d7e5,color:#000
-    style J2 fill:#f8d7e5,color:#000
-    style K1 fill:#f8d7e5,color:#000
-    style K2 fill:#f8d7e5,color:#000
-    style L1 fill:#ffdab9,color:#000
-    style L2 fill:#ffdab9,color:#000
-```
 
 **Workflow Details:**
 
