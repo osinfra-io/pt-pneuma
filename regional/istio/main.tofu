@@ -151,8 +151,6 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
             capabilities {
               drop = ["ALL"]
             }
-
-            run_as_non_root = true
           }
         }
       }
