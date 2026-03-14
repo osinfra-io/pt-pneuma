@@ -9,7 +9,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "kubernetes_engine" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=28e3b79b870028d241a3938323829d0500630a62" # fix-missing-mcs-service-agent-binding
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=eeb68eab5e63d608eb9271064683b17a53f6cca8" # v0.3.3
 
   labels     = module.helpers.labels
   namespaces = var.kubernetes_engine_namespaces
@@ -20,7 +20,7 @@ module "kubernetes_engine" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=58e5a5e78db17bf753f5bceb0406aa1e525b8b79" # fix-dns-auto-allocate-deprecation
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=1b776c94e4c3a541f8c600d2d292cab354c6d48f" # v0.3.3
 
   gateway_dns = local.gateway_dns
   labels      = module.helpers.labels

@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=58e5a5e78db17bf753f5bceb0406aa1e525b8b79" # fix-dns-auto-allocate-deprecation
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=1b776c94e4c3a541f8c600d2d292cab354c6d48f" # v0.3.3
 
   artifact_registry          = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.helpers.team}-virtual"
   cluster_prefix             = module.helpers.team

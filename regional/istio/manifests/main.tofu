@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=58e5a5e78db17bf753f5bceb0406aa1e525b8b79" # fix-dns-auto-allocate-deprecation
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=1b776c94e4c3a541f8c600d2d292cab354c6d48f" # v0.3.3
 
   common_istio_test_virtual_services = local.common_istio_test_virtual_services
   common_virtual_services            = {}

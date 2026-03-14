@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "kubernetes_engine_onboarding" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=28e3b79b870028d241a3938323829d0500630a62" # fix-missing-mcs-service-agent-binding
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=eeb68eab5e63d608eb9271064683b17a53f6cca8" # v0.3.3
 
   namespaces                               = var.kubernetes_engine_namespaces
   project                                  = data.terraform_remote_state.main.outputs.project_id
