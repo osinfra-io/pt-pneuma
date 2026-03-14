@@ -1092,7 +1092,7 @@ jobs:
     uses: osinfra-io/pt-techne-misc-workflows/.github/workflows/nuclei.yml@279a9f1150a84b3b34ebc1f221bf71bdd10d0000
     if: github.actor != 'dependabot[bot]'
     needs:
-      - istio_manifests_us_east1_b
-      - istio_manifests_us_east4_b
+      - istio_test_us_east1_b
+      - istio_test_us_east4_b
     with:
       urls_file: nuclei-urls-sb.txt
