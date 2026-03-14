@@ -9,7 +9,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "kubernetes_engine" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=243d2a3fd369024c6e37fec8c3f43b3ff53113f4" # fix-missing-mcs-service-agent-binding
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=86d1a7bd4326273cc83412626ed643a57f0b3469" # fix-missing-mcs-service-agent-binding
 
   labels     = module.helpers.labels
   namespaces = var.kubernetes_engine_namespaces
