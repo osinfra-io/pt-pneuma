@@ -1089,7 +1089,7 @@ jobs:
 
   nuclei:
     name: Nuclei Vulnerability Scan
-    uses: osinfra-io/pt-techne-misc-workflows/.github/workflows/nuclei.yml@9af5502c5b4921b39423b22e2b1e7f5439668124
+    uses: osinfra-io/pt-techne-misc-workflows/.github/workflows/nuclei.yml@279a9f1150a84b3b34ebc1f221bf71bdd10d0000
     if: github.actor != 'dependabot[bot]'
     needs:
       - istio_manifests_us_east1_b
