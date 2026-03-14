@@ -1,0 +1,17 @@
+name: Nuclei Vulnerability Scan
+
+on:
+  schedule:
+    - cron: "0 11 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  nuclei:
+    name: Nuclei Vulnerability Scan
+    uses: osinfra-io/pt-techne-misc-workflows/.github/workflows/nuclei.yml@279a9f1150a84b3b34ebc1f221bf71bdd10d0000
+    with:
+      urls_file: nuclei-urls-sb.txt
