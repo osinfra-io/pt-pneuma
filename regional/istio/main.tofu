@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=3eba4f88eb463df16a4356323abed555a55f6281" # v0.3.2
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=1b776c94e4c3a541f8c600d2d292cab354c6d48f" # v0.3.3
 
   artifact_registry          = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.helpers.team}-virtual"
   cluster_prefix             = module.helpers.team
@@ -151,8 +151,6 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
             capabilities {
               drop = ["ALL"]
             }
-
-            run_as_non_root = true
           }
         }
       }
@@ -190,5 +188,21 @@ resource "kubernetes_service_v1" "datadog_aap_extproc" {
     }
 
     type = "ClusterIP"
+  }
+}
+
+# Kubernetes Labels Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/labels
+
+resource "kubernetes_labels" "default_namespace_istio_injection" {
+  api_version = "v1"
+  kind        = "Namespace"
+
+  metadata {
+    name = "default"
+  }
+
+  labels = {
+    "istio-injection" = "disabled"
   }
 }

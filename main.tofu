@@ -9,7 +9,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "kubernetes_engine" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=340ba79adb758f7ad767aaf383246ec1fa79c964" # v0.3.2
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=eeb68eab5e63d608eb9271064683b17a53f6cca8" # v0.3.3
 
   labels     = module.helpers.labels
   namespaces = var.kubernetes_engine_namespaces
@@ -20,7 +20,7 @@ module "kubernetes_engine" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=3eba4f88eb463df16a4356323abed555a55f6281" # v0.3.2
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=1b776c94e4c3a541f8c600d2d292cab354c6d48f" # v0.3.3
 
   gateway_dns = local.gateway_dns
   labels      = module.helpers.labels
