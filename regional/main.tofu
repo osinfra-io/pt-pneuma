@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "kubernetes_engine_regional" {
-  source   = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=340ba79adb758f7ad767aaf383246ec1fa79c964" # v0.3.2
+  source   = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=fac150c8f0f10374a517ab7e519587d1e3331e38" # fix-hub-membership-workload-identity
   for_each = local.gke_clusters
 
   cluster_prefix             = module.helpers.team

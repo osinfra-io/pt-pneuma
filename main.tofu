@@ -9,7 +9,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "kubernetes_engine" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=340ba79adb758f7ad767aaf383246ec1fa79c964" # v0.3.2
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=fac150c8f0f10374a517ab7e519587d1e3331e38" # fix-hub-membership-workload-identity
 
   labels     = module.helpers.labels
   namespaces = var.kubernetes_engine_namespaces
