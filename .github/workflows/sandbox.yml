@@ -19,6 +19,7 @@ concurrency:
 permissions:
   contents: read
   id-token: write
+  security-events: write
 
 jobs:
   main:
@@ -1085,3 +1086,13 @@ jobs:
 #       opentofu_workspace: us-east4-c-opa-gatekeeper-sandbox
 #       working_directory: regional/opa-gatekeeper
 #       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  nuclei:
+    name: Nuclei Vulnerability Scan
+    uses: osinfra-io/pt-techne-misc-workflows/.github/workflows/nuclei.yml@9af5502c5b4921b39423b22e2b1e7f5439668124
+    if: github.actor != 'dependabot[bot]'
+    needs:
+      - istio_manifests_us_east1_b
+      - istio_manifests_us_east4_b
+    with:
+      urls_file: nuclei-urls-sb.txt
