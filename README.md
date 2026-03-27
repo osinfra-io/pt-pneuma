@@ -10,32 +10,6 @@ Here, Kubernetes clusters are called into being across multiple zones; certifica
 
 The Pneuma layer is where infrastructure breathes — where the static order established by Logos and the tangible form given by Corpus are joined by living workloads, dynamic routing, and continuous delivery. It is the atmosphere within which application teams move, build, and ship.
 
-The infrastructure automates the creation of:
-
-- **GKE Clusters** deployed across multiple zones for high availability and geographic redundancy
-- **Certificate Management** with cert-manager and Istio CSR for mTLS and workload identity
-- **Service Mesh** with Istio for traffic management, observability, and secure service-to-service communication
-- **Datadog Integration** with cluster-level monitoring, APM, and infrastructure visibility
-- **Policy Enforcement** with OPA Gatekeeper for admission control and governance
-- **Namespace Onboarding** with workload identity setup for application teams
-
-This establishes the Kubernetes runtime layer, providing a consistent, secure, and observable environment for all application workloads running on the platform.
-
-## 🏭 Platform Information
-
-- Documentation: [docs.osinfra.io](https://docs.osinfra.io/product-guides/google-cloud-platform/pneuma)
-- Service Interfaces: [github.com](https://github.com/osinfra-io/pt-pneuma/issues/new/choose)
-
-## <img align="left" width="35" height="35" src="https://github.com/user-attachments/assets/eb98a3be-2ffe-4c05-91a4-072fe795a167"> Development
-
-Our focus is on the core fundamental practice of platform engineering, Infrastructure as Code.
-
->Open Source Infrastructure (as Code) is a development model for infrastructure that focuses on open collaboration and applying relative lessons learned from software development practices that organizations can use internally at scale. - [Open Source Infrastructure (as Code)](https://www.osinfra.io)
-
-To avoid slowing down stream-aligned teams, we want to open up the possibility for contributions. The Open Source Infrastructure (as Code) model allows team members external to the platform team to contribute with only a slight increase in cognitive load. This section is for developers who want to contribute to this repository, describing the tools used, the skills, and the knowledge required, along with OpenTofu documentation.
-
-See the [documentation](https://docs.osinfra.io/fundamentals/development-setup) for setting up a development environment.
-
 ### 🛠️ Tools
 
 - [pre-commit](https://github.com/pre-commit/pre-commit)
