@@ -21,6 +21,7 @@ Links to documentation and other resources required to develop and iterate in th
 
 - [cert-manager](https://cert-manager.io/docs/)
 - [datadog kubernetes monitoring](https://docs.datadoghq.com/containers/kubernetes/)
+- [datadog synthetics](https://docs.datadoghq.com/synthetics/)
 - [google kubernetes engine](https://cloud.google.com/kubernetes-engine/docs)
 - [istio service mesh](https://istio.io/latest/docs/)
 - [kubernetes](https://kubernetes.io/docs/home/)
