@@ -20,7 +20,7 @@ module "kubernetes_engine" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=1b776c94e4c3a541f8c600d2d292cab354c6d48f" # v0.3.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=427d0fd4ce60690a95de7505a40073fa443bea75" # v0.3.4
 
   gateway_dns = local.gateway_dns
   labels      = module.helpers.labels
