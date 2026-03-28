@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=1b776c94e4c3a541f8c600d2d292cab354c6d48f" # v0.3.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=427d0fd4ce60690a95de7505a40073fa443bea75" # v0.3.4
 
   artifact_registry          = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.helpers.team}-virtual"
   cluster_prefix             = module.helpers.team
