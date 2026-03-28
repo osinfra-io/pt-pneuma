@@ -7,16 +7,19 @@ set -euo pipefail
 # Clusters are discovered via gcloud. Credentials are written to a temporary
 # kubeconfig file and cleaned up on exit — nothing is written to ~/.kube/config.
 #
-# Usage: ./create-remote-secrets.sh <env>
-#   env: sb (sandbox), np (non-production), prod (production)
+# Usage: ./create-remote-secrets.sh <env> [team]
+#   env:  sb (sandbox), np (non-production), prod (production)
+#   team: team label used to find the Kubernetes project (default: pt-pneuma)
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <env>"
-  echo "  env: sb, np, or prod"
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $0 <env> [team]"
+  echo "  env:  sb, np, or prod"
+  echo "  team: labels.team value used to find the Kubernetes project (default: pt-pneuma)"
   exit 1
 fi
 
 ENV="${1}"
+TEAM="${2:-pt-pneuma}"
 
 case "${ENV}" in
   sb | np | prod) ;;
@@ -32,17 +35,17 @@ KUBECONFIG_FILE="$(mktemp)"
 trap 'rm -f "${KUBECONFIG_FILE}"' EXIT
 export KUBECONFIG="${KUBECONFIG_FILE}"
 
-# Discover the pt-pneuma Kubernetes project for this environment.
-# Project IDs follow the pattern: pt-pneuma-k8s-{random}-{env}
+# Discover the Kubernetes project for this team and environment.
+# Project IDs follow the pattern: {team}-k8s-{random}-{env}
 
-echo "Discovering pt-pneuma Kubernetes project for env '${ENV}'..."
+echo "Discovering ${TEAM} Kubernetes project for env '${ENV}'..."
 
 PROJECT=$(gcloud projects list \
-  --filter="labels.team=pt-pneuma labels.repository=pt-corpus" \
+  --filter="labels.team=${TEAM} labels.repository=pt-corpus" \
   --format="value(projectId)" | grep "\-${ENV}$")
 
 if [[ -z "${PROJECT}" ]]; then
-  echo "Error: No pt-pneuma Kubernetes project found for env '${ENV}'."
+  echo "Error: No ${TEAM} Kubernetes project found for env '${ENV}'."
   exit 1
 fi
 
