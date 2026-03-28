@@ -7,12 +7,12 @@ set -euo pipefail
 # kubeconfig file and cleaned up on exit — nothing is written to ~/.kube/config.
 #
 # Usage: ./check-health.sh <env> [team]
-#   env:  sb (sandbox), np (non-production), prod (production)
+#   env:  sb (sandbox), nonprod (non-production), prod (production)
 #   team: team label used to find the Kubernetes project (default: pt-pneuma)
 
 if [[ $# -lt 1 ]]; then
   echo "Usage: $0 <env> [team]"
-  echo "  env:  sb, np, or prod"
+  echo "  env:  sb, nonprod, or prod"
   echo "  team: labels.team value used to find the Kubernetes project (default: pt-pneuma)"
   exit 1
 fi
@@ -21,9 +21,9 @@ ENV="${1}"
 TEAM="${2:-pt-pneuma}"
 
 case "${ENV}" in
-  sb | np | prod) ;;
+  sb | nonprod | prod) ;;
   *)
-    echo "Error: env must be one of: sb, np, prod"
+    echo "Error: env must be one of: sb, nonprod, prod"
     exit 1
     ;;
 esac

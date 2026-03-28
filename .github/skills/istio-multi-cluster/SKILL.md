@@ -26,39 +26,8 @@ The operation is idempotent — re-running safely overwrites existing secrets (`
 
 Ask the user which environment to target if not already stated:
 - `sb` — sandbox
-- `np` — non-production
+- `nonprod` — non-production
 - `prod` — production
-
-Ask which team if not `pt-pneuma` (e.g., `st-ethos`).
-
-### 2. Confirm prerequisites
-
-Before running, verify the required tools are available:
-
-```bash
-gcloud auth list
-istioctl version --remote=false
-kubectl version --client
-```
-
-If `gcloud` is not authenticated, prompt the user to run `gcloud auth login` first.
-
-### 3. Run the script
-
-From the root of the `pt-pneuma` repository:
-
-```bash
-./regional/istio/scripts/create-remote-secrets.sh <env> [team]
-```
-
-Examples:
-
-```bash
-# pt-pneuma sandbox (team defaults to pt-pneuma)
-./regional/istio/scripts/create-remote-secrets.sh sb
-
-# st-ethos non-production
-./regional/istio/scripts/create-remote-secrets.sh np st-ethos
 ```
 
 The script will:
@@ -116,7 +85,7 @@ The operation is idempotent — re-running safely overwrites existing secrets.
 
 Ask the user which environment to target if not already stated:
 - `sb` — sandbox
-- `np` — non-production
+- `nonprod` — non-production
 - `prod` — production
 
 ### 2. Confirm prerequisites
