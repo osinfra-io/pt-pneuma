@@ -2,12 +2,12 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  # The DNS subdomain for this team (e.g., "pneuma"), sourced from team config in pt-logos
+  dns_subdomain = module.helpers.teams[module.helpers.team].dns_subdomain != null ? module.helpers.teams[module.helpers.team].dns_subdomain : replace(module.helpers.team, "/^[a-z]+-/", "")
+
   # Environment key for logos lookup (title case with hyphens preserved)
   # Converts workspace environment (e.g., "non-production") to logos format (e.g., "Non-Production")
   environment_key = title(module.helpers.environment)
-
-  # The DNS subdomain for this team (e.g., "pneuma"), sourced from team config in pt-logos
-  dns_subdomain = module.helpers.teams[module.helpers.team].dns_subdomain != null ? module.helpers.teams[module.helpers.team].dns_subdomain : replace(module.helpers.team, "/^[a-z]+-/", "")
 
   # The team DNS zone name and managed zone resource name, following env-first naming convention
   # prod: pneuma.osinfra.io / pneuma-osinfra-io

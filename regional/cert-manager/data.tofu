@@ -1,6 +1,3 @@
-# Data Sources
-# https://opentofu.org/docs/language/data-sources
-
 # Google Client Config Data Source
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config
 
