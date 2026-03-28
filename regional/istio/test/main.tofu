@@ -285,6 +285,9 @@ resource "kubernetes_service_v1" "istio_test" {
   }
 }
 
+# Kubernetes Service Resource (Regional)
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/service_v1
+
 resource "kubernetes_service_v1" "istio_test_regional" {
   metadata {
     name      = "istio-test-${module.helpers.region}-${module.helpers.zone}"

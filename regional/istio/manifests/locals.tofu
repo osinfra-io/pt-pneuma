@@ -2,18 +2,18 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  # gateway_dns is always a single-entry map keyed by the DNS zone name
-  # (e.g. "pneuma.osinfra.io"). one() errors loudly if the map has >1 key
-  # and returns null if empty; both cases indicate the main workspace has
-  # not been applied and this layer should not run.
-  dns_zone = one(keys(data.terraform_remote_state.main.outputs.gateway_dns))
-
   common_istio_test_virtual_services = {
     "istio-test" = {
       destination_host = "istio-test.istio-test.svc.cluster.local"
       host             = local.dns_zone
     }
   }
+
+  # gateway_dns is always a single-entry map keyed by the DNS zone name
+  # (e.g. "pneuma.osinfra.io"). one() errors loudly if the map has >1 key
+  # and returns null if empty; both cases indicate the main workspace has
+  # not been applied and this layer should not run.
+  dns_zone = one(keys(data.terraform_remote_state.main.outputs.gateway_dns))
 
   failover_from_region = module.helpers.region
   failover_to_region   = module.helpers.region == "us-east1" ? "us-east4" : "us-east1"

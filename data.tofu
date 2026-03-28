@@ -1,7 +1,5 @@
-# Data Sources
-# https://opentofu.org/docs/language/data-sources
-
 # Data Source: Google Project (Kubernetes)
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/project
 # Reference the single Kubernetes project from the filtered results
 
 data "google_project" "kubernetes" {
@@ -13,6 +11,7 @@ data "google_project" "kubernetes" {
 }
 
 # Data Source: Google Project (Shared VPC Host)
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/project
 # Reference the single shared VPC host project from the filtered results
 
 data "google_project" "shared_vpc_host" {
@@ -24,6 +23,7 @@ data "google_project" "shared_vpc_host" {
 }
 
 # Data Source: Google Projects (Kubernetes)
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/projects
 # Find the Kubernetes project created by pt-corpus for this team using a filter
 # Project naming pattern: {team_key}-k8s-{random_suffix}-{env}
 # Uses parent.id to scope to team's environment folder for reliable discovery
@@ -37,6 +37,7 @@ data "google_projects" "kubernetes" {
 }
 
 # Data Source: Google Projects (Shared VPC Host)
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/projects
 # Find the pt-corpus shared VPC host project for this environment
 # Project naming pattern: pt-corpus-{random_suffix}-{env}
 # Uses parent.id to scope to pt-corpus environment folder for reliable discovery

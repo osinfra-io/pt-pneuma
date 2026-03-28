@@ -1,4 +1,4 @@
-# Core Helpers Module (osinfra.io)
+# OpenTofu Core Helpers Module (osinfra.io)
 # https://github.com/osinfra-io/pt-arche-core-helpers
 
 module "helpers" {
