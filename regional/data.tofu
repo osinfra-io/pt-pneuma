@@ -7,8 +7,8 @@ data "terraform_remote_state" "main" {
   config = {
     bucket             = var.state_bucket
     kms_encryption_key = var.state_kms_encryption_key
-    prefix             = module.helpers.repository
+    prefix             = module.core_helpers.repository
   }
 
-  workspace = "main-${module.helpers.environment}"
+  workspace = "main-${module.core_helpers.environment}"
 }

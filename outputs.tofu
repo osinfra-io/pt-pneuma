@@ -24,7 +24,7 @@ output "kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key" {
 
 output "kubernetes_engine_workload_identity_service_account_emails" {
   description = "The email addresses of the service accounts for the Kubernetes namespace workload identity"
-  value       = module.kubernetes_engine.workload_identity_service_account_emails
+  value       = module.google_kubernetes_engine.workload_identity_service_account_emails
 }
 
 output "kubernetes_istio_gateway_mci_global_address" {
@@ -49,5 +49,5 @@ output "shared_vpc_host_project_id" {
 
 output "team" {
   description = "The team data from helpers module"
-  value       = module.helpers.teams[module.helpers.team]
+  value       = module.core_helpers.teams[module.core_helpers.team]
 }

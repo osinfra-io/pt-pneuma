@@ -1,16 +1,14 @@
 # Google Client Config Data Source
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/client_config
 
-
-data "google_client_config" "this" {
-}
+data "google_client_config" "this" {}
 
 # Google Container Cluster Data Source
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/container_cluster
 
 data "google_container_cluster" "this" {
-  location = module.helpers.region
-  name     = "${module.helpers.team}-${module.helpers.region}-${module.helpers.zone}"
+  location = module.core_helpers.region
+  name     = "${module.core_helpers.team}-${module.core_helpers.region}-${module.core_helpers.zone}"
   project  = data.terraform_remote_state.main.outputs.project_id
 }
 
@@ -23,8 +21,8 @@ data "terraform_remote_state" "main" {
   config = {
     bucket             = var.state_bucket
     kms_encryption_key = var.state_kms_encryption_key
-    prefix             = module.helpers.repository
+    prefix             = module.core_helpers.repository
   }
 
-  workspace = "main-${module.helpers.environment}"
+  workspace = "main-${module.core_helpers.environment}"
 }

@@ -2,13 +2,12 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=427d0fd4ce60690a95de7505a40073fa443bea75" # v0.3.4
-
   common_istio_test_virtual_services = local.common_istio_test_virtual_services
   common_virtual_services            = {}
   failover_from_region               = local.failover_from_region
   failover_to_region                 = local.failover_to_region
   istio_test_virtual_services        = local.istio_test_virtual_services
+  source                             = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=427d0fd4ce60690a95de7505a40073fa443bea75" # v0.3.4
   virtual_services                   = {}
 }
 
@@ -40,7 +39,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
               http2_protocol_options = {}
               lb_policy              = "ROUND_ROBIN"
               load_assignment = {
-                cluster_name = "pt-${module.helpers.region}-${module.helpers.zone}"
+                cluster_name = "pt-${module.core_helpers.region}-${module.core_helpers.zone}"
                 endpoints = [
                   {
                     lb_endpoints = [
@@ -58,7 +57,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
                   }
                 ]
               }
-              name = "pt-${module.helpers.region}-${module.helpers.zone}"
+              name = "pt-${module.core_helpers.region}-${module.core_helpers.zone}"
               transport_socket = {
                 name = "envoy.transport_sockets.tls"
                 typed_config = {
@@ -94,7 +93,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
                 failure_mode_allow = true
                 grpc_service = {
                   envoy_grpc = {
-                    cluster_name = "pt-${module.helpers.region}-${module.helpers.zone}"
+                    cluster_name = "pt-${module.core_helpers.region}-${module.core_helpers.zone}"
                   }
                   timeout = "0.5s"
                 }

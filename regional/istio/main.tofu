@@ -2,10 +2,8 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=427d0fd4ce60690a95de7505a40073fa443bea75" # v0.3.4
-
-  artifact_registry          = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.helpers.team}-virtual"
-  cluster_prefix             = module.helpers.team
+  artifact_registry          = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
+  cluster_prefix             = module.core_helpers.team
   enable_istio_gateway       = true
   gateway_cpu_limits         = var.kubernetes_istio_gateway_cpu_limits
   gateway_cpu_requests       = var.kubernetes_istio_gateway_cpu_requests
@@ -13,7 +11,7 @@ module "kubernetes_istio" {
   gateway_mci_global_address = try(local.main.kubernetes_istio_gateway_mci_global_address, null)
   gateway_memory_limits      = var.kubernetes_istio_gateway_memory_limits
   gateway_memory_requests    = var.kubernetes_istio_gateway_memory_requests
-  labels                     = module.helpers.labels
+  labels                     = module.core_helpers.labels
 
   multi_cluster_service_clusters = local.multi_cluster_service_clusters
 
@@ -26,6 +24,7 @@ module "kubernetes_istio" {
   proxy_cpu_requests                          = var.kubernetes_istio_proxy_cpu_requests
   proxy_memory_limits                         = var.kubernetes_istio_proxy_memory_limits
   proxy_memory_requests                       = var.kubernetes_istio_proxy_memory_requests
+  source                                      = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=427d0fd4ce60690a95de7505a40073fa443bea75" # v0.3.4
   tls_self_signed_cert_cert_manager_root_cert = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert
   tls_self_signed_cert_cert_manager_root_key  = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key
 }
@@ -41,7 +40,7 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
   metadata {
     labels = {
       app                          = "datadog-aap-extproc"
-      "tags.datadoghq.com/env"     = module.helpers.environment
+      "tags.datadoghq.com/env"     = module.core_helpers.environment
       "tags.datadoghq.com/service" = "istio-gateway"
     }
 
@@ -60,7 +59,7 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
       metadata {
         annotations = {
           "apm.datadoghq.com/env" = jsonencode({
-            DD_ENV     = module.helpers.environment
+            DD_ENV     = module.core_helpers.environment
             DD_SERVICE = "istio-gateway"
           })
           "sidecar.istio.io/inject" = "false"
@@ -69,7 +68,7 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
         labels = {
           "admission.datadoghq.com/enabled" = "true"
           app                               = "datadog-aap-extproc"
-          "tags.datadoghq.com/env"          = module.helpers.environment
+          "tags.datadoghq.com/env"          = module.core_helpers.environment
           "tags.datadoghq.com/service"      = "istio-gateway"
         }
       }
@@ -158,6 +157,22 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
   }
 }
 
+# Kubernetes Labels Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/labels
+
+resource "kubernetes_labels" "default_namespace_istio_injection" {
+  api_version = "v1"
+  kind        = "Namespace"
+
+  labels = {
+    "istio-injection" = "disabled"
+  }
+
+  metadata {
+    name = "default"
+  }
+}
+
 # Kubernetes Service Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/service_v1
 
@@ -188,21 +203,5 @@ resource "kubernetes_service_v1" "datadog_aap_extproc" {
     }
 
     type = "ClusterIP"
-  }
-}
-
-# Kubernetes Labels Resource
-# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/labels
-
-resource "kubernetes_labels" "default_namespace_istio_injection" {
-  api_version = "v1"
-  kind        = "Namespace"
-
-  metadata {
-    name = "default"
-  }
-
-  labels = {
-    "istio-injection" = "disabled"
   }
 }

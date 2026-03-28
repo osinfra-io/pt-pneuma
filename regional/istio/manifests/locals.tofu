@@ -15,13 +15,13 @@ locals {
   # not been applied and this layer should not run.
   dns_zone = one(keys(data.terraform_remote_state.main.outputs.gateway_dns))
 
-  failover_from_region = module.helpers.region
-  failover_to_region   = module.helpers.region == "us-east1" ? "us-east4" : "us-east1"
+  failover_from_region = module.core_helpers.region
+  failover_to_region   = module.core_helpers.region == "us-east1" ? "us-east4" : "us-east1"
 
   istio_test_virtual_services = {
-    "istio-test-${module.helpers.region}-${module.helpers.zone}" = {
-      destination_host = "istio-test-${module.helpers.region}-${module.helpers.zone}.istio-test.svc.cluster.local"
-      host             = "${module.helpers.region}-${module.helpers.zone}.${local.dns_zone}"
+    "istio-test-${module.core_helpers.region}-${module.core_helpers.zone}" = {
+      destination_host = "istio-test-${module.core_helpers.region}-${module.core_helpers.zone}.istio-test.svc.cluster.local"
+      host             = "${module.core_helpers.region}-${module.core_helpers.zone}.${local.dns_zone}"
     }
   }
 }
