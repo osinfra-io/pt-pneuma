@@ -1,58 +1,3 @@
-# Datadog Synthetics Test Resource
-# https://search.opentofu.org/provider/opentofu/datadog/latest/resources/synthetics_test
-
-resource "datadog_synthetics_test" "this" {
-  for_each = local.datadog_synthetic_tests
-
-  assertion {
-    operator = "is"
-    target   = "200"
-    type     = "statusCode"
-  }
-
-  assertion {
-    operator = "lessThan"
-    target   = 1000
-    type     = "responseTime"
-  }
-
-  locations = each.value.locations
-  message   = each.value.message
-  name      = "${each.value.name} ${each.value.region} ${module.helpers.environment}"
-
-  options_list {
-    monitor_priority = each.value.message_priority
-
-    retry {
-      count    = 2
-      interval = 120
-    }
-
-    tick_every = 300
-  }
-
-  request_definition {
-    method = "GET"
-    url    = each.value.url
-  }
-
-  request_headers = each.value.region == "global" ? {} : {
-    Body = "services-${each.value.region}"
-  }
-
-  status  = each.value.status
-  subtype = "http"
-
-  tags = [
-    "env:${module.helpers.environment}",
-    "region:${each.value.region}",
-    "service:${each.value.service}",
-    "team:${module.helpers.team}"
-  ]
-
-  type = "api"
-}
-
 # Kubernetes Deployment Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/deployment_v1
 
@@ -307,4 +252,59 @@ resource "kubernetes_service_v1" "istio_test_regional" {
 
     type = "ClusterIP"
   }
+}
+
+# Datadog Synthetics Test Resource
+# https://search.opentofu.org/provider/opentofu/datadog/latest/resources/synthetics_test
+
+resource "datadog_synthetics_test" "this" {
+  for_each = local.datadog_synthetic_tests
+
+  assertion {
+    operator = "is"
+    target   = "200"
+    type     = "statusCode"
+  }
+
+  assertion {
+    operator = "lessThan"
+    target   = 1000
+    type     = "responseTime"
+  }
+
+  locations = each.value.locations
+  message   = each.value.message
+  name      = "${each.value.name} ${each.value.region} ${module.helpers.environment}"
+
+  options_list {
+    monitor_priority = each.value.message_priority
+
+    retry {
+      count    = 2
+      interval = 120
+    }
+
+    tick_every = 300
+  }
+
+  request_definition {
+    method = "GET"
+    url    = each.value.url
+  }
+
+  request_headers = each.value.region == "global" ? {} : {
+    Body = "services-${each.value.region}"
+  }
+
+  status  = each.value.status
+  subtype = "http"
+
+  tags = [
+    "env:${module.helpers.environment}",
+    "region:${each.value.region}",
+    "service:${each.value.service}",
+    "team:${module.helpers.team}"
+  ]
+
+  type = "api"
 }
