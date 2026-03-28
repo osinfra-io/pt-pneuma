@@ -18,7 +18,7 @@ resource "datadog_synthetics_test" "this" {
 
   locations = each.value.locations
   message   = each.value.message
-  name      = "${each.value.name} ${each.value.region} ${module.helpers.environment}"
+  name      = "${each.value.name} ${each.value.region} ${module.core_helpers.environment}"
 
   options_list {
     monitor_priority = each.value.message_priority
@@ -36,18 +36,16 @@ resource "datadog_synthetics_test" "this" {
     url    = each.value.url
   }
 
-  request_headers = each.value.region == "global" ? {} : {
-    Body = "services-${each.value.region}"
-  }
+  request_headers = each.value.request_headers
 
   status  = each.value.status
   subtype = "http"
 
   tags = [
-    "env:${module.helpers.environment}",
+    "env:${module.core_helpers.environment}",
     "region:${each.value.region}",
     "service:${each.value.service}",
-    "team:${module.helpers.team}"
+    "team:${module.core_helpers.team}"
   ]
 
   type = "api"
@@ -74,7 +72,7 @@ resource "kubernetes_deployment_v1" "istio_test" {
 
   metadata {
     labels = {
-      "tags.datadoghq.com/env"     = module.helpers.environment
+      "tags.datadoghq.com/env"     = module.core_helpers.environment
       "tags.datadoghq.com/service" = "istio-test"
       "tags.datadoghq.com/version" = var.istio_test_version
     }
@@ -96,7 +94,7 @@ resource "kubernetes_deployment_v1" "istio_test" {
       metadata {
         annotations = {
           "apm.datadoghq.com/env" = jsonencode({
-            "DD_ENV"     = module.helpers.environment
+            "DD_ENV"     = module.core_helpers.environment
             "DD_SERVICE" = "istio-test"
             "DD_VERSION" = var.istio_test_version
           })
@@ -106,7 +104,7 @@ resource "kubernetes_deployment_v1" "istio_test" {
           # Enable Admission Controller to mutate new pods part of this deployment
           "admission.datadoghq.com/enabled" = "true"
           "app"                             = "istio-test"
-          "tags.datadoghq.com/env"          = module.helpers.environment
+          "tags.datadoghq.com/env"          = module.core_helpers.environment
           "tags.datadoghq.com/service"      = "istio-test"
           "tags.datadoghq.com/version"      = var.istio_test_version
         }
@@ -285,12 +283,9 @@ resource "kubernetes_service_v1" "istio_test" {
   }
 }
 
-# Kubernetes Service Resource (Regional)
-# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/service_v1
-
 resource "kubernetes_service_v1" "istio_test_regional" {
   metadata {
-    name      = "istio-test-${module.helpers.region}-${module.helpers.zone}"
+    name      = "istio-test-${module.core_helpers.region}-${module.core_helpers.zone}"
     namespace = "istio-test"
   }
 

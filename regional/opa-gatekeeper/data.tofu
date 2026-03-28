@@ -7,7 +7,7 @@ data "google_client_config" "this" {}
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/container_cluster
 
 data "google_container_cluster" "this" {
-  location = module.helpers.region
+  location = module.core_helpers.region
   name     = local.cluster_name
   project  = data.terraform_remote_state.main.outputs.project_id
 }
@@ -21,8 +21,8 @@ data "terraform_remote_state" "main" {
   config = {
     bucket             = var.state_bucket
     kms_encryption_key = var.state_kms_encryption_key
-    prefix             = module.helpers.repository
+    prefix             = module.core_helpers.repository
   }
 
-  workspace = "main-${module.helpers.environment}"
+  workspace = "main-${module.core_helpers.environment}"
 }

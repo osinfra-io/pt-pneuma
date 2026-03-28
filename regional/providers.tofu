@@ -57,5 +57,5 @@ terraform {
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs
 
 provider "google" {
-  region = module.helpers.region
+  region = module.core_helpers.region
 }
