@@ -2,6 +2,8 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine_regional" {
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=4477108018add36dd477904df79ef01f5a3315d0" # v0.3.4
+
   for_each = local.gke_clusters
 
   cluster_prefix             = module.core_helpers.team
@@ -13,7 +15,6 @@ module "google_kubernetes_engine_regional" {
   node_pools                 = lookup(each.value, "node_pools", {})
   project                    = local.main.project_id
   resource_labels            = module.core_helpers.labels
-  source                     = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=4477108018add36dd477904df79ef01f5a3315d0" # v0.3.4
   subnet                     = local.subnet
   vpc_host_project_id        = local.main.shared_vpc_host_project_id
 }

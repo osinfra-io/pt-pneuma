@@ -2,12 +2,13 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=eb4670328111e91d87296ff3338c9f04efaa9217" # v0.3.5
+
   common_istio_test_virtual_services = local.common_istio_test_virtual_services
   common_virtual_services            = {}
   failover_from_region               = local.failover_from_region
   failover_to_region                 = local.failover_to_region
   istio_test_virtual_services        = local.istio_test_virtual_services
-  source                             = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=eb4670328111e91d87296ff3338c9f04efaa9217" # v0.3.5
   virtual_services                   = {}
 }
 
