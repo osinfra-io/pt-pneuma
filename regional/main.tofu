@@ -13,7 +13,7 @@ module "google_kubernetes_engine_regional" {
   node_pools                 = lookup(each.value, "node_pools", {})
   project                    = local.main.project_id
   resource_labels            = module.core_helpers.labels
-  source                     = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=eeb68eab5e63d608eb9271064683b17a53f6cca8" # v0.3.3
+  source                     = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=4477108018add36dd477904df79ef01f5a3315d0" # v0.3.4
   subnet                     = local.subnet
   vpc_host_project_id        = local.main.shared_vpc_host_project_id
 }

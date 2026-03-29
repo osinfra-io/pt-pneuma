@@ -7,7 +7,7 @@ module "kubernetes_istio_manifests" {
   failover_from_region               = local.failover_from_region
   failover_to_region                 = local.failover_to_region
   istio_test_virtual_services        = local.istio_test_virtual_services
-  source                             = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=427d0fd4ce60690a95de7505a40073fa443bea75" # v0.3.4
+  source                             = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=eb4670328111e91d87296ff3338c9f04efaa9217" # v0.3.5
   virtual_services                   = {}
 }
 

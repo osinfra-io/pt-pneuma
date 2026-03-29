@@ -3,5 +3,5 @@
 
 module "kubernetes_cert_manager" {
   artifact_registry = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
-  source            = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional?ref=ea72b0d648b5be9b403c0c2946a9022810e9f849" # v0.2.1
+  source            = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional?ref=51b9c4ce4933a31870c9ea5fd398f96d7674232f" # v0.2.2
 }
