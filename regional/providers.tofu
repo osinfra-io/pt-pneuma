@@ -45,7 +45,7 @@ terraform {
   required_providers {
 
     # Google Cloud Platform Provider
-    # https://registry.terraform.io/providers/hashicorp/google/latest/docs
+    # https://search.opentofu.org/provider/hashicorp/google/latest/docs
 
     google = {
       source = "hashicorp/google"
@@ -54,7 +54,7 @@ terraform {
 }
 
 # Google Cloud Platform Provider
-# https://registry.terraform.io/providers/hashicorp/google/latest/docs
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs
 
 provider "google" {
   region = module.core_helpers.region

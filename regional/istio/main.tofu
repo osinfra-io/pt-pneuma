@@ -76,10 +76,6 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
 
       spec {
         container {
-          image             = "ghcr.io/datadog/dd-trace-go/service-extensions-callout:v2.2.2"
-          image_pull_policy = "Always"
-          name              = "datadog-aap-extproc-container"
-
           env {
             name  = "DD_APPSEC_WAF_TIMEOUT"
             value = "10000"
@@ -102,6 +98,10 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
               }
             }
           }
+
+          image             = "ghcr.io/datadog/dd-trace-go/service-extensions-callout:v2.2.2"
+          image_pull_policy = "Always"
+          name              = "datadog-aap-extproc-container"
 
           liveness_probe {
             http_get {
