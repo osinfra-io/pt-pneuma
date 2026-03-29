@@ -1,10 +1,10 @@
 # Google Client Config Data Source
-# https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/client_config
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/client_config
 
 data "google_client_config" "this" {}
 
 # Google Container Cluster Data Source
-# https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/container_cluster
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/container_cluster
 
 data "google_container_cluster" "this" {
   location = module.core_helpers.region

@@ -10,8 +10,6 @@ data "google_project" "kubernetes" {
   project_id = data.google_projects.kubernetes.projects[0].project_id
 }
 
-# Reference the single shared VPC host project from the filtered results
-
 data "google_project" "shared_vpc_host" {
   lifecycle {
     enabled = length(data.google_projects.shared_vpc_host.projects) > 0
@@ -33,10 +31,6 @@ data "google_projects" "kubernetes" {
   # Strip 'folders/' prefix from folder ID since API expects just the numeric ID
   filter = "parent.id:${replace(module.core_helpers.environment_folder_id, "folders/", "")} labels.repository:pt-corpus labels.team:${module.core_helpers.team} lifecycleState:ACTIVE"
 }
-
-# Find the pt-corpus shared VPC host project for this environment
-# Project naming pattern: pt-corpus-{random_suffix}-{env}
-# Uses parent.id to scope to pt-corpus environment folder for reliable discovery
 
 data "google_projects" "shared_vpc_host" {
   # Use supported fields: parent.id, labels, lifecycleState
