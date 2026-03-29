@@ -5,6 +5,6 @@ module "core_helpers" {
   cost_center         = "x001"
   data_classification = "public"
   repository          = "pt-pneuma"
-  source              = "github.com/osinfra-io/pt-arche-core-helpers//root?ref=9734175404f3c0b26b0a58a6c877828dba2dea70" # v0.2.1
+  source              = "github.com/osinfra-io/pt-arche-core-helpers//root?ref=37126d7c6b48b027fc57272c7e58c49e8c3753ff" # v0.2.2
   team                = "pt-pneuma"
 }
