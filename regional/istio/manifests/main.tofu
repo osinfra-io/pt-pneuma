@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=eb4670328111e91d87296ff3338c9f04efaa9217" # v0.3.5
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=7b66900fc6a6d5fe31e31fa2dd406f2f63f79703" # v0.3.7
 
   common_istio_test_virtual_services = local.common_istio_test_virtual_services
   common_virtual_services            = {}
