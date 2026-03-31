@@ -50,7 +50,6 @@ jobs:
       github_environment: "Production: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-production
@@ -66,7 +65,6 @@ jobs:
       github_environment: "Production: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-production
@@ -82,7 +80,6 @@ jobs:
       github_environment: "Production: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-d-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-production
@@ -98,7 +95,6 @@ jobs:
       github_environment: "Production: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-a-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-production
@@ -114,7 +110,6 @@ jobs:
       github_environment: "Production: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-production
@@ -130,7 +125,6 @@ jobs:
       github_environment: "Production: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-production
@@ -326,7 +320,6 @@ jobs:
       github_environment: "Production cert-manager Istio CSR: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-cert-manager-istio-csr-production
@@ -342,7 +335,6 @@ jobs:
       github_environment: "Production cert-manager Istio CSR: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-cert-manager-istio-csr-production
@@ -358,7 +350,6 @@ jobs:
       github_environment: "Production cert-manager Istio CSR: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-d-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-cert-manager-istio-csr-production
@@ -374,7 +365,6 @@ jobs:
       github_environment: "Production cert-manager Istio CSR: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-a-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-cert-manager-istio-csr-production
@@ -390,7 +380,6 @@ jobs:
       github_environment: "Production cert-manager Istio CSR: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-cert-manager-istio-csr-production
@@ -406,7 +395,6 @@ jobs:
       github_environment: "Production cert-manager Istio CSR: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-cert-manager-istio-csr-production
@@ -651,7 +639,6 @@ jobs:
       github_environment: "Production Istio Manifests: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-manifests-production
@@ -668,7 +655,6 @@ jobs:
       github_environment: "Production Istio Manifests: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-istio-manifests-production
@@ -685,7 +671,6 @@ jobs:
       github_environment: "Production Istio Manifests: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-d-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-istio-manifests-production
@@ -702,7 +687,6 @@ jobs:
       github_environment: "Production Istio Manifests: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-a-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-manifests-production
@@ -719,7 +703,6 @@ jobs:
       github_environment: "Production Istio Manifests: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-istio-manifests-production
@@ -736,7 +719,6 @@ jobs:
       github_environment: "Production Istio Manifests: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-istio-manifests-production
@@ -753,7 +735,6 @@ jobs:
       github_environment: "Production Istio Test: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-test-production
@@ -774,7 +755,6 @@ jobs:
       github_environment: "Production Istio Test: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-istio-test-production
@@ -795,7 +775,6 @@ jobs:
       github_environment: "Production Istio Test: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-d-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-istio-test-production
@@ -816,7 +795,6 @@ jobs:
       github_environment: "Production Istio Test: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-a-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-test-production
@@ -837,7 +815,6 @@ jobs:
       github_environment: "Production Istio Test: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-istio-test-production
@@ -858,7 +835,6 @@ jobs:
       github_environment: "Production Istio Test: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-istio-test-production
@@ -989,7 +965,6 @@ jobs:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Manifests: us-east1-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-opa-gatekeeper-manifests-production
@@ -1021,7 +996,6 @@ jobs:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Manifests: us-east1-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-opa-gatekeeper-manifests-production
@@ -1053,7 +1027,6 @@ jobs:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Manifests: us-east1-d"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east1-d-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-opa-gatekeeper-manifests-production
@@ -1085,7 +1058,6 @@ jobs:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Manifests: us-east4-a"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-a-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-opa-gatekeeper-manifests-production
@@ -1117,7 +1089,6 @@ jobs:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Manifests: us-east4-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-b-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-opa-gatekeeper-manifests-production
@@ -1149,7 +1120,6 @@ jobs:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Manifests: us-east4-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/us-east4-c-production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-opa-gatekeeper-manifests-production
