@@ -1001,6 +1001,23 @@ jobs:
       working_directory: regional/opa-gatekeeper
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  opa_gatekeeper_manifests_us_east1_b:
+    name: "OPA Gatekeeper Manifests: us-east1-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    if: github.actor != 'dependabot[bot]'
+    needs: opa_gatekeeper_us_east1_b
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Sandbox OPA Gatekeeper Manifests: us-east1-b"
+      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/us-east1-b-sandbox.tfvars
+      opentofu_state_bucket: pt-pneuma-state-sb
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-b-opa-gatekeeper-manifests-sandbox
+      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
+      working_directory: regional/opa-gatekeeper/manifests
+      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   opa_gatekeeper_us_east1_c:
     name: "OPA Gatekeeper: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1016,6 +1033,23 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-opa-gatekeeper-sandbox
       working_directory: regional/opa-gatekeeper
+      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  opa_gatekeeper_manifests_us_east1_c:
+    name: "OPA Gatekeeper Manifests: us-east1-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    if: github.actor != 'dependabot[bot]'
+    needs: opa_gatekeeper_us_east1_c
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Sandbox OPA Gatekeeper Manifests: us-east1-c"
+      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/us-east1-c-sandbox.tfvars
+      opentofu_state_bucket: pt-pneuma-state-sb
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-c-opa-gatekeeper-manifests-sandbox
+      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
+      working_directory: regional/opa-gatekeeper/manifests
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   opa_gatekeeper_us_east1_d:
@@ -1035,6 +1069,23 @@ jobs:
       working_directory: regional/opa-gatekeeper
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  opa_gatekeeper_manifests_us_east1_d:
+    name: "OPA Gatekeeper Manifests: us-east1-d"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    if: github.actor != 'dependabot[bot]'
+    needs: opa_gatekeeper_us_east1_d
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Sandbox OPA Gatekeeper Manifests: us-east1-d"
+      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/us-east1-d-sandbox.tfvars
+      opentofu_state_bucket: pt-pneuma-state-sb
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-d-opa-gatekeeper-manifests-sandbox
+      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
+      working_directory: regional/opa-gatekeeper/manifests
+      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   opa_gatekeeper_us_east4_a:
     name: "OPA Gatekeeper: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1050,6 +1101,23 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-opa-gatekeeper-sandbox
       working_directory: regional/opa-gatekeeper
+      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  opa_gatekeeper_manifests_us_east4_a:
+    name: "OPA Gatekeeper Manifests: us-east4-a"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    if: github.actor != 'dependabot[bot]'
+    needs: opa_gatekeeper_us_east4_a
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Sandbox OPA Gatekeeper Manifests: us-east4-a"
+      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/us-east4-a-sandbox.tfvars
+      opentofu_state_bucket: pt-pneuma-state-sb
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-a-opa-gatekeeper-manifests-sandbox
+      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
+      working_directory: regional/opa-gatekeeper/manifests
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   opa_gatekeeper_us_east4_b:
@@ -1069,6 +1137,23 @@ jobs:
       working_directory: regional/opa-gatekeeper
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  opa_gatekeeper_manifests_us_east4_b:
+    name: "OPA Gatekeeper Manifests: us-east4-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    if: github.actor != 'dependabot[bot]'
+    needs: opa_gatekeeper_us_east4_b
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Sandbox OPA Gatekeeper Manifests: us-east4-b"
+      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/us-east4-b-sandbox.tfvars
+      opentofu_state_bucket: pt-pneuma-state-sb
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-b-opa-gatekeeper-manifests-sandbox
+      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
+      working_directory: regional/opa-gatekeeper/manifests
+      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   opa_gatekeeper_us_east4_c:
     name: "OPA Gatekeeper: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1084,4 +1169,21 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-opa-gatekeeper-sandbox
       working_directory: regional/opa-gatekeeper
+      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  opa_gatekeeper_manifests_us_east4_c:
+    name: "OPA Gatekeeper Manifests: us-east4-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    if: github.actor != 'dependabot[bot]'
+    needs: opa_gatekeeper_us_east4_c
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Sandbox OPA Gatekeeper Manifests: us-east4-c"
+      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/us-east4-c-sandbox.tfvars
+      opentofu_state_bucket: pt-pneuma-state-sb
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-c-opa-gatekeeper-manifests-sandbox
+      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
+      working_directory: regional/opa-gatekeeper/manifests
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
