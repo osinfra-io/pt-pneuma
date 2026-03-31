@@ -1,0 +1,39 @@
+# This file is maintained automatically by "tofu init".
+# Manual edits may be lost in future updates.
+
+provider "registry.opentofu.org/hashicorp/google" {
+  version = "7.25.0"
+  hashes = [
+    "h1:cUA+uZ1iJtIn09XqwYNaUoSDHrgOZAxwyqW3avXIKaE=",
+    "zh:00560362d225142cf3ee0a38c1d9ebf2c2982551c9bedc7bd69e7e5c07797e92",
+    "zh:1312c205b9658effcbaa5828033ad724a1f829c82be0fdd29dde689023a47f44",
+    "zh:29c649ba246a0e0e8565c6a16d6aa28a56e9bac8860054d15f58d8b5983d5c08",
+    "zh:3ae5c0da5e4447cf89ea7e7dcf7ed12154747734e11c00e711c861248347d182",
+    "zh:41cdb10f48f1f2c5ec2afc0e8ba10fabc79dca02725e898f445dc3d9e858a673",
+    "zh:58fd365605f9b9b4e57ea46a4c05757047ba69a56a4a66adebd90355b2da1155",
+    "zh:6ac5988d027cbdcdab866e7114a7285de91bbff58e4594241166c105357a6c83",
+    "zh:7ec06c956a9e4381e1430e79558bb60e0fce907942a404bb03165deb2ab334cd",
+    "zh:805a7a06cf06f14151be1769ac729d254fa754622689b223dffac29b479a9035",
+    "zh:b1e10cb0bad9111ab0f1646adc49cc11bdafa31e956ef305b67ebd1a52590787",
+    "zh:c20039282e751c382f03d7f7133bd4354bbce947978c029a801c1261d44f5a07",
+    "zh:d010fdf618333ea86fda9be2f5369fcf7adbfe7b8d9f1f02d7392a2cfc9f516e",
+    "zh:f8ae6e509745166456ee3250b100b95648e7769f383e4f63df642cf12625f788",
+    "zh:fc9971298c996df21c4a43c9b39fda6457d3c744d9605a78f514c842d4b10afc",
+  ]
+}
+
+provider "registry.opentofu.org/hashicorp/kubernetes" {
+  version = "3.0.1"
+  hashes = [
+    "h1:idu+cVjePQ4hnl7zlOio+h1Gc5tQybs9KgPKWmyRd/A=",
+    "zh:0a6aff192781cfd062efe814d87ec21c84273005a685c818fb3c771ec9fd7051",
+    "zh:129f10760e8c727f7b593111e0026aa36aeb28c98f6500c749007aabba402332",
+    "zh:4a0995010f32949b1fbe580db15e76c73ba15aa265f73a7e535addd15dfade0d",
+    "zh:8b518be59029e8f0ad0767dbbd87f169ac6c906e50636314f8a5ff3c952f0ad5",
+    "zh:a2f1c113ae07dc5da8410d7a93b7e9ad24c3f17db357f090e6d68b41ed52e616",
+    "zh:b1d3604a2f545beae0965305d7bca821076cc9127fc34a77eef01c2d0cf916d2",
+    "zh:c2f2d371018d77affce46fee8b9a9ff0d27c4d5c3c64f8bce654e7c8d3305dc1",
+    "zh:c7cf958fb9bb429086ff1d371a4b824ec601ec0913dddaf85cd2e38d73ca7ec0",
+    "zh:f7753278388598c8e27140c5700e5699a0131926df8dad362f86ad67c36585ea",
+  ]
+}
