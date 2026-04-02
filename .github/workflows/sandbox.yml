@@ -1005,7 +1005,6 @@ jobs:
       working_directory: regional/opa-gatekeeper/templates
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-
   opa_gatekeeper_constraints_us_east1_b:
     name: "OPA Gatekeeper Constraints: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1021,6 +1020,7 @@ jobs:
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       working_directory: regional/opa-gatekeeper/constraints
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   opa_gatekeeper_us_east1_c:
     name: "OPA Gatekeeper: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1054,7 +1054,6 @@ jobs:
       working_directory: regional/opa-gatekeeper/templates
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-
   opa_gatekeeper_constraints_us_east1_c:
     name: "OPA Gatekeeper Constraints: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1070,6 +1069,7 @@ jobs:
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       working_directory: regional/opa-gatekeeper/constraints
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   opa_gatekeeper_us_east1_d:
     name: "OPA Gatekeeper: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1103,7 +1103,6 @@ jobs:
       working_directory: regional/opa-gatekeeper/templates
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-
   opa_gatekeeper_constraints_us_east1_d:
     name: "OPA Gatekeeper Constraints: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1119,6 +1118,7 @@ jobs:
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       working_directory: regional/opa-gatekeeper/constraints
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   opa_gatekeeper_us_east4_a:
     name: "OPA Gatekeeper: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1152,7 +1152,6 @@ jobs:
       working_directory: regional/opa-gatekeeper/templates
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-
   opa_gatekeeper_constraints_us_east4_a:
     name: "OPA Gatekeeper Constraints: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1168,6 +1167,7 @@ jobs:
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       working_directory: regional/opa-gatekeeper/constraints
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   opa_gatekeeper_us_east4_b:
     name: "OPA Gatekeeper: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1201,7 +1201,6 @@ jobs:
       working_directory: regional/opa-gatekeeper/templates
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-
   opa_gatekeeper_constraints_us_east4_b:
     name: "OPA Gatekeeper Constraints: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
@@ -1217,6 +1216,7 @@ jobs:
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       working_directory: regional/opa-gatekeeper/constraints
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   opa_gatekeeper_us_east4_c:
     name: "OPA Gatekeeper: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
