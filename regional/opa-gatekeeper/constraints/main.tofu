@@ -2,5 +2,5 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-opa-gatekeeper
 
 module "kubernetes_opa_gatekeeper_constraints" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-opa-gatekeeper//regional/constraints?ref=e34c54dd4bfc05993cfd809a08aa186d73b7db83" # branch: add-block-ingress-policy — update to post-merge SHA before merging this PR
+  source = "github.com/osinfra-io/pt-arche-kubernetes-opa-gatekeeper//regional/constraints?ref=58493500e2ea279d4a7b0d35cf95c7b7a83a3e04" # branch: add-block-ingress-policy — update to post-merge SHA before merging this PR
 }
