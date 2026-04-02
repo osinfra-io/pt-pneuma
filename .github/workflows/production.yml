@@ -944,7 +944,7 @@ jobs:
   opa_gatekeeper_us_east1_b:
     name: "OPA Gatekeeper: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
-    needs: istio_us_east1_b
+    needs: cert_manager_us_east1_b
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-b"
@@ -990,7 +990,7 @@ jobs:
   opa_gatekeeper_us_east1_c:
     name: "OPA Gatekeeper: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
-    needs: istio_us_east1_c
+    needs: cert_manager_us_east1_c
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-c"
@@ -1036,7 +1036,7 @@ jobs:
   opa_gatekeeper_us_east1_d:
     name: "OPA Gatekeeper: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
-    needs: istio_us_east1_d
+    needs: cert_manager_us_east1_d
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-d"
@@ -1082,7 +1082,7 @@ jobs:
   opa_gatekeeper_us_east4_a:
     name: "OPA Gatekeeper: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
-    needs: istio_us_east4_a
+    needs: cert_manager_us_east4_a
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-a"
@@ -1128,7 +1128,7 @@ jobs:
   opa_gatekeeper_us_east4_b:
     name: "OPA Gatekeeper: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
-    needs: istio_us_east4_b
+    needs: cert_manager_us_east4_b
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-b"
@@ -1174,7 +1174,7 @@ jobs:
   opa_gatekeeper_us_east4_c:
     name: "OPA Gatekeeper: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
-    needs: istio_us_east4_c
+    needs: cert_manager_us_east4_c
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-c"
