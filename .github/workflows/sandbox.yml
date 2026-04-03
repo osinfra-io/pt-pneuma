@@ -423,7 +423,7 @@ jobs:
     name: "Datadog: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     if: github.actor != 'dependabot[bot]'
-    needs: cert_manager_istio_csr_us_east1_b
+    needs: us_east1_b_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Datadog: us-east1-b"
@@ -443,7 +443,7 @@ jobs:
     name: "Datadog: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     if: github.actor != 'dependabot[bot]'
-    needs: cert_manager_istio_csr_us_east1_c
+    needs: us_east1_c_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Datadog: us-east1-c"
@@ -463,7 +463,7 @@ jobs:
     name: "Datadog: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     if: github.actor != 'dependabot[bot]'
-    needs: cert_manager_istio_csr_us_east1_d
+    needs: us_east1_d_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Datadog: us-east1-d"
@@ -483,7 +483,7 @@ jobs:
     name: "Datadog: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     if: github.actor != 'dependabot[bot]'
-    needs: cert_manager_istio_csr_us_east4_a
+    needs: us_east4_a_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Datadog: us-east4-a"
@@ -503,7 +503,7 @@ jobs:
     name: "Datadog: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     if: github.actor != 'dependabot[bot]'
-    needs: cert_manager_istio_csr_us_east4_b
+    needs: us_east4_b_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Datadog: us-east4-b"
@@ -523,7 +523,7 @@ jobs:
     name: "Datadog: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     if: github.actor != 'dependabot[bot]'
-    needs: cert_manager_istio_csr_us_east4_c
+    needs: us_east4_c_onboarding
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Datadog: us-east4-c"

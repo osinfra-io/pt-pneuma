@@ -42,8 +42,9 @@ flowchart TD
     cert_manager --> cert_manager_istio_csr["cert-manager Istio CSR: zone"]
     cert_manager --> opa_gatekeeper["OPA Gatekeeper: zone"]
 
-    cert_manager_istio_csr --> datadog["Datadog: zone"]
     cert_manager_istio_csr --> istio["Istio: zone"]
+
+    onboarding --> datadog["Datadog: zone"]
 
     datadog --> datadog_manifests["Datadog Manifests: zone"]
     istio --> istio_manifests["Istio Manifests: zone"]
