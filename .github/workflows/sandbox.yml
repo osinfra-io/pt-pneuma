@@ -30,7 +30,6 @@ jobs:
       github_environment: "Sandbox: Main"
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=environments/sandbox.tfvars
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: main-sandbox
@@ -982,7 +981,6 @@ jobs:
       github_environment: "Sandbox OPA Gatekeeper: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east1-b-sandbox.tfvars
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-opa-gatekeeper-sandbox
@@ -1031,7 +1029,6 @@ jobs:
       github_environment: "Sandbox OPA Gatekeeper: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east1-c-sandbox.tfvars
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-opa-gatekeeper-sandbox
@@ -1080,7 +1077,6 @@ jobs:
       github_environment: "Sandbox OPA Gatekeeper: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east1-d-sandbox.tfvars
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-opa-gatekeeper-sandbox
@@ -1129,7 +1125,6 @@ jobs:
       github_environment: "Sandbox OPA Gatekeeper: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east4-a-sandbox.tfvars
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-opa-gatekeeper-sandbox
@@ -1178,7 +1173,6 @@ jobs:
       github_environment: "Sandbox OPA Gatekeeper: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east4-b-sandbox.tfvars
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-opa-gatekeeper-sandbox
@@ -1227,7 +1221,6 @@ jobs:
       github_environment: "Sandbox OPA Gatekeeper: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var-file=../environments/us-east4-c-sandbox.tfvars
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-opa-gatekeeper-sandbox
