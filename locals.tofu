@@ -28,7 +28,7 @@ locals {
   # Derives cluster name as {team_key}-{location} from the flat locations map in pt-logos
   gke_clusters = merge([
     for team_key, team in module.core_helpers.teams : {
-      for location, config in team.google_kubernetes_engine_clusters != null ? team.google_kubernetes_engine_clusters : {} :
+      for location, config in team.google_kubernetes_engine_clusters.locations :
       "${team_key}-${location}" => config
     }
   ]...)
