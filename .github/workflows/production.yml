@@ -943,7 +943,7 @@ jobs:
 
   opa_gatekeeper_us_east1_b:
     name: "OPA Gatekeeper: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: cert_manager_us_east1_b
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -959,7 +959,7 @@ jobs:
 
   opa_gatekeeper_templates_us_east1_b:
     name: "OPA Gatekeeper Templates: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_us_east1_b
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -974,7 +974,7 @@ jobs:
 
   opa_gatekeeper_constraints_us_east1_b:
     name: "OPA Gatekeeper Constraints: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_templates_us_east1_b
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -989,7 +989,7 @@ jobs:
 
   opa_gatekeeper_us_east1_c:
     name: "OPA Gatekeeper: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: cert_manager_us_east1_c
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1005,7 +1005,7 @@ jobs:
 
   opa_gatekeeper_templates_us_east1_c:
     name: "OPA Gatekeeper Templates: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_us_east1_c
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1020,7 +1020,7 @@ jobs:
 
   opa_gatekeeper_constraints_us_east1_c:
     name: "OPA Gatekeeper Constraints: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_templates_us_east1_c
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1035,7 +1035,7 @@ jobs:
 
   opa_gatekeeper_us_east1_d:
     name: "OPA Gatekeeper: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: cert_manager_us_east1_d
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1051,7 +1051,7 @@ jobs:
 
   opa_gatekeeper_templates_us_east1_d:
     name: "OPA Gatekeeper Templates: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_us_east1_d
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1066,7 +1066,7 @@ jobs:
 
   opa_gatekeeper_constraints_us_east1_d:
     name: "OPA Gatekeeper Constraints: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_templates_us_east1_d
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1081,7 +1081,7 @@ jobs:
 
   opa_gatekeeper_us_east4_a:
     name: "OPA Gatekeeper: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: cert_manager_us_east4_a
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1097,7 +1097,7 @@ jobs:
 
   opa_gatekeeper_templates_us_east4_a:
     name: "OPA Gatekeeper Templates: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_us_east4_a
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1112,7 +1112,7 @@ jobs:
 
   opa_gatekeeper_constraints_us_east4_a:
     name: "OPA Gatekeeper Constraints: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_templates_us_east4_a
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1127,7 +1127,7 @@ jobs:
 
   opa_gatekeeper_us_east4_b:
     name: "OPA Gatekeeper: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: cert_manager_us_east4_b
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1143,7 +1143,7 @@ jobs:
 
   opa_gatekeeper_templates_us_east4_b:
     name: "OPA Gatekeeper Templates: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_us_east4_b
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1158,7 +1158,7 @@ jobs:
 
   opa_gatekeeper_constraints_us_east4_b:
     name: "OPA Gatekeeper Constraints: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_templates_us_east4_b
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1173,7 +1173,7 @@ jobs:
 
   opa_gatekeeper_us_east4_c:
     name: "OPA Gatekeeper: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: cert_manager_us_east4_c
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1189,7 +1189,7 @@ jobs:
 
   opa_gatekeeper_templates_us_east4_c:
     name: "OPA Gatekeeper Templates: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_us_east4_c
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -1204,7 +1204,7 @@ jobs:
 
   opa_gatekeeper_constraints_us_east4_c:
     name: "OPA Gatekeeper Constraints: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3c6dd71a92e792a616e6565447fb7d063e5d290f # v0.3.2
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
     needs: opa_gatekeeper_templates_us_east4_c
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
