@@ -2,6 +2,16 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  # Active zones per environment — controls which GKE clusters are included in outputs
+  # Sandbox and non-production use 2 zones (1 per region) for multi-cluster testing
+  # Production uses all 6 zones (3 per region) for full HA
+
+  active_zones = {
+    non-production = toset(["us-east1-b", "us-east4-a"])
+    production     = toset(["us-east1-b", "us-east1-c", "us-east1-d", "us-east4-a", "us-east4-b", "us-east4-c"])
+    sandbox        = toset(["us-east1-b", "us-east4-a"])
+  }
+
   # The DNS subdomain for this team (e.g., "pneuma"), sourced from team config in pt-logos
   dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
 
@@ -24,12 +34,13 @@ locals {
     }
   } : {}
 
-  # GKE clusters aggregated from all teams
+  # GKE clusters aggregated from all teams, filtered by active zones for this environment
   # Derives cluster name as {team_key}-{location} from the flat locations map in pt-logos
   gke_clusters = merge([
     for team_key, team in module.core_helpers.teams : {
       for location, config in team.google_kubernetes_engine_clusters.locations :
       "${team_key}-${location}" => config
+      if contains(local.active_zones[module.core_helpers.environment], location)
     }
   ]...)
 }

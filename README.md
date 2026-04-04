@@ -29,7 +29,7 @@ Links to documentation and other resources required to develop and iterate in th
 
 ## 🔄 Deployment Dependency Graph
 
-Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel across all 6 zones. The diagram below shows the dependency chain for one zone — the same pattern repeats for each zone.
+Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). The diagram below shows the dependency chain for one zone — the same pattern repeats for each active zone in the environment.
 
 ```mermaid
 flowchart TD
