@@ -28,16 +28,14 @@ spec:
     - service:cert-manager-cainjector
     - service:cert-manager-istio-csr
     - service:cert-manager-webhook
-    - service:datadog-aap-extproc
     - service:datadog-agent
     - service:datadog-cluster-agent
     - service:datadog-operator
     - service:gatekeeper-audit
-    - service:gatekeeper-controller-manager
-    - service:gateway
-    - service:gke-mcs-importer
+    - service:gatekeeper-controller
+    - service:istio-control-plane
+    - service:istio-gateway
     - service:istio-test
-    - service:istiod
 datadog:
   codeLocations:
     - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
@@ -126,32 +124,6 @@ spec:
   lifecycle: production
   tier: one
   type: infrastructure
----
-apiVersion: v3
-kind: service
-metadata:
-  name: datadog-aap-extproc
-  description: >-
-    Datadog Application Security external processor that inspects Istio gateway
-    traffic for threats via Envoy external processing filter.
-  links:
-    - name: Datadog Application Security
-      type: doc
-      url: "https://docs.datadoghq.com/security/application_security/"
-  owner: pt-pneuma
-spec:
-  lifecycle: production
-  tier: one
-  type: infrastructure
-datadog:
-  performanceData:
-    tags:
-      - "service:istio-gateway"
-  codeLocations:
-    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
-      paths:
-        - regional/istio/main.tofu
-        - regional/istio/manifests/**
 ---
 apiVersion: v3
 kind: service
@@ -251,7 +223,7 @@ datadog:
 apiVersion: v3
 kind: service
 metadata:
-  name: gatekeeper-controller-manager
+  name: gatekeeper-controller
   description: >-
     OPA Gatekeeper admission controller that enforces policy constraints on
     Kubernetes resource creation and updates.
@@ -268,7 +240,7 @@ spec:
 apiVersion: v3
 kind: service
 metadata:
-  name: gateway
+  name: istio-gateway
   description: >-
     Istio ingress gateway that handles external traffic routing into the service
     mesh across multi-cluster deployments.
@@ -290,23 +262,6 @@ datadog:
     - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
       paths:
         - regional/istio/**
----
-apiVersion: v3
-kind: service
-metadata:
-  name: gke-mcs-importer
-  description: >-
-    GKE Multi-Cluster Services importer that synchronizes service endpoints
-    across GKE clusters for multi-cluster traffic routing.
-  links:
-    - name: GKE Multi-Cluster Services
-      type: doc
-      url: "https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-services"
-  owner: pt-pneuma
-spec:
-  lifecycle: production
-  tier: one
-  type: infrastructure
 ---
 apiVersion: v3
 kind: service
@@ -334,7 +289,7 @@ datadog:
 apiVersion: v3
 kind: service
 metadata:
-  name: istiod
+  name: istio-control-plane
   description: >-
     Istio control plane that manages service mesh configuration, certificate
     distribution, and proxy sidecar injection.
