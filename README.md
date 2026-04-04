@@ -33,23 +33,23 @@ Each workflow (sandbox, non-production, production) deploys a `main` workspace f
 
 ```mermaid
 flowchart TD
-    main["Main\n(GKE clusters, projects)"]
+    main["Main"]
 
-    main --> zone["Regional: zone\n(cluster config)"]
-    zone --> onboarding["Onboarding: zone\n(namespaces, RBAC)"]
-    onboarding --> cert_manager["cert-manager: zone"]
+    main --> zone["Regional"]
+    zone --> onboarding["Onboarding"]
+    onboarding --> cert_manager["cert-manager"]
 
-    cert_manager --> cert_manager_istio_csr["cert-manager Istio CSR: zone"]
-    cert_manager --> opa_gatekeeper["OPA Gatekeeper: zone"]
+    cert_manager --> cert_manager_istio_csr["cert-manager Istio CSR"]
+    cert_manager --> opa_gatekeeper["OPA Gatekeeper"]
 
-    cert_manager_istio_csr --> istio["Istio: zone"]
+    cert_manager_istio_csr --> istio["Istio"]
 
-    onboarding --> datadog["Datadog: zone"]
+    onboarding --> datadog["Datadog"]
 
-    datadog --> datadog_manifests["Datadog Manifests: zone"]
-    istio --> istio_manifests["Istio Manifests: zone"]
-    istio_manifests --> istio_test["Istio Test: zone"]
+    datadog --> datadog_manifests["Datadog Manifests"]
+    istio --> istio_manifests["Istio Manifests"]
+    istio_manifests --> istio_test["Istio Test"]
 
-    opa_gatekeeper --> opa_gatekeeper_templates["OPA Gatekeeper Templates: zone"]
-    opa_gatekeeper_templates --> opa_gatekeeper_constraints["OPA Gatekeeper Constraints: zone"]
+    opa_gatekeeper --> opa_gatekeeper_templates["OPA Gatekeeper Templates"]
+    opa_gatekeeper_templates --> opa_gatekeeper_constraints["OPA Gatekeeper Constraints"]
 ```
