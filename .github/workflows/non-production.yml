@@ -239,7 +239,7 @@ jobs:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east1-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_state_bucket: pt-pneuma-state-np
+      opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-manifests-non-production
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
@@ -255,7 +255,7 @@ jobs:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east4-a"
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_state_bucket: pt-pneuma-state-np
+      opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-manifests-non-production
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
@@ -271,7 +271,7 @@ jobs:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Test: us-east1-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_state_bucket: pt-pneuma-state-np
+      opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-test-non-production
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
@@ -291,7 +291,7 @@ jobs:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Test: us-east4-a"
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_state_bucket: pt-pneuma-state-np
+      opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-test-non-production
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
