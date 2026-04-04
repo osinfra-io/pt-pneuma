@@ -626,7 +626,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     name: "Istio Manifests: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: datadog_manifests_us_east1_b
+    needs: istio_us_east1_b
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east1-b"
@@ -642,7 +642,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     name: "Istio Manifests: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: datadog_manifests_us_east1_c
+    needs: istio_us_east1_c
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east1-c"
@@ -658,7 +658,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     name: "Istio Manifests: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: datadog_manifests_us_east1_d
+    needs: istio_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east1-d"
@@ -674,7 +674,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     name: "Istio Manifests: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: datadog_manifests_us_east4_a
+    needs: istio_us_east4_a
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east4-a"
@@ -690,7 +690,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     name: "Istio Manifests: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: datadog_manifests_us_east4_b
+    needs: istio_us_east4_b
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east4-b"
@@ -706,7 +706,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     name: "Istio Manifests: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: datadog_manifests_us_east4_c
+    needs: istio_us_east4_c
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east4-c"
@@ -841,7 +841,7 @@ jobs:
   istio_us_east1_b:
     name: "Istio: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: istio_test_us_east1_b
+    needs: cert_manager_istio_csr_us_east1_b
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio: us-east1-b"
@@ -856,7 +856,7 @@ jobs:
   istio_us_east1_c:
     name: "Istio: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: istio_test_us_east1_c
+    needs: cert_manager_istio_csr_us_east1_c
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio: us-east1-c"
@@ -871,7 +871,7 @@ jobs:
   istio_us_east1_d:
     name: "Istio: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: istio_test_us_east1_d
+    needs: cert_manager_istio_csr_us_east1_d
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio: us-east1-d"
@@ -886,7 +886,7 @@ jobs:
   istio_us_east4_a:
     name: "Istio: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: istio_test_us_east4_a
+    needs: cert_manager_istio_csr_us_east4_a
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio: us-east4-a"
@@ -901,7 +901,7 @@ jobs:
   istio_us_east4_b:
     name: "Istio: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: istio_test_us_east4_b
+    needs: cert_manager_istio_csr_us_east4_b
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio: us-east4-b"
@@ -916,7 +916,7 @@ jobs:
   istio_us_east4_c:
     name: "Istio: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@3f9adb2285dd7249063dbaa9cfcabd0c7966e3e2 # v0.3.3
-    needs: istio_test_us_east4_c
+    needs: cert_manager_istio_csr_us_east4_c
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio: us-east4-c"
