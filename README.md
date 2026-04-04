@@ -26,3 +26,38 @@ Links to documentation and other resources required to develop and iterate in th
 - [istio service mesh](https://istio.io/latest/docs/)
 - [kubernetes](https://kubernetes.io/docs/home/)
 - [opa gatekeeper](https://open-policy-agent.github.io/gatekeeper/website/docs/)
+
+## 🔄 Deployment Dependency Graph
+
+Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel across all 6 zones. The diagram below shows the dependency chain for one zone — the same pattern repeats for each zone.
+
+```mermaid
+flowchart TD
+    classDef gke fill:#4285F4,stroke:#4285F4,color:#fff
+    classDef certmanager fill:#0195D8,stroke:#0195D8,color:#fff
+    classDef istio fill:#466BB0,stroke:#466BB0,color:#fff
+    classDef datadog fill:#632CA6,stroke:#632CA6,color:#fff
+    classDef opa fill:#23263B,stroke:#23263B,color:#fff
+
+    main["Main"]:::gke
+    zone["Regional"]:::gke
+    onboarding["Onboarding"]:::gke
+
+    main --> zone
+    zone --> onboarding
+    onboarding --> cert_manager["cert-manager"]:::certmanager
+
+    cert_manager --> cert_manager_istio_csr["cert-manager Istio CSR"]:::certmanager
+    cert_manager --> opa_gatekeeper["OPA Gatekeeper"]:::opa
+
+    cert_manager_istio_csr --> istio["Istio"]:::istio
+
+    onboarding --> datadog["Datadog"]:::datadog
+
+    datadog --> datadog_manifests["Datadog Manifests"]:::datadog
+    istio --> istio_manifests["Istio Manifests"]:::istio
+    istio_manifests --> istio_test["Istio Test"]:::istio
+
+    opa_gatekeeper --> opa_gatekeeper_templates["OPA Gatekeeper Templates"]:::opa
+    opa_gatekeeper_templates --> opa_gatekeeper_constraints["OPA Gatekeeper Constraints"]:::opa
+```
