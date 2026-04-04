@@ -18,7 +18,7 @@ metadata:
       url: "https://github.com/osinfra-io/pt-pneuma"
   contacts:
     - type: email
-      contact: platform-kubernetes@osinfra.io
+      contact: pt-pneuma@osinfra.io
   owner: pt-pneuma
 spec:
   lifecycle: production
