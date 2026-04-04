@@ -32,7 +32,7 @@ spec:
     - service:datadog-cluster-agent
     - service:datadog-operator
     - service:gatekeeper-audit
-    - service:gatekeeper-controller
+    - service:gatekeeper-controller-manager
     - service:istio-control-plane
     - service:istio-gateway
     - service:istio-test
@@ -223,7 +223,7 @@ datadog:
 apiVersion: v3
 kind: service
 metadata:
-  name: gatekeeper-controller
+  name: gatekeeper-controller-manager
   description: >-
     OPA Gatekeeper admission controller that enforces policy constraints on
     Kubernetes resource creation and updates.
