@@ -1,0 +1,179 @@
+apiVersion: v3
+kind: system
+metadata:
+  name: pt-pneuma
+  displayName: Pneuma
+  description: >-
+    The breathing, dynamic layer of the platform where structure comes alive.
+    Animates Corpus projects into workload environments: GKE clusters across
+    multiple zones, cert-manager, Istio service mesh, Datadog cluster
+    monitoring, and OPA Gatekeeper policy enforcement.
+  tags:
+    - team:pt-pneuma
+    - team-type:platform-team
+  links:
+    - name: pt-pneuma
+      type: repo
+      provider: Github
+      url: "https://github.com/osinfra-io/pt-pneuma"
+  contacts:
+    - type: email
+      contact: platform-kubernetes@osinfra.io
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  components:
+    - service:cert-manager
+    - service:datadog-operator
+    - service:istio
+    - service:istio-gateway
+    - service:opa-gatekeeper
+datadog:
+  codeLocations:
+    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+      paths:
+        - "**"
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: cert-manager
+  description: >-
+    TLS certificate management for Kubernetes clusters, including Istio CSR
+    integration for automatic mTLS certificate provisioning within the service
+    mesh.
+  tags:
+    - team:pt-pneuma
+  links:
+    - name: cert-manager documentation
+      type: doc
+      url: "https://cert-manager.io/docs/"
+    - name: pt-arche-kubernetes-cert-manager
+      type: repo
+      provider: Github
+      url: "https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager"
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: infrastructure
+datadog:
+  codeLocations:
+    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+      paths:
+        - regional/cert-manager/**
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: datadog-operator
+  description: >-
+    Kubernetes cluster monitoring via Datadog Operator, providing observability
+    into the runtime so the platform can perceive and regulate itself at the
+    application layer.
+  tags:
+    - team:pt-pneuma
+  links:
+    - name: Datadog Kubernetes monitoring
+      type: doc
+      url: "https://docs.datadoghq.com/containers/kubernetes/"
+    - name: pt-arche-kubernetes-datadog-operator
+      type: repo
+      provider: Github
+      url: "https://github.com/osinfra-io/pt-arche-kubernetes-datadog-operator"
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: infrastructure
+datadog:
+  codeLocations:
+    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+      paths:
+        - regional/datadog/**
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: istio
+  description: >-
+    Istio service mesh providing traffic management, security, and observability
+    for all workloads running on the platform GKE clusters.
+  tags:
+    - team:pt-pneuma
+  links:
+    - name: Istio documentation
+      type: doc
+      url: "https://istio.io/latest/docs/"
+    - name: pt-arche-kubernetes-istio
+      type: repo
+      provider: Github
+      url: "https://github.com/osinfra-io/pt-arche-kubernetes-istio"
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: infrastructure
+datadog:
+  codeLocations:
+    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+      paths:
+        - regional/istio/**
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: istio-gateway
+  description: >-
+    Istio ingress gateway handling external traffic routing into the service
+    mesh, with Datadog Application Security monitoring via external processing
+    filter.
+  tags:
+    - team:pt-pneuma
+  links:
+    - name: Istio gateway documentation
+      type: doc
+      url: "https://istio.io/latest/docs/tasks/traffic-management/ingress/"
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: web
+datadog:
+  performanceData:
+    tags:
+      - "service:istio-gateway"
+  codeLocations:
+    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+      paths:
+        - regional/istio/main.tofu
+        - regional/istio/manifests/**
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: opa-gatekeeper
+  description: >-
+    OPA Gatekeeper policy enforcement for Kubernetes clusters, ensuring
+    compliance and security across all workloads on the platform.
+  tags:
+    - team:pt-pneuma
+  links:
+    - name: OPA Gatekeeper documentation
+      type: doc
+      url: "https://open-policy-agent.github.io/gatekeeper/website/docs/"
+    - name: pt-arche-kubernetes-opa-gatekeeper
+      type: repo
+      provider: Github
+      url: "https://github.com/osinfra-io/pt-arche-kubernetes-opa-gatekeeper"
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: infrastructure
+datadog:
+  codeLocations:
+    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+      paths:
+        - regional/opa-gatekeeper/**
