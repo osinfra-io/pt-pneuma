@@ -32,7 +32,7 @@ Links to documentation and other resources required to develop and iterate in th
 Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain.
 
 ```mermaid
-flowchart TD
+flowchart LR
     classDef gke fill:#4285F4,stroke:#4285F4,color:#fff
     classDef certmanager fill:#0195D8,stroke:#0195D8,color:#fff
     classDef istio fill:#466BB0,stroke:#466BB0,color:#fff
