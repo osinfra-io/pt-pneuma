@@ -29,7 +29,7 @@ Links to documentation and other resources required to develop and iterate in th
 
 ## 🔄 Deployment Dependency Graph
 
-Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). The diagram below shows the dependency chain for one zone — the same pattern repeats for each active zone in the environment.
+Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain.
 
 ```mermaid
 flowchart TD
@@ -40,24 +40,56 @@ flowchart TD
     classDef opa fill:#23263B,stroke:#23263B,color:#fff
 
     main["Main"]:::gke
-    zone["Regional"]:::gke
-    onboarding["Onboarding"]:::gke
 
-    main --> zone
-    zone --> onboarding
-    onboarding --> cert_manager["cert-manager"]:::certmanager
+    z1_regional["Regional: us-east1-b"]:::gke
+    z1_onboarding["Onboarding"]:::gke
+    z1_cert_manager["cert-manager"]:::certmanager
+    z1_cert_manager_istio_csr["cert-manager Istio CSR"]:::certmanager
+    z1_istio["Istio"]:::istio
+    z1_istio_manifests["Istio Manifests"]:::istio
+    z1_istio_test["Istio Test"]:::istio
+    z1_datadog["Datadog"]:::datadog
+    z1_datadog_manifests["Datadog Manifests"]:::datadog
+    z1_opa_gatekeeper["OPA Gatekeeper"]:::opa
+    z1_opa_templates["OPA Gatekeeper Templates"]:::opa
+    z1_opa_constraints["OPA Gatekeeper Constraints"]:::opa
 
-    cert_manager --> cert_manager_istio_csr["cert-manager Istio CSR"]:::certmanager
-    cert_manager --> opa_gatekeeper["OPA Gatekeeper"]:::opa
+    main --> z1_regional
+    z1_regional --> z1_onboarding
+    z1_onboarding --> z1_cert_manager
+    z1_onboarding --> z1_datadog
+    z1_cert_manager --> z1_cert_manager_istio_csr
+    z1_cert_manager --> z1_opa_gatekeeper
+    z1_cert_manager_istio_csr --> z1_istio
+    z1_istio --> z1_istio_manifests
+    z1_istio_manifests --> z1_istio_test
+    z1_datadog --> z1_datadog_manifests
+    z1_opa_gatekeeper --> z1_opa_templates
+    z1_opa_templates --> z1_opa_constraints
 
-    cert_manager_istio_csr --> istio["Istio"]:::istio
+    z2_regional["Regional: us-east4-a"]:::gke
+    z2_onboarding["Onboarding"]:::gke
+    z2_cert_manager["cert-manager"]:::certmanager
+    z2_cert_manager_istio_csr["cert-manager Istio CSR"]:::certmanager
+    z2_istio["Istio"]:::istio
+    z2_istio_manifests["Istio Manifests"]:::istio
+    z2_istio_test["Istio Test"]:::istio
+    z2_datadog["Datadog"]:::datadog
+    z2_datadog_manifests["Datadog Manifests"]:::datadog
+    z2_opa_gatekeeper["OPA Gatekeeper"]:::opa
+    z2_opa_templates["OPA Gatekeeper Templates"]:::opa
+    z2_opa_constraints["OPA Gatekeeper Constraints"]:::opa
 
-    onboarding --> datadog["Datadog"]:::datadog
-
-    datadog --> datadog_manifests["Datadog Manifests"]:::datadog
-    istio --> istio_manifests["Istio Manifests"]:::istio
-    istio_manifests --> istio_test["Istio Test"]:::istio
-
-    opa_gatekeeper --> opa_gatekeeper_templates["OPA Gatekeeper Templates"]:::opa
-    opa_gatekeeper_templates --> opa_gatekeeper_constraints["OPA Gatekeeper Constraints"]:::opa
+    main --> z2_regional
+    z2_regional --> z2_onboarding
+    z2_onboarding --> z2_cert_manager
+    z2_onboarding --> z2_datadog
+    z2_cert_manager --> z2_cert_manager_istio_csr
+    z2_cert_manager --> z2_opa_gatekeeper
+    z2_cert_manager_istio_csr --> z2_istio
+    z2_istio --> z2_istio_manifests
+    z2_istio_manifests --> z2_istio_test
+    z2_datadog --> z2_datadog_manifests
+    z2_opa_gatekeeper --> z2_opa_templates
+    z2_opa_templates --> z2_opa_constraints
 ```
