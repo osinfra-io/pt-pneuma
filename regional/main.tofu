@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine_regional" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=add-private-endpoint-subnetwork"
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=6c8f1c3ef31139e9ffe7264001801b0321d7561d" # v0.3.7
 
   for_each = local.gke_clusters
 
