@@ -9,6 +9,7 @@ module "core_helpers" {
 
   logos_workspaces = [
     "pt-kryptos-main-production",
+    "pt-logos-main-production",
     "pt-pneuma-main-production",
   ]
 
