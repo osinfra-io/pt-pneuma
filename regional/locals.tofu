@@ -15,10 +15,11 @@ locals {
 
   # GKE Hub memberships - for fleet host cluster, build memberships for all other clusters
   # Cluster IDs follow format: projects/{project}/locations/{location}/clusters/{cluster-name}
+  # Extracts region from cluster name suffix (e.g. "us-east1" from "pt-kryptos-us-east1-b")
   gke_hub_memberships = {
     for cluster_name, cluster_config in local.main.gke_clusters :
     cluster_name => {
-      cluster_id = "projects/${local.main.project_id}/locations/${regex("^${module.core_helpers.team}-(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]}/clusters/${cluster_name}"
+      cluster_id = "projects/${cluster_config.project_id}/locations/${regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]}/clusters/${cluster_name}"
     }
     if cluster_name != local.subnet && try(local.main.gke_clusters[local.subnet].enable_gke_hub_host, false)
   }

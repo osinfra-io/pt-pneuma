@@ -36,11 +36,21 @@ locals {
 
   # GKE clusters aggregated from all teams, filtered by active zones for this environment
   # Derives cluster name as {team_key}-{location} from the flat locations map in pt-logos
+  # Merges project_id for each team so regional workspaces can construct correct cluster resource IDs
   gke_clusters = merge([
     for team_key, team in module.core_helpers.teams : {
       for location, config in team.google_kubernetes_engine_clusters.locations :
-      "${team_key}-${location}" => config
+      "${team_key}-${location}" => merge(config, {
+        project_id = try(data.google_projects.team_kubernetes[team_key].projects[0].project_id, null)
+      })
       if contains(local.active_zones[module.core_helpers.environment], location)
     }
   ]...)
+
+  # Teams with kubernetes clusters configured — used as the for_each key for team_kubernetes data source
+  teams_with_clusters = {
+    for team_key, team in module.core_helpers.teams :
+    team_key => team
+    if try(length(team.google_kubernetes_engine_clusters.locations), 0) > 0
+  }
 }
