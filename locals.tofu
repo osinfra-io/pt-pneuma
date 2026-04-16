@@ -42,6 +42,7 @@ locals {
       for location, config in team.google_kubernetes_engine_clusters.locations :
       "${team_key}-${location}" => merge(config, {
         project_id = length(data.google_projects.team_kubernetes[team_key].projects) > 0 ? data.google_projects.team_kubernetes[team_key].projects[0].project_id : error("No kubernetes project found for team '${team_key}'; ensure pt-corpus has provisioned the kubernetes project with labels.repository=pt-corpus and labels.team=${team_key}")
+        team_key   = team_key
       })
       if contains(local.active_zones[module.core_helpers.environment], location)
     }
