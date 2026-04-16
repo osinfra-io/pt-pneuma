@@ -27,7 +27,7 @@ data "google_projects" "kubernetes" {
   # Use supported fields: parent.id, labels, lifecycleState
   # Matches Kubernetes projects using labels.team to identify the owning team's k8s project
   # Strip 'folders/' prefix from folder ID since API expects just the numeric ID
-  filter = "parent.id:${replace(module.core_helpers.environment_folder_id, "folders/", "")} labels.repository:pt-corpus labels.team:${module.core_helpers.team} lifecycleState:ACTIVE"
+  filter = "parent.id:${replace(module.core_helpers.environment_folder_id, "folders/", "")} labels.repository:pt-corpus labels.team:${module.core_helpers.team} labels.project_type:kubernetes lifecycleState:ACTIVE"
 }
 
 data "google_projects" "shared_vpc_host" {
@@ -43,5 +43,5 @@ data "google_projects" "team_kubernetes" {
   # Use supported fields: parent.id, labels, lifecycleState
   # Matches each team's Kubernetes project using labels.team scoped to that team's environment folder
   # Strip 'folders/' prefix from folder ID since API expects just the numeric ID
-  filter = "parent.id:${replace(module.core_helpers.teams[each.key].environments[local.environment_key], "folders/", "")} labels.repository:pt-corpus labels.team:${each.key} lifecycleState:ACTIVE"
+  filter = "parent.id:${replace(module.core_helpers.teams[each.key].environments[local.environment_key], "folders/", "")} labels.repository:pt-corpus labels.team:${each.key} labels.project_type:kubernetes lifecycleState:ACTIVE"
 }
