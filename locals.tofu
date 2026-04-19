@@ -41,14 +41,14 @@ locals {
     for team_key, team in local.teams_with_clusters : {
       for location, config in team.google_kubernetes_engine_clusters.locations :
       "${team_key}-${location}" => merge(config, {
-        project_id = length(data.google_projects.team_kubernetes[team_key].projects) > 0 ? data.google_projects.team_kubernetes[team_key].projects[0].project_id : error("No kubernetes project found for team '${team_key}'; ensure pt-corpus has provisioned the kubernetes project with labels.repository=pt-corpus and labels.team=${team_key}")
+        project_id = length(data.google_projects.team_platform_managed[team_key].projects) > 0 ? data.google_projects.team_platform_managed[team_key].projects[0].project_id : error("No platform-managed project found for team '${team_key}'; ensure pt-corpus has provisioned the platform-managed project with labels.repository=pt-corpus and labels.team=${team_key}")
         team_key   = team_key
       })
       if contains(local.active_zones[module.core_helpers.environment], location)
     }
   ]...)
 
-  # Teams with kubernetes clusters configured — used as the for_each key for team_kubernetes data source
+  # Teams with kubernetes clusters configured — used as the for_each key for team_platform_managed data source
   teams_with_clusters = {
     for team_key, team in module.core_helpers.teams :
     team_key => team

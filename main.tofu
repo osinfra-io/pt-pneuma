@@ -6,7 +6,7 @@ module "google_kubernetes_engine" {
 
   labels     = module.core_helpers.labels
   namespaces = var.kubernetes_engine_namespaces
-  project    = data.google_project.kubernetes.project_id
+  project    = data.google_project.platform_managed.project_id
 }
 
 # Kubernetes cert-manager Module (osinfra.io)
@@ -24,5 +24,5 @@ module "kubernetes_istio" {
 
   gateway_dns = local.gateway_dns
   labels      = module.core_helpers.labels
-  project     = data.google_project.kubernetes.project_id
+  project     = data.google_project.platform_managed.project_id
 }
