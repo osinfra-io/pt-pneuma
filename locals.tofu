@@ -39,7 +39,7 @@ locals {
   # Merges project_id for each team so regional workspaces can construct correct cluster resource IDs
   gke_clusters = merge([
     for team_key, team in local.teams_with_clusters : {
-      for location, config in team.google_kubernetes_engine_clusters.locations :
+      for location, config in team.platform_managed_project.kubernetes_engine_locations :
       "${team_key}-${location}" => merge(config, {
         project_id = length(data.google_projects.team_platform_managed[team_key].projects) > 0 ? data.google_projects.team_platform_managed[team_key].projects[0].project_id : error("No platform-managed project found for team '${team_key}'; ensure pt-corpus has provisioned the platform-managed project with labels.repository=pt-corpus and labels.team=${team_key}")
         team_key   = team_key
@@ -52,6 +52,6 @@ locals {
   teams_with_clusters = {
     for team_key, team in module.core_helpers.teams :
     team_key => team
-    if try(length(team.google_kubernetes_engine_clusters.locations), 0) > 0
+    if length(team.platform_managed_project.kubernetes_engine_locations) > 0
   }
 }
