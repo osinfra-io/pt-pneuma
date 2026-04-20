@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-datadog-operator
 
 module "kubernetes_datadog_operator" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-datadog-operator//regional?ref=77145fbc92a5eb75a5a6fa90939730730fd85d18" # v0.3.5
+  source = "github.com/osinfra-io/pt-arche-kubernetes-datadog-operator//regional?ref=3cffd6e30ba9bf2d7ae465716fc49a517d008ab5" # v0.3.6
 
   lifecycle {
     enabled = local.enable_datadog

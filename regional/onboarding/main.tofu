@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine_onboarding" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=fdb89acac1442f89dc69557f218dbc430ea1001a" # v0.3.6
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=65ee1ae0252e334732245a92eaa610e1a507d9f5" # v0.3.8
 
   namespaces                               = var.kubernetes_engine_namespaces
   project                                  = data.terraform_remote_state.main.outputs.project_id

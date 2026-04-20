@@ -33,13 +33,13 @@ output "kubernetes_istio_gateway_mci_global_address" {
 }
 
 output "project_id" {
-  description = "The Kubernetes project ID"
-  value       = data.google_project.kubernetes.project_id
+  description = "The platform-managed project ID"
+  value       = data.google_project.platform_managed.project_id
 }
 
 output "project_number" {
-  description = "The Kubernetes project number"
-  value       = data.google_project.kubernetes.number
+  description = "The platform-managed project number"
+  value       = data.google_project.platform_managed.number
 }
 
 output "shared_vpc_host_project_id" {
