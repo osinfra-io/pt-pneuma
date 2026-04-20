@@ -3,10 +3,6 @@
 # Reference the single platform-managed project from the filtered results
 
 data "google_project" "platform_managed" {
-  lifecycle {
-    enabled = length(data.google_projects.platform_managed.projects) > 0
-  }
-
   project_id = data.google_projects.platform_managed.projects[0].project_id
 }
 
