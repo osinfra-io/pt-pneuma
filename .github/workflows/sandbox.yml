@@ -23,7 +23,7 @@ permissions:
 jobs:
   main:
     name: "Main"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     with:
       checkout_ref: ${{ github.ref }}
@@ -37,7 +37,7 @@ jobs:
 
   us_east1_b:
     name: "Regional: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: main
     with:
@@ -53,7 +53,7 @@ jobs:
 
   us_east4_a:
     name: "Regional: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: main
     with:
@@ -69,7 +69,7 @@ jobs:
 
   us_east1_b_onboarding:
     name: "Onboarding: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: us_east1_b
     with:
@@ -85,7 +85,7 @@ jobs:
 
   us_east4_a_onboarding:
     name: "Onboarding: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: us_east4_a
     with:
@@ -101,7 +101,7 @@ jobs:
 
   cert_manager_us_east1_b:
     name: "cert-manager: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: us_east1_b_onboarding
     with:
@@ -117,7 +117,7 @@ jobs:
 
   cert_manager_us_east4_a:
     name: "cert-manager: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: us_east4_a_onboarding
     with:
@@ -133,7 +133,7 @@ jobs:
 
   cert_manager_istio_csr_us_east1_b:
     name: "cert-manager Istio CSR: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: cert_manager_us_east1_b
     with:
@@ -149,7 +149,7 @@ jobs:
 
   cert_manager_istio_csr_us_east4_a:
     name: "cert-manager Istio CSR: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: cert_manager_us_east4_a
     with:
@@ -165,7 +165,7 @@ jobs:
 
   datadog_us_east1_b:
     name: "Datadog: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: us_east1_b_onboarding
     with:
@@ -185,7 +185,7 @@ jobs:
 
   datadog_us_east4_a:
     name: "Datadog: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: us_east4_a_onboarding
     with:
@@ -205,7 +205,7 @@ jobs:
 
   datadog_manifests_us_east1_b:
     name: "Datadog Manifests: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: datadog_us_east1_b
     with:
@@ -225,7 +225,7 @@ jobs:
 
   datadog_manifests_us_east4_a:
     name: "Datadog Manifests: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: datadog_us_east4_a
     with:
@@ -245,7 +245,7 @@ jobs:
 
   istio_manifests_us_east1_b:
     name: "Istio Manifests: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: istio_us_east1_b
     with:
@@ -261,7 +261,7 @@ jobs:
 
   istio_manifests_us_east4_a:
     name: "Istio Manifests: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: istio_us_east4_a
     with:
@@ -277,7 +277,7 @@ jobs:
 
   istio_test_us_east1_b:
     name: "Istio Test: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: istio_manifests_us_east1_b
     with:
@@ -297,7 +297,7 @@ jobs:
 
   istio_test_us_east4_a:
     name: "Istio Test: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: istio_manifests_us_east4_a
     with:
@@ -317,7 +317,7 @@ jobs:
 
   istio_us_east1_b:
     name: "Istio: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: cert_manager_istio_csr_us_east1_b
     with:
@@ -333,7 +333,7 @@ jobs:
 
   istio_us_east4_a:
     name: "Istio: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: cert_manager_istio_csr_us_east4_a
     with:
@@ -349,7 +349,7 @@ jobs:
 
   opa_gatekeeper_us_east1_b:
     name: "OPA Gatekeeper: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: cert_manager_us_east1_b
     with:
@@ -365,7 +365,7 @@ jobs:
 
   opa_gatekeeper_templates_us_east1_b:
     name: "OPA Gatekeeper Templates: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: opa_gatekeeper_us_east1_b
     with:
@@ -381,7 +381,7 @@ jobs:
 
   opa_gatekeeper_constraints_us_east1_b:
     name: "OPA Gatekeeper Constraints: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: opa_gatekeeper_templates_us_east1_b
     with:
@@ -397,7 +397,7 @@ jobs:
 
   opa_gatekeeper_us_east4_a:
     name: "OPA Gatekeeper: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: cert_manager_us_east4_a
     with:
@@ -413,7 +413,7 @@ jobs:
 
   opa_gatekeeper_templates_us_east4_a:
     name: "OPA Gatekeeper Templates: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: opa_gatekeeper_us_east4_a
     with:
@@ -429,7 +429,7 @@ jobs:
 
   opa_gatekeeper_constraints_us_east4_a:
     name: "OPA Gatekeeper Constraints: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@d51fc205b914b7dde9cf54fab2d7e0059ddfa8c0 # v0.3.6
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@8af74f7c3eee27cc3751fd92d2b22db45d6b40d5 # v0.3.7
     if: github.actor != 'dependabot[bot]'
     needs: opa_gatekeeper_templates_us_east4_a
     with:
