@@ -13,7 +13,7 @@ permissions:
 jobs:
   # datadog_manifests_us_east1_b:
   #   name: "Datadog Manifests: us-east1-b"
-  #   uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@0b73cfd4d115a6317ebf642425f5e6773a337d60 # v0.4.0
+  #   uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35773c9889c3192ada62856f811225fb5410565a # v0.4.1
   #   with:
   #     checkout_ref: ${{ github.ref }}
   #     github_environment: "Sandbox Datadog Manifests: us-east1-b"
@@ -32,7 +32,7 @@ jobs:
 
   # datadog_manifests_us_east4_a:
   #   name: "Datadog Manifests: us-east4-a"
-  #   uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@0b73cfd4d115a6317ebf642425f5e6773a337d60 # v0.4.0
+  #   uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35773c9889c3192ada62856f811225fb5410565a # v0.4.1
   #   with:
   #     checkout_ref: ${{ github.ref }}
   #     github_environment: "Sandbox Datadog Manifests: us-east4-a"
@@ -51,7 +51,7 @@ jobs:
 
   us_east1_b_onboarding:
     name: "Onboarding: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@0b73cfd4d115a6317ebf642425f5e6773a337d60 # v0.4.0
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35773c9889c3192ada62856f811225fb5410565a # v0.4.1
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Onboarding: us-east1-b"
@@ -66,7 +66,7 @@ jobs:
 
   us_east4_a_onboarding:
     name: "Onboarding: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@0b73cfd4d115a6317ebf642425f5e6773a337d60 # v0.4.0
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35773c9889c3192ada62856f811225fb5410565a # v0.4.1
 
     with:
       checkout_ref: ${{ github.ref }}
@@ -82,7 +82,7 @@ jobs:
 
   us_east1_b:
     name: "Regional: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@0b73cfd4d115a6317ebf642425f5e6773a337d60 # v0.4.0
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35773c9889c3192ada62856f811225fb5410565a # v0.4.1
     needs: us_east1_b_onboarding
     with:
       checkout_ref: ${{ github.ref }}
@@ -98,7 +98,7 @@ jobs:
 
   us_east4_a:
     name: "Regional: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@0b73cfd4d115a6317ebf642425f5e6773a337d60 # v0.4.0
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35773c9889c3192ada62856f811225fb5410565a # v0.4.1
     needs: us_east4_a_onboarding
     with:
       checkout_ref: ${{ github.ref }}
