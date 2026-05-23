@@ -8,6 +8,7 @@ module "core_helpers" {
   data_classification = "public"
 
   logos_workspaces = [
+    "et-delete-main-production",
     "pt-corpus-main-production",
     "pt-kryptos-main-production",
     "pt-logos-main-production",
