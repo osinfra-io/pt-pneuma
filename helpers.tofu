@@ -12,6 +12,7 @@ module "core_helpers" {
     "pt-kryptos-main-production",
     "pt-logos-main-production",
     "pt-pneuma-main-production",
+    "st-ai-agents-main-production",
   ]
 
   repository = "pt-pneuma"
