@@ -1,12 +1,6 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
-variable "kubernetes_engine_namespaces" {
-  default     = {}
-  description = "Map of namespaces and service accounts to onboard to GKE"
-  type        = map(any)
-}
-
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

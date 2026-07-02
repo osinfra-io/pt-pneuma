@@ -2,6 +2,14 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  # GKE namespaces for this team, derived from Logos team data.
+  # Namespaces are scoped to the current team's own clusters — each team's
+  # onboarding workspace creates only that team's declared namespaces.
+  gke_namespaces = try(
+    module.core_helpers.teams[module.core_helpers.team].platform_managed_project.kubernetes_engine_namespaces,
+    {}
+  )
+
   # Active zones per environment — controls which GKE clusters are included in outputs
   # Sandbox and non-production use 2 zones (1 per region) for multi-cluster testing
   # Production uses all 6 zones (3 per region) for full HA
