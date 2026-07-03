@@ -70,6 +70,10 @@ resource "kubernetes_deployment_v1" "istio_test" {
   # Image should use digest
   # checkov:skip=CKV_K8S_43: We are using the image tag for the deployment
 
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
   metadata {
     labels = {
       "tags.datadoghq.com/env"     = module.core_helpers.environment
@@ -209,6 +213,10 @@ resource "kubernetes_deployment_v1" "istio_test" {
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
 
 resource "kubernetes_manifest" "istio_test" {
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
   manifest = {
     apiVersion = "security.istio.io/v1"
     kind       = "AuthorizationPolicy"
@@ -263,6 +271,10 @@ resource "kubernetes_manifest" "istio_test" {
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/service_v1
 
 resource "kubernetes_service_v1" "istio_test" {
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
   metadata {
     name      = "istio-test"
     namespace = "istio-test"
@@ -284,8 +296,12 @@ resource "kubernetes_service_v1" "istio_test" {
 }
 
 resource "kubernetes_service_v1" "istio_test_regional" {
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
   metadata {
-    name      = "istio-test-${module.core_helpers.region}-${module.core_helpers.zone}"
+    name      = "istio-test-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
     namespace = "istio-test"
   }
 
