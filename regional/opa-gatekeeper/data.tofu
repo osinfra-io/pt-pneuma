@@ -5,11 +5,15 @@ data "google_client_config" "this" {}
 
 # Google Container Cluster Data Source
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/container_cluster
+# Looks up every cluster so the Kubernetes and Helm provider for_each remain a superset of the
+# module for_each (required for safe removal of a cluster in a future apply)
 
 data "google_container_cluster" "this" {
-  location = module.core_helpers.region
-  name     = local.cluster_name
-  project  = data.terraform_remote_state.main.outputs.project_id
+  for_each = var.clusters
+
+  location = local.regions[each.key]
+  name     = each.key
+  project  = each.value.project_id
 }
 
 # Terraform Remote State Data Source - Main
