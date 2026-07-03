@@ -18,6 +18,4 @@ locals {
 
   # This deployment zone, parsed from the workspace name. Static context safe.
   zone = try(regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0], "")
-
-  main = data.terraform_remote_state.main.outputs
 }
