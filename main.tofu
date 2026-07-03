@@ -6,9 +6,10 @@ module "google_kubernetes_engine" {
 
   for_each = local.teams_with_clusters
 
-  labels     = module.core_helpers.labels
-  namespaces = local.gke_namespaces_by_team[each.key]
-  project    = local.team_project_ids[each.key]
+  gke_fleet_host_project_id = each.key == "pt-pneuma" ? "" : local.team_project_ids["pt-pneuma"]
+  labels                    = module.core_helpers.labels
+  namespaces                = local.gke_namespaces_by_team[each.key]
+  project                   = local.team_project_ids[each.key]
 }
 
 # Kubernetes cert-manager Module (osinfra.io)
