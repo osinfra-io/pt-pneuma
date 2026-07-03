@@ -17,7 +17,7 @@ module "kubernetes_istio" {
   enable_istio_gateway       = each.value.team_key == module.core_helpers.team
   gateway_cpu_limits         = var.kubernetes_istio_gateway_cpu_limits
   gateway_cpu_requests       = var.kubernetes_istio_gateway_cpu_requests
-  gateway_dns                = local.gateway_dns[each.key]
+  gateway_dns                = each.value.team_key == module.core_helpers.team ? local.gateway_dns[each.key] : {}
   gateway_mci_global_address = try(local.main.kubernetes_istio_gateway_mci_global_address[each.value.team_key], null)
   gateway_memory_limits      = var.kubernetes_istio_gateway_memory_limits
   gateway_memory_requests    = var.kubernetes_istio_gateway_memory_requests
