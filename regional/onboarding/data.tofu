@@ -16,17 +16,6 @@ data "google_container_cluster" "this" {
   project  = each.value.project_id
 }
 
-# Google Service Account Data Source
-# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/service_account
-# Each team's GitHub Actions service account, created in pt-corpus, bound as namespace-admin
-
-data "google_service_account" "github" {
-  for_each = local.teams_in_zone
-
-  account_id = "${each.value}-github"
-  project    = local.main.shared_vpc_host_project_id
-}
-
 # Terraform Remote State Data Source - Main
 # https://opentofu.org/docs/language/state/remote-state-data
 
