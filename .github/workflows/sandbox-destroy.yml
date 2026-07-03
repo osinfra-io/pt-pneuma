@@ -51,7 +51,7 @@ jobs:
 
   main:
     name: "Main"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@1e40e763bbc2f555735048079020b97232498316 # unreleased (techne #243; repin to tag after merge)
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@40b5b4670d88a7a01f7c8af1cdb8c0d0eb16ed9b # v0.5.0
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox: Main"
