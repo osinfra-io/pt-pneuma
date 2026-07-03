@@ -13,6 +13,14 @@ locals {
     }
   }
 
+  # GKE clusters in this zone that have the Istio gateway enabled (platform team only).
+  # Used for resources that are gateway-specific (e.g. Datadog AAP extproc).
+  gateway_clusters = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => cluster_config
+    if cluster_config.team_key == module.core_helpers.team
+  }
+
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
   gke_clusters = {

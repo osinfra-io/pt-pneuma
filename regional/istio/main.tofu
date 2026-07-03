@@ -46,7 +46,7 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
     module.kubernetes_istio
   ]
 
-  for_each = local.gke_clusters
+  for_each = local.gateway_clusters
 
   provider = kubernetes.by_cluster[each.key]
 
@@ -198,7 +198,7 @@ resource "kubernetes_service_v1" "datadog_aap_extproc" {
     module.kubernetes_istio
   ]
 
-  for_each = local.gke_clusters
+  for_each = local.gateway_clusters
 
   provider = kubernetes.by_cluster[each.key]
 
