@@ -26,7 +26,7 @@ permissions:
 jobs:
   main:
     name: "Main"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event.workflow_run.conclusion == 'success' &&
@@ -39,11 +39,12 @@ jobs:
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: main-production
+      passthrough_output: clusters
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   us_east1_b:
     name: "Regional: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     needs: main
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -58,7 +59,7 @@ jobs:
 
   us_east1_c:
     name: "Regional: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     needs: main
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -73,7 +74,7 @@ jobs:
 
   us_east1_d:
     name: "Regional: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     needs: main
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -88,7 +89,7 @@ jobs:
 
   us_east4_a:
     name: "Regional: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     needs: main
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -103,7 +104,7 @@ jobs:
 
   us_east4_b:
     name: "Regional: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     needs: main
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -118,7 +119,7 @@ jobs:
 
   us_east4_c:
     name: "Regional: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     needs: main
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -133,14 +134,14 @@ jobs:
 
   us_east1_b_onboarding:
     name: "Onboarding: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east1_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-onboarding-production
       working_directory: regional/onboarding
@@ -148,14 +149,14 @@ jobs:
 
   us_east1_c_onboarding:
     name: "Onboarding: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east1_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-onboarding-production
       working_directory: regional/onboarding
@@ -163,14 +164,14 @@ jobs:
 
   us_east1_d_onboarding:
     name: "Onboarding: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east1_d
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-onboarding-production
       working_directory: regional/onboarding
@@ -178,14 +179,14 @@ jobs:
 
   us_east4_a_onboarding:
     name: "Onboarding: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east4_a
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-onboarding-production
       working_directory: regional/onboarding
@@ -193,14 +194,14 @@ jobs:
 
   us_east4_b_onboarding:
     name: "Onboarding: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east4_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-onboarding-production
       working_directory: regional/onboarding
@@ -208,14 +209,14 @@ jobs:
 
   us_east4_c_onboarding:
     name: "Onboarding: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east4_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-onboarding-production
       working_directory: regional/onboarding
@@ -223,14 +224,14 @@ jobs:
 
   cert_manager_us_east1_b:
     name: "cert-manager: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east1_b_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-cert-manager-production
       working_directory: regional/cert-manager
@@ -238,14 +239,14 @@ jobs:
 
   cert_manager_us_east1_c:
     name: "cert-manager: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east1_c_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-cert-manager-production
       working_directory: regional/cert-manager
@@ -253,14 +254,14 @@ jobs:
 
   cert_manager_us_east1_d:
     name: "cert-manager: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east1_d_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-cert-manager-production
       working_directory: regional/cert-manager
@@ -268,14 +269,14 @@ jobs:
 
   cert_manager_us_east4_a:
     name: "cert-manager: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east4_a_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-cert-manager-production
       working_directory: regional/cert-manager
@@ -283,14 +284,14 @@ jobs:
 
   cert_manager_us_east4_b:
     name: "cert-manager: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east4_b_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-cert-manager-production
       working_directory: regional/cert-manager
@@ -298,14 +299,14 @@ jobs:
 
   cert_manager_us_east4_c:
     name: "cert-manager: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east4_c_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-cert-manager-production
       working_directory: regional/cert-manager
@@ -313,14 +314,14 @@ jobs:
 
   cert_manager_istio_csr_us_east1_b:
     name: "cert-manager Istio CSR: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east1_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-cert-manager-istio-csr-production
       working_directory: regional/cert-manager/istio-csr
@@ -328,14 +329,14 @@ jobs:
 
   cert_manager_istio_csr_us_east1_c:
     name: "cert-manager Istio CSR: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east1_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-cert-manager-istio-csr-production
       working_directory: regional/cert-manager/istio-csr
@@ -343,14 +344,14 @@ jobs:
 
   cert_manager_istio_csr_us_east1_d:
     name: "cert-manager Istio CSR: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east1_d
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-cert-manager-istio-csr-production
       working_directory: regional/cert-manager/istio-csr
@@ -358,14 +359,14 @@ jobs:
 
   cert_manager_istio_csr_us_east4_a:
     name: "cert-manager Istio CSR: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east4_a
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-cert-manager-istio-csr-production
       working_directory: regional/cert-manager/istio-csr
@@ -373,14 +374,14 @@ jobs:
 
   cert_manager_istio_csr_us_east4_b:
     name: "cert-manager Istio CSR: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east4_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-cert-manager-istio-csr-production
       working_directory: regional/cert-manager/istio-csr
@@ -388,14 +389,14 @@ jobs:
 
   cert_manager_istio_csr_us_east4_c:
     name: "cert-manager Istio CSR: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east4_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-cert-manager-istio-csr-production
       working_directory: regional/cert-manager/istio-csr
@@ -403,14 +404,14 @@ jobs:
 
   datadog_us_east1_b:
     name: "Datadog: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east1_b_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-datadog-production
       working_directory: regional/datadog
@@ -422,14 +423,14 @@ jobs:
 
   datadog_us_east1_c:
     name: "Datadog: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east1_c_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-datadog-production
       working_directory: regional/datadog
@@ -441,14 +442,14 @@ jobs:
 
   datadog_us_east1_d:
     name: "Datadog: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east1_d_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-datadog-production
       working_directory: regional/datadog
@@ -460,14 +461,14 @@ jobs:
 
   datadog_us_east4_a:
     name: "Datadog: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east4_a_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-datadog-production
       working_directory: regional/datadog
@@ -479,14 +480,14 @@ jobs:
 
   datadog_us_east4_b:
     name: "Datadog: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east4_b_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-datadog-production
       working_directory: regional/datadog
@@ -498,14 +499,14 @@ jobs:
 
   datadog_us_east4_c:
     name: "Datadog: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: us_east4_c_onboarding
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-datadog-production
       working_directory: regional/datadog
@@ -517,14 +518,14 @@ jobs:
 
   datadog_manifests_us_east1_b:
     name: "Datadog Manifests: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: datadog_us_east1_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-datadog-manifests-production
       working_directory: regional/datadog/manifests
@@ -536,14 +537,14 @@ jobs:
 
   datadog_manifests_us_east1_c:
     name: "Datadog Manifests: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: datadog_us_east1_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-datadog-manifests-production
       working_directory: regional/datadog/manifests
@@ -555,14 +556,14 @@ jobs:
 
   datadog_manifests_us_east1_d:
     name: "Datadog Manifests: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: datadog_us_east1_d
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-datadog-manifests-production
       working_directory: regional/datadog/manifests
@@ -574,14 +575,14 @@ jobs:
 
   datadog_manifests_us_east4_a:
     name: "Datadog Manifests: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: datadog_us_east4_a
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-datadog-manifests-production
       working_directory: regional/datadog/manifests
@@ -593,14 +594,14 @@ jobs:
 
   datadog_manifests_us_east4_b:
     name: "Datadog Manifests: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: datadog_us_east4_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-datadog-manifests-production
       working_directory: regional/datadog/manifests
@@ -612,14 +613,14 @@ jobs:
 
   datadog_manifests_us_east4_c:
     name: "Datadog Manifests: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: datadog_us_east4_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-datadog-manifests-production
       working_directory: regional/datadog/manifests
@@ -631,15 +632,16 @@ jobs:
 
   istio_manifests_us_east1_b:
     name: "Istio Manifests: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_us_east1_b
+    needs: [istio_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-manifests-production
       working_directory: regional/istio/manifests
@@ -647,15 +649,16 @@ jobs:
 
   istio_manifests_us_east1_c:
     name: "Istio Manifests: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_us_east1_c
+    needs: [istio_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-istio-manifests-production
       working_directory: regional/istio/manifests
@@ -663,15 +666,16 @@ jobs:
 
   istio_manifests_us_east1_d:
     name: "Istio Manifests: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_us_east1_d
+    needs: [istio_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-istio-manifests-production
       working_directory: regional/istio/manifests
@@ -679,15 +683,16 @@ jobs:
 
   istio_manifests_us_east4_a:
     name: "Istio Manifests: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_us_east4_a
+    needs: [istio_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-manifests-production
       working_directory: regional/istio/manifests
@@ -695,15 +700,16 @@ jobs:
 
   istio_manifests_us_east4_b:
     name: "Istio Manifests: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_us_east4_b
+    needs: [istio_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-istio-manifests-production
       working_directory: regional/istio/manifests
@@ -711,15 +717,16 @@ jobs:
 
   istio_manifests_us_east4_c:
     name: "Istio Manifests: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_us_east4_c
+    needs: [istio_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-istio-manifests-production
       working_directory: regional/istio/manifests
@@ -727,15 +734,16 @@ jobs:
 
   istio_test_us_east1_b:
     name: "Istio Test: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_manifests_us_east1_b
+    needs: [istio_manifests_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-test-production
       working_directory: regional/istio/test
@@ -747,15 +755,16 @@ jobs:
 
   istio_test_us_east1_c:
     name: "Istio Test: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_manifests_us_east1_c
+    needs: [istio_manifests_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-istio-test-production
       working_directory: regional/istio/test
@@ -767,15 +776,16 @@ jobs:
 
   istio_test_us_east1_d:
     name: "Istio Test: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_manifests_us_east1_d
+    needs: [istio_manifests_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-istio-test-production
       working_directory: regional/istio/test
@@ -787,15 +797,16 @@ jobs:
 
   istio_test_us_east4_a:
     name: "Istio Test: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_manifests_us_east4_a
+    needs: [istio_manifests_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-test-production
       working_directory: regional/istio/test
@@ -807,15 +818,16 @@ jobs:
 
   istio_test_us_east4_b:
     name: "Istio Test: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_manifests_us_east4_b
+    needs: [istio_manifests_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-istio-test-production
       working_directory: regional/istio/test
@@ -827,15 +839,16 @@ jobs:
 
   istio_test_us_east4_c:
     name: "Istio Test: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: istio_manifests_us_east4_c
+    needs: [istio_manifests_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-istio-test-production
       working_directory: regional/istio/test
@@ -847,14 +860,14 @@ jobs:
 
   istio_us_east1_b:
     name: "Istio: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_istio_csr_us_east1_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-production
       working_directory: regional/istio
@@ -862,14 +875,14 @@ jobs:
 
   istio_us_east1_c:
     name: "Istio: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_istio_csr_us_east1_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-istio-production
       working_directory: regional/istio
@@ -877,14 +890,14 @@ jobs:
 
   istio_us_east1_d:
     name: "Istio: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_istio_csr_us_east1_d
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-istio-production
       working_directory: regional/istio
@@ -892,14 +905,14 @@ jobs:
 
   istio_us_east4_a:
     name: "Istio: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_istio_csr_us_east4_a
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-production
       working_directory: regional/istio
@@ -907,14 +920,14 @@ jobs:
 
   istio_us_east4_b:
     name: "Istio: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_istio_csr_us_east4_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-istio-production
       working_directory: regional/istio
@@ -922,14 +935,14 @@ jobs:
 
   istio_us_east4_c:
     name: "Istio: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_istio_csr_us_east4_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-istio-production
       working_directory: regional/istio
@@ -937,14 +950,14 @@ jobs:
 
   opa_gatekeeper_us_east1_b:
     name: "OPA Gatekeeper: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east1_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-opa-gatekeeper-production
       working_directory: regional/opa-gatekeeper
@@ -952,13 +965,13 @@ jobs:
 
   opa_gatekeeper_templates_us_east1_b:
     name: "OPA Gatekeeper Templates: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_us_east1_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east1-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-opa-gatekeeper-templates-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -967,13 +980,13 @@ jobs:
 
   opa_gatekeeper_constraints_us_east1_b:
     name: "OPA Gatekeeper Constraints: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_templates_us_east1_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east1-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-opa-gatekeeper-constraints-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -982,14 +995,14 @@ jobs:
 
   opa_gatekeeper_us_east1_c:
     name: "OPA Gatekeeper: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east1_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-opa-gatekeeper-production
       working_directory: regional/opa-gatekeeper
@@ -997,13 +1010,13 @@ jobs:
 
   opa_gatekeeper_templates_us_east1_c:
     name: "OPA Gatekeeper Templates: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_us_east1_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east1-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-opa-gatekeeper-templates-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -1012,13 +1025,13 @@ jobs:
 
   opa_gatekeeper_constraints_us_east1_c:
     name: "OPA Gatekeeper Constraints: us-east1-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_templates_us_east1_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east1-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-opa-gatekeeper-constraints-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -1027,14 +1040,14 @@ jobs:
 
   opa_gatekeeper_us_east1_d:
     name: "OPA Gatekeeper: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east1_d
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-opa-gatekeeper-production
       working_directory: regional/opa-gatekeeper
@@ -1042,13 +1055,13 @@ jobs:
 
   opa_gatekeeper_templates_us_east1_d:
     name: "OPA Gatekeeper Templates: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_us_east1_d
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east1-d"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-opa-gatekeeper-templates-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -1057,13 +1070,13 @@ jobs:
 
   opa_gatekeeper_constraints_us_east1_d:
     name: "OPA Gatekeeper Constraints: us-east1-d"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_templates_us_east1_d
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east1-d"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-opa-gatekeeper-constraints-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -1072,14 +1085,14 @@ jobs:
 
   opa_gatekeeper_us_east4_a:
     name: "OPA Gatekeeper: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east4_a
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-opa-gatekeeper-production
       working_directory: regional/opa-gatekeeper
@@ -1087,13 +1100,13 @@ jobs:
 
   opa_gatekeeper_templates_us_east4_a:
     name: "OPA Gatekeeper Templates: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_us_east4_a
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east4-a"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-opa-gatekeeper-templates-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -1102,13 +1115,13 @@ jobs:
 
   opa_gatekeeper_constraints_us_east4_a:
     name: "OPA Gatekeeper Constraints: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_templates_us_east4_a
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east4-a"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-opa-gatekeeper-constraints-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -1117,14 +1130,14 @@ jobs:
 
   opa_gatekeeper_us_east4_b:
     name: "OPA Gatekeeper: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east4_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-opa-gatekeeper-production
       working_directory: regional/opa-gatekeeper
@@ -1132,13 +1145,13 @@ jobs:
 
   opa_gatekeeper_templates_us_east4_b:
     name: "OPA Gatekeeper Templates: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_us_east4_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east4-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-opa-gatekeeper-templates-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -1147,13 +1160,13 @@ jobs:
 
   opa_gatekeeper_constraints_us_east4_b:
     name: "OPA Gatekeeper Constraints: us-east4-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_templates_us_east4_b
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east4-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-opa-gatekeeper-constraints-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -1162,14 +1175,14 @@ jobs:
 
   opa_gatekeeper_us_east4_c:
     name: "OPA Gatekeeper: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: cert_manager_us_east4_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-opa-gatekeeper-production
       working_directory: regional/opa-gatekeeper
@@ -1177,13 +1190,13 @@ jobs:
 
   opa_gatekeeper_templates_us_east4_c:
     name: "OPA Gatekeeper Templates: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_us_east4_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east4-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-opa-gatekeeper-templates-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
@@ -1192,13 +1205,13 @@ jobs:
 
   opa_gatekeeper_constraints_us_east4_c:
     name: "OPA Gatekeeper Constraints: us-east4-c"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@35647c1a2f7a1666e59ff5853dd653f5470bcd54 # v0.5.4
-    needs: opa_gatekeeper_templates_us_east4_c
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east4-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-opa-gatekeeper-constraints-production
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
