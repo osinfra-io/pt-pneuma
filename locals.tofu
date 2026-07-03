@@ -67,7 +67,7 @@ locals {
   # pt-pneuma provisions every team's declared namespaces in that team's own clusters.
   gke_namespaces_by_team = {
     for team_key, team in local.teams_with_clusters :
-    team_key => team.platform_managed_project.kubernetes_engine_namespaces
+    team_key => try(team.platform_managed_project.kubernetes_engine_namespaces, {})
   }
 
   # Platform-managed project ID per team, discovered from pt-corpus labels.
