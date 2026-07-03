@@ -7,8 +7,7 @@ module "kubernetes_cert_manager" {
   for_each = local.gke_clusters
 
   providers = {
-    helm       = helm.by_cluster[each.key]
-    kubernetes = kubernetes.by_cluster[each.key]
+    helm = helm.by_cluster[each.key]
   }
 
   artifact_registry = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
