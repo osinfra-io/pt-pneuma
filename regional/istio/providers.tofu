@@ -118,33 +118,3 @@ provider "kubernetes" {
   host  = "https://${data.google_container_cluster.this[each.key].endpoint}"
   token = data.google_client_config.this.access_token
 }
-
-# Helm Provider (state migration bridge)
-# https://search.opentofu.org/provider/hashicorp/helm/latest
-# Matches old state entries recorded with the unaliased provider before the
-# per-cluster for_each refactor. Remove after the first successful apply.
-
-provider "helm" {
-  kubernetes = {
-    cluster_ca_certificate = base64decode(
-      data.google_container_cluster.this["pt-pneuma-${regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0]}"].master_auth.0.cluster_ca_certificate
-    )
-
-    host  = data.google_container_cluster.this["pt-pneuma-${regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0]}"].endpoint
-    token = data.google_client_config.this.access_token
-  }
-}
-
-# Kubernetes Provider (state migration bridge)
-# https://search.opentofu.org/provider/hashicorp/kubernetes/latest
-# Matches old state entries recorded with the unaliased provider before the
-# per-cluster for_each refactor. Remove after the first successful apply.
-
-provider "kubernetes" {
-  cluster_ca_certificate = base64decode(
-    data.google_container_cluster.this["pt-pneuma-${regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0]}"].master_auth.0.cluster_ca_certificate
-  )
-
-  host  = "https://${data.google_container_cluster.this["pt-pneuma-${regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0]}"].endpoint}"
-  token = data.google_client_config.this.access_token
-}
