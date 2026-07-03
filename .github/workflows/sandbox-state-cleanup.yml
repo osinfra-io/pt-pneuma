@@ -1,0 +1,40 @@
+name: Sandbox State Cleanup
+
+# One-time cleanup: removes addon workspace state from sandbox GCS bucket so
+# the per-cluster provider for_each refactor can apply cleanly from fresh state.
+# Delete this workflow after the first successful sandbox apply of PR #134.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  cleanup:
+    name: Remove addon sandbox state
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Authenticate
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093  # v2.1.10
+        with:
+          service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
+          workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+      - name: Remove addon workspace state files
+        run: |
+          for workspace in \
+            us-east1-b-cert-manager-sandbox \
+            us-east4-a-cert-manager-sandbox \
+            us-east1-b-datadog-sandbox \
+            us-east4-a-datadog-sandbox \
+            us-east1-b-istio-sandbox \
+            us-east4-a-istio-sandbox \
+            us-east1-b-opa-gatekeeper-sandbox \
+            us-east4-a-opa-gatekeeper-sandbox; do
+            gsutil -q rm "gs://pt-pneuma-state-sb/pt-pneuma/env:${workspace}" 2>/dev/null \
+              && echo "Removed: ${workspace}" \
+              || echo "Not found (skipped): ${workspace}"
+          done
