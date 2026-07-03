@@ -1,16 +1,6 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
-variable "kubernetes_engine_namespaces" {
-  default     = {}
-  description = "A map of namespaces with the Google service account used for the namespace administrator and whether Istio injection is enabled or disabled"
-
-  type = map(object({
-    google_service_account = string
-    istio_injection        = optional(string, "disabled")
-  }))
-}
-
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 
