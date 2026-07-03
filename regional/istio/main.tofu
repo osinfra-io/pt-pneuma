@@ -14,7 +14,7 @@ module "kubernetes_istio" {
 
   artifact_registry          = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
   cluster_prefix             = each.value.team_key
-  enable_istio_gateway       = true
+  enable_istio_gateway       = each.value.team_key == module.core_helpers.team
   gateway_cpu_limits         = var.kubernetes_istio_gateway_cpu_limits
   gateway_cpu_requests       = var.kubernetes_istio_gateway_cpu_requests
   gateway_dns                = local.gateway_dns[each.key]
