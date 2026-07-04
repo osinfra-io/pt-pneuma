@@ -2,15 +2,16 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  # Gateway DNS per cluster, built from the owning team's gateway DNS zones in the
-  # main workspace. Keyed by cluster, then by the cluster's zonal subdomain
-  # (e.g. "us-east1-b.pneuma.osinfra.io").
+  # Gateway DNS per cluster. Pneuma (gateway) clusters create zonal A records for ALL
+  # teams — because every team's DNS routes through pneuma's single ingress gateway.
+  # Member team clusters get nothing (their traffic arrives via the mesh, not a local LB).
   gateway_dns = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => {
-      for dns_zone, attrs in try(local.main.gateway_dns[cluster_config.team_key], {}) :
-      "${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${dns_zone}" => attrs
-    }
+    cluster_name => cluster_config.team_key == module.core_helpers.team ? {
+      for team_key, team_dns in local.main.gateway_dns :
+      "${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${one(keys(team_dns))}" => one(values(team_dns))
+      if length(team_dns) > 0
+    } : {}
   }
 
   # GKE clusters in this zone that have the Istio gateway enabled (platform team only).

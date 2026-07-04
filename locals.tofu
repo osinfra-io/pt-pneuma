@@ -49,6 +49,11 @@ locals {
     } : {}
   }
 
+  # Merged gateway DNS for all teams — passed to pneuma's MCI module instance so the
+  # single MCI global address creates DNS A records for every team that routes through
+  # pneuma's gateway (e.g. both pneuma.sb.osinfra.io and kryptos.sb.osinfra.io).
+  gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(values(local.gateway_dns_by_team)...) : {}
+
   # GKE clusters aggregated from all teams, filtered by active zones for this environment
   # Derives cluster name as {team_key}-{location} from the flat locations map in pt-logos
   # Merges project_id for each team so regional workspaces can construct correct cluster resource IDs

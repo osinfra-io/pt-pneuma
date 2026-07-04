@@ -22,7 +22,7 @@ module "kubernetes_istio_manifests" {
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
 
 resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
-  for_each = local.gke_clusters
+  for_each = local.gateway_clusters
 
   provider = kubernetes.by_cluster[each.key]
 
