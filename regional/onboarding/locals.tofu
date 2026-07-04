@@ -15,11 +15,14 @@ locals {
 
   # Namespaces per cluster, derived from Logos team data. The team's GitHub Actions
   # service account (from pt-corpus) is bound as the namespace administrator.
+  # Member team namespaces are prefixed with the team key (e.g. "istio-test" on pt-kryptos
+  # becomes "pt-kryptos-istio-test") so each team's workloads are isolated by namespace
+  # and Istio routing can target a specific team's cluster exclusively.
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {
       for namespace_name, namespace in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) :
-      namespace_name => {
+      (cluster_config.team_key != module.core_helpers.team ? "${cluster_config.team_key}-${namespace_name}" : namespace_name) => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
         istio_injection        = namespace.istio_injection
       }

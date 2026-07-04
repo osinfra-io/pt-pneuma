@@ -16,11 +16,12 @@ locals {
           host             = local.dns_zone[cluster_name]
         }
       },
-      # Other teams' entries — team-qualified names to avoid key collisions
+      # Other teams' entries — team-qualified names to avoid key collisions;
+      # destination uses team-prefixed namespace so routing stays within that team's clusters
       {
         for peer_name, peer_config in local.gke_clusters :
         "istio-test-${local.dns_subdomain[peer_name]}" => {
-          destination_host = "istio-test.istio-test.svc.cluster.local"
+          destination_host = "istio-test.${peer_config.team_key}-istio-test.svc.cluster.local"
           host             = local.dns_zone[peer_name]
         }
         if peer_config.team_key != module.core_helpers.team
@@ -77,11 +78,12 @@ locals {
           host             = "${local.zone}.${local.dns_zone[cluster_name]}"
         }
       },
-      # Other teams' zonal entries — team-qualified names to avoid key collisions
+      # Other teams' zonal entries — team-qualified names to avoid key collisions;
+      # destination uses team-prefixed namespace so routing stays within that team's clusters
       {
         for peer_name, peer_config in local.gke_clusters :
         "istio-test-${local.dns_subdomain[peer_name]}-${local.zone}" => {
-          destination_host = "istio-test-${local.zone}.istio-test.svc.cluster.local"
+          destination_host = "istio-test-${local.zone}.${peer_config.team_key}-istio-test.svc.cluster.local"
           host             = "${local.zone}.${local.dns_zone[peer_name]}"
         }
         if peer_config.team_key != module.core_helpers.team
