@@ -1,31 +1,24 @@
 #!/bin/bash
 set -euo pipefail
 
-# Check Istio health across all clusters for one or more teams and environment.
+# Check Istio health across all clusters in an environment.
 #
-# Clusters are discovered via gcloud across all requested teams. Credentials
-# are written to a temporary kubeconfig file and cleaned up on exit — nothing
-# is written to ~/.kube/config.
+# Clusters are discovered automatically across all teams by querying every
+# GCP project labeled labels.repository=pt-corpus for the environment. Any
+# project that has GKE clusters is included. Credentials are written to a
+# temporary kubeconfig file and cleaned up on exit — nothing is written to
+# ~/.kube/config.
 #
-# Usage: ./check-health.sh <env> [team...]
-#   env:   sb (sandbox), nonprod (non-production), prod (production)
-#   team:  one or more team labels used to find Kubernetes projects
-#          (default: pt-pneuma)
-#
-# Examples:
-#   ./check-health.sh sb
-#   ./check-health.sh sb pt-pneuma pt-kryptos
+# Usage: ./check-health.sh <env>
+#   env: sb (sandbox), nonprod (non-production), prod (production)
 
-if [[ $# -lt 1 ]]; then
-  echo "Usage: $0 <env> [team...]"
-  echo "  env:   sb, nonprod, or prod"
-  echo "  team:  one or more labels.team values (default: pt-pneuma)"
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 <env>"
+  echo "  env: sb, nonprod, or prod"
   exit 1
 fi
 
 ENV="${1}"
-shift
-TEAMS=("${@:-pt-pneuma}")
 
 case "${ENV}" in
   sb | nonprod | prod) ;;
@@ -41,33 +34,34 @@ KUBECONFIG_FILE="$(mktemp)"
 trap 'rm -f "${KUBECONFIG_FILE}"' EXIT
 export KUBECONFIG="${KUBECONFIG_FILE}"
 
-# Discover clusters across all requested teams.
+# Discover all pt-corpus projects for this environment, then find which ones
+# have GKE clusters.
 
 declare -A CLUSTER_ZONES
 declare -A CLUSTER_PROJECT
 
-for TEAM in "${TEAMS[@]}"; do
-  echo "Discovering ${TEAM} Kubernetes project for env '${ENV}'..."
+echo "Discovering all projects for env '${ENV}'..."
 
-  PROJECT=$(gcloud projects list \
-    --filter="labels.team=${TEAM} labels.repository=pt-corpus" \
-    --format="value(projectId)" | grep "\-${ENV}$")
+mapfile -t PROJECTS < <(gcloud projects list \
+  --filter="labels.repository=pt-corpus" \
+  --format="value(projectId)" | grep "\-${ENV}$")
 
-  if [[ -z "${PROJECT}" ]]; then
-    echo "Error: No ${TEAM} Kubernetes project found for env '${ENV}'."
-    exit 1
-  fi
+if [[ ${#PROJECTS[@]} -eq 0 ]]; then
+  echo "Error: No pt-corpus projects found for env '${ENV}'."
+  exit 1
+fi
 
-  echo "Project: ${PROJECT}"
+echo "Found ${#PROJECTS[@]} project(s), scanning for GKE clusters..."
+echo
 
+for PROJECT in "${PROJECTS[@]}"; do
   mapfile -t CLUSTER_ROWS < <(gcloud container clusters list \
     --project="${PROJECT}" \
-    --format="csv[no-heading](name,location)")
+    --format="csv[no-heading](name,location)" 2>/dev/null || true)
 
-  if [[ ${#CLUSTER_ROWS[@]} -eq 0 ]]; then
-    echo "Error: No clusters found in project '${PROJECT}'."
-    exit 1
-  fi
+  [[ ${#CLUSTER_ROWS[@]} -eq 0 ]] && continue
+
+  echo "  ${PROJECT}: ${#CLUSTER_ROWS[@]} cluster(s)"
 
   for row in "${CLUSTER_ROWS[@]}"; do
     NAME="${row%%,*}"
@@ -75,9 +69,14 @@ for TEAM in "${TEAMS[@]}"; do
     CLUSTER_ZONES["${NAME}"]="${ZONE}"
     CLUSTER_PROJECT["${NAME}"]="${PROJECT}"
   done
-
-  echo
 done
+
+echo
+
+if [[ ${#CLUSTER_ZONES[@]} -eq 0 ]]; then
+  echo "Error: No GKE clusters found across any pt-corpus project for env '${ENV}'."
+  exit 1
+fi
 
 # Fetch credentials for all clusters into the temporary kubeconfig.
 
