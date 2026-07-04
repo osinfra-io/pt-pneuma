@@ -29,7 +29,8 @@ module "kubernetes_istio" {
 
   for_each = local.teams_with_clusters
 
-  gateway_dns = local.gateway_dns_by_team[each.key]
-  labels      = module.core_helpers.labels
-  project     = local.team_project_ids[each.key]
+  gateway_dns               = local.gateway_dns_by_team[each.key]
+  gke_fleet_host_project_id = each.key == module.core_helpers.team ? "" : local.team_project_ids[module.core_helpers.team]
+  labels                    = module.core_helpers.labels
+  project                   = local.team_project_ids[each.key]
 }
