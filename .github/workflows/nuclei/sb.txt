@@ -1,3 +1,6 @@
+https://kryptos.sb.osinfra.io
 https://pneuma.sb.osinfra.io
+https://us-east1-b.kryptos.sb.osinfra.io
 https://us-east1-b.pneuma.sb.osinfra.io
-https://us-east4-b.pneuma.sb.osinfra.io
+https://us-east4-a.kryptos.sb.osinfra.io
+https://us-east4-a.pneuma.sb.osinfra.io

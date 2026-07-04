@@ -1,0 +1,10 @@
+https://kryptos.osinfra.io
+https://pneuma.osinfra.io
+https://us-east1-b.kryptos.osinfra.io
+https://us-east1-b.pneuma.osinfra.io
+https://us-east1-c.pneuma.osinfra.io
+https://us-east1-d.pneuma.osinfra.io
+https://us-east4-a.kryptos.osinfra.io
+https://us-east4-a.pneuma.osinfra.io
+https://us-east4-b.pneuma.osinfra.io
+https://us-east4-c.pneuma.osinfra.io
