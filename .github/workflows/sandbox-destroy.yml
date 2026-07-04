@@ -65,7 +65,7 @@ jobs:
 
   us_east1_b_onboarding:
     name: "Onboarding: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Onboarding: us-east1-b"
@@ -81,7 +81,7 @@ jobs:
 
   us_east4_a_onboarding:
     name: "Onboarding: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Onboarding: us-east4-a"
@@ -97,7 +97,7 @@ jobs:
 
   us_east1_b:
     name: "Regional: us-east1-b"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     needs: us_east1_b_onboarding
     with:
       checkout_ref: ${{ github.ref }}
@@ -113,7 +113,7 @@ jobs:
 
   us_east4_a:
     name: "Regional: us-east4-a"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe0a9f13e98ea765a4e8e9e2bb7fd71cf31 # v0.5.5
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     needs: us_east4_a_onboarding
     with:
       checkout_ref: ${{ github.ref }}
