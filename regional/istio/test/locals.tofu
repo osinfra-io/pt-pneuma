@@ -135,6 +135,14 @@ locals {
     if endswith(cluster_name, "-${local.zone}")
   }
 
+  # Namespace per cluster. Pneuma (platform team) uses "istio-test"; member team clusters
+  # use a team-prefixed namespace (e.g. "pt-kryptos-istio-test") so each team's workload
+  # is isolated and Istio routing targets only that team's cluster pods.
+  namespace = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => cluster_config.team_key != module.core_helpers.team ? "${cluster_config.team_key}-istio-test" : "istio-test"
+  }
+
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :

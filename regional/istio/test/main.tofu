@@ -82,7 +82,7 @@ resource "kubernetes_deployment_v1" "istio_test" {
     }
 
     name      = "istio-test"
-    namespace = "istio-test"
+    namespace = local.namespace[each.key]
   }
 
   spec {
@@ -223,7 +223,7 @@ resource "kubernetes_manifest" "istio_test" {
 
     metadata = {
       name      = "istio-test"
-      namespace = "istio-test"
+      namespace = local.namespace[each.key]
     }
 
     spec = {
@@ -277,7 +277,7 @@ resource "kubernetes_service_v1" "istio_test" {
 
   metadata {
     name      = "istio-test"
-    namespace = "istio-test"
+    namespace = local.namespace[each.key]
   }
 
   spec {
@@ -302,7 +302,7 @@ resource "kubernetes_service_v1" "istio_test_regional" {
 
   metadata {
     name      = "istio-test-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
-    namespace = "istio-test"
+    namespace = local.namespace[each.key]
   }
 
   spec {
