@@ -1,24 +1,31 @@
 #!/bin/bash
 set -euo pipefail
 
-# Check Istio health across all clusters for a given team and environment.
+# Check Istio health across all clusters for one or more teams and environment.
 #
-# Clusters are discovered via gcloud. Credentials are written to a temporary
-# kubeconfig file and cleaned up on exit — nothing is written to ~/.kube/config.
+# Clusters are discovered via gcloud across all requested teams. Credentials
+# are written to a temporary kubeconfig file and cleaned up on exit — nothing
+# is written to ~/.kube/config.
 #
-# Usage: ./check-health.sh <env> [team]
-#   env:  sb (sandbox), nonprod (non-production), prod (production)
-#   team: team label used to find the Kubernetes project (default: pt-pneuma)
+# Usage: ./check-health.sh <env> [team...]
+#   env:   sb (sandbox), nonprod (non-production), prod (production)
+#   team:  one or more team labels used to find Kubernetes projects
+#          (default: pt-pneuma)
+#
+# Examples:
+#   ./check-health.sh sb
+#   ./check-health.sh sb pt-pneuma pt-kryptos
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: $0 <env> [team]"
-  echo "  env:  sb, nonprod, or prod"
-  echo "  team: labels.team value used to find the Kubernetes project (default: pt-pneuma)"
+  echo "Usage: $0 <env> [team...]"
+  echo "  env:   sb, nonprod, or prod"
+  echo "  team:  one or more labels.team values (default: pt-pneuma)"
   exit 1
 fi
 
 ENV="${1}"
-TEAM="${2:-pt-pneuma}"
+shift
+TEAMS=("${@:-pt-pneuma}")
 
 case "${ENV}" in
   sb | nonprod | prod) ;;
@@ -34,40 +41,42 @@ KUBECONFIG_FILE="$(mktemp)"
 trap 'rm -f "${KUBECONFIG_FILE}"' EXIT
 export KUBECONFIG="${KUBECONFIG_FILE}"
 
-# Discover the Kubernetes project for this team and environment.
-# Project IDs follow the pattern: {team}-k8s-{random}-{env}
-
-echo "Discovering ${TEAM} Kubernetes project for env '${ENV}'..."
-
-PROJECT=$(gcloud projects list \
-  --filter="labels.team=${TEAM} labels.repository=pt-corpus" \
-  --format="value(projectId)" | grep "\-${ENV}$")
-
-if [[ -z "${PROJECT}" ]]; then
-  echo "Error: No ${TEAM} Kubernetes project found for env '${ENV}'."
-  exit 1
-fi
-
-echo "Project: ${PROJECT}"
-echo
-
-# Discover all GKE clusters in the project.
-
-mapfile -t CLUSTER_ROWS < <(gcloud container clusters list \
-  --project="${PROJECT}" \
-  --format="csv[no-heading](name,location)")
-
-if [[ ${#CLUSTER_ROWS[@]} -eq 0 ]]; then
-  echo "Error: No clusters found in project '${PROJECT}'."
-  exit 1
-fi
+# Discover clusters across all requested teams.
 
 declare -A CLUSTER_ZONES
+declare -A CLUSTER_PROJECT
 
-for row in "${CLUSTER_ROWS[@]}"; do
-  NAME="${row%%,*}"
-  ZONE="${row##*,}"
-  CLUSTER_ZONES["${NAME}"]="${ZONE}"
+for TEAM in "${TEAMS[@]}"; do
+  echo "Discovering ${TEAM} Kubernetes project for env '${ENV}'..."
+
+  PROJECT=$(gcloud projects list \
+    --filter="labels.team=${TEAM} labels.repository=pt-corpus" \
+    --format="value(projectId)" | grep "\-${ENV}$")
+
+  if [[ -z "${PROJECT}" ]]; then
+    echo "Error: No ${TEAM} Kubernetes project found for env '${ENV}'."
+    exit 1
+  fi
+
+  echo "Project: ${PROJECT}"
+
+  mapfile -t CLUSTER_ROWS < <(gcloud container clusters list \
+    --project="${PROJECT}" \
+    --format="csv[no-heading](name,location)")
+
+  if [[ ${#CLUSTER_ROWS[@]} -eq 0 ]]; then
+    echo "Error: No clusters found in project '${PROJECT}'."
+    exit 1
+  fi
+
+  for row in "${CLUSTER_ROWS[@]}"; do
+    NAME="${row%%,*}"
+    ZONE="${row##*,}"
+    CLUSTER_ZONES["${NAME}"]="${ZONE}"
+    CLUSTER_PROJECT["${NAME}"]="${PROJECT}"
+  done
+
+  echo
 done
 
 # Fetch credentials for all clusters into the temporary kubeconfig.
@@ -75,17 +84,18 @@ done
 for NAME in "${!CLUSTER_ZONES[@]}"; do
   gcloud container clusters get-credentials "${NAME}" \
     --zone="${CLUSTER_ZONES[${NAME}]}" \
-    --project="${PROJECT}" \
+    --project="${CLUSTER_PROJECT[${NAME}]}" \
     --quiet
 done
 
 # Run health checks on each cluster.
 
 for NAME in "${!CLUSTER_ZONES[@]}"; do
+  PROJECT="${CLUSTER_PROJECT[${NAME}]}"
   CTX="gke_${PROJECT}_${CLUSTER_ZONES[${NAME}]}_${NAME}"
 
   echo "════════════════════════════════════════"
-  echo "Cluster: ${NAME}"
+  echo "Cluster: ${NAME} [${PROJECT}]"
   echo "════════════════════════════════════════"
 
   echo ""
