@@ -12,13 +12,45 @@ module "google_kubernetes_engine" {
   project                   = local.team_project_ids[each.key]
 }
 
+# TLS Private Key Resource
+# https://search.opentofu.org/provider/hashicorp/tls/latest/docs/resources/private_key
+
+resource "tls_private_key" "cert_manager_ca" {
+  algorithm   = "ECDSA"
+  ecdsa_curve = "P256"
+}
+
+# TLS Self-Signed Certificate Resource
+# https://search.opentofu.org/provider/hashicorp/tls/latest/docs/resources/self_signed_cert
+
+resource "tls_self_signed_cert" "cert_manager_ca" {
+  allowed_uses = [
+    "cert_signing",
+    "digital_signature",
+    "key_encipherment",
+  ]
+
+  is_ca_certificate = true
+  private_key_pem   = tls_private_key.cert_manager_ca.private_key_pem
+
+  subject {
+    common_name  = "opentofu-self-signed-ca.osinfra.io"
+    organization = "Open Source Infrastructure (as Code) OpenTofu Self-Signed CA"
+  }
+
+  validity_period_hours = 262980 # 30 years
+}
+
 # Kubernetes cert-manager Module (osinfra.io)
 # https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager
 
 module "kubernetes_cert_manager" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=bb00d8bd52c54cbdde002d88808df07b035e6c1c" # v0.3.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=65c289542625c5ce08322b2b69b401df285213e6" # v0.4.0
 
   for_each = local.teams_with_clusters
+
+  ca_cert_pem = tls_self_signed_cert.cert_manager_ca.cert_pem
+  ca_key_pem  = tls_private_key.cert_manager_ca.private_key_pem
 }
 
 # Kubernetes Istio Module (osinfra.io)

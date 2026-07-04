@@ -79,6 +79,13 @@ terraform {
     random = {
       source = "hashicorp/random"
     }
+
+    # TLS Provider
+    # https://search.opentofu.org/provider/hashicorp/tls/latest/docs
+
+    tls = {
+      source = "hashicorp/tls"
+    }
   }
 }
 

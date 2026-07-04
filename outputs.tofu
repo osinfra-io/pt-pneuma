@@ -25,8 +25,8 @@ output "gke_clusters" {
 output "kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert" {
   description = "The self-signed certificate for the cert-manager root certificate, keyed by team"
   value = {
-    for team_key, cert_manager in module.kubernetes_cert_manager :
-    team_key => cert_manager.tls_self_signed_cert_cert_manager_root_cert
+    for team_key in keys(module.kubernetes_cert_manager) :
+    team_key => tls_self_signed_cert.cert_manager_ca.cert_pem
   }
 }
 
@@ -34,8 +34,8 @@ output "kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key" {
   description = "The private key for the cert-manager root certificate, keyed by team"
   sensitive   = true
   value = {
-    for team_key, cert_manager in module.kubernetes_cert_manager :
-    team_key => cert_manager.tls_self_signed_cert_cert_manager_root_key
+    for team_key in keys(module.kubernetes_cert_manager) :
+    team_key => tls_private_key.cert_manager_ca.private_key_pem
   }
 }
 

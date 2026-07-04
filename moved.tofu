@@ -21,3 +21,18 @@ moved {
   from = module.kubernetes_istio
   to   = module.kubernetes_istio["pt-pneuma"]
 }
+
+# The root CA was previously generated inside the kubernetes_cert_manager module
+# per team, resulting in independent CAs per team. The CA is now created once
+# at the root and shared across all teams. These moved blocks preserve pt-pneuma's
+# existing CA key pair so no cert rotation is required on pneuma clusters.
+
+moved {
+  from = module.kubernetes_cert_manager["pt-pneuma"].tls_private_key.cert_manager_root
+  to   = tls_private_key.cert_manager_ca
+}
+
+moved {
+  from = module.kubernetes_cert_manager["pt-pneuma"].tls_self_signed_cert.cert_manager_root
+  to   = tls_self_signed_cert.cert_manager_ca
+}
