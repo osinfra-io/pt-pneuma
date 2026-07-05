@@ -33,7 +33,7 @@ locals {
   # (e.g. "pneuma.sb.osinfra.io" → "pneuma", "kryptos.sb.osinfra.io" → "kryptos").
   dns_subdomain = {
     for cluster_name in keys(local.gke_clusters) :
-    cluster_name => split(".", local.dns_zone[cluster_name])[0]
+    cluster_name => try(split(".", local.dns_zone[cluster_name])[0], "")
   }
 
   # The single gateway DNS zone for each cluster's owning team (e.g. "pneuma.osinfra.io").

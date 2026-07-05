@@ -237,7 +237,8 @@ resource "kubernetes_deployment_v1" "istio_test" {
 resource "kubernetes_manifest" "istio_test" {
   for_each = local.gke_clusters
 
-  provider = kubernetes.by_cluster[each.key]
+  depends_on = [kubernetes_namespace_v1.istio_test]
+  provider   = kubernetes.by_cluster[each.key]
 
   manifest = {
     apiVersion = "security.istio.io/v1"
@@ -295,7 +296,8 @@ resource "kubernetes_manifest" "istio_test" {
 resource "kubernetes_service_v1" "istio_test" {
   for_each = local.gke_clusters
 
-  provider = kubernetes.by_cluster[each.key]
+  depends_on = [kubernetes_namespace_v1.istio_test]
+  provider   = kubernetes.by_cluster[each.key]
 
   metadata {
     name      = "istio-test"
@@ -320,7 +322,8 @@ resource "kubernetes_service_v1" "istio_test" {
 resource "kubernetes_service_v1" "istio_test_regional" {
   for_each = local.gke_clusters
 
-  provider = kubernetes.by_cluster[each.key]
+  depends_on = [kubernetes_namespace_v1.istio_test]
+  provider   = kubernetes.by_cluster[each.key]
 
   metadata {
     name      = "istio-test-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"

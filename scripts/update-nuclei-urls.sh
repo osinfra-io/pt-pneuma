@@ -19,9 +19,10 @@ LOGOS_TEAMS_DIR="${REPO_ROOT}/../../logos/pt-logos/teams"
 NUCLEI_DIR="${REPO_ROOT}/.github/workflows/nuclei"
 
 if [[ ! -d "${LOGOS_TEAMS_DIR}" ]]; then
-  echo "Error: pt-logos teams directory not found at ${LOGOS_TEAMS_DIR}"
+  echo "Warning: pt-logos teams directory not found at ${LOGOS_TEAMS_DIR}"
   echo "  Ensure pt-logos is checked out alongside pt-pneuma in the platform-group workspace."
-  exit 1
+  echo "  Skipping nuclei URL update."
+  exit 0
 fi
 
 # Active zones per environment (mirrors locals.tofu active_zones).
@@ -41,7 +42,7 @@ for TFVARS in "${LOGOS_TEAMS_DIR}"/*.tfvars; do
   fi
 
   # Extract dns_subdomain (first match inside kubernetes_engine block).
-  SUBDOMAIN=$(grep 'dns_subdomain' "${TFVARS}" | head -1 | grep -o '"[^"]*"' | tr -d '"')
+  SUBDOMAIN=$(grep 'dns_subdomain' "${TFVARS}" | head -1 | grep -o '"[^"]*"' | tr -d '"' || true)
   if [[ -z "${SUBDOMAIN}" ]]; then
     continue
   fi

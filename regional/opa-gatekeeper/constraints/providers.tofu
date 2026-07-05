@@ -79,7 +79,7 @@ terraform {
 
 # Kubernetes Provider
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest
-# One instance per cluster in this zone; modules receive the matching instance
+# One instance per cluster across all zones and teams; modules receive the matching instance
 
 provider "kubernetes" {
   alias    = "by_cluster"
