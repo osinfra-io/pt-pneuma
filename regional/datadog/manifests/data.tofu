@@ -7,9 +7,11 @@ data "google_client_config" "this" {}
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/container_cluster
 
 data "google_container_cluster" "this" {
-  location = module.core_helpers.region
-  name     = "${module.core_helpers.team}-${module.core_helpers.region}-${module.core_helpers.zone}"
-  project  = data.terraform_remote_state.main.outputs.project_id
+  for_each = var.clusters
+
+  location = local.regions[each.key]
+  name     = each.key
+  project  = each.value.project_id
 }
 
 # Terraform Remote State Data Source - Main

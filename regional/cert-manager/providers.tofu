@@ -71,38 +71,24 @@ terraform {
     helm = {
       source = "hashicorp/helm"
     }
-
-    # Kubernetes Provider
-    # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs
-
-    kubernetes = {
-      source = "hashicorp/kubernetes"
-    }
   }
 }
 
 # Helm Provider
 # https://search.opentofu.org/provider/hashicorp/helm/latest
+# One instance per cluster in this zone; modules receive the matching instance
 
 provider "helm" {
+  alias    = "by_cluster"
+  for_each = var.clusters
+
   kubernetes = {
 
     cluster_ca_certificate = base64decode(
-      data.google_container_cluster.this.master_auth.0.cluster_ca_certificate
+      data.google_container_cluster.this[each.key].master_auth.0.cluster_ca_certificate
     )
 
-    host  = data.google_container_cluster.this.endpoint
+    host  = data.google_container_cluster.this[each.key].endpoint
     token = data.google_client_config.this.access_token
   }
-}
-
-# Kubernetes Provider
-# https://search.opentofu.org/provider/hashicorp/kubernetes/latest
-
-provider "kubernetes" {
-  cluster_ca_certificate = base64decode(
-    data.google_container_cluster.this.master_auth.0.cluster_ca_certificate
-  )
-  host  = "https://${data.google_container_cluster.this.endpoint}"
-  token = data.google_client_config.this.access_token
 }

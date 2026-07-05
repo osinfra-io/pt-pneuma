@@ -2,6 +2,13 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  # Clusters in this zone whose owning team has opted in to platform-managed Datadog.
+  datadog_clusters = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => cluster_config
+    if try(module.core_helpers.teams[cluster_config.team_key].enable_platform_managed_datadog, false)
+  }
+
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
   gke_clusters = {
@@ -16,7 +23,6 @@ locals {
     cluster_name => regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]
   }
 
-  # This deployment zone, parsed from the workspace name (e.g.
-  # "us-east1-b-opa-gatekeeper-non-production" → "us-east1-b"). Static context safe.
+  # This deployment zone, parsed from the workspace name. Static context safe.
   zone = try(regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0], "")
 }

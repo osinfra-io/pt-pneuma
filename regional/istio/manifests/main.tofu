@@ -2,13 +2,19 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=8eed62d605a258f8f9fe43b761d347251b08901a" # v0.3.8
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=7734e2e2846fa1d872c1f58bdab6ba964530c3e9" # v0.4.0
 
-  common_istio_test_virtual_services = local.common_istio_test_virtual_services
+  for_each = local.gke_clusters
+
+  providers = {
+    kubernetes = kubernetes.by_cluster[each.key]
+  }
+
+  common_istio_test_virtual_services = local.common_istio_test_virtual_services[each.key]
   common_virtual_services            = {}
-  failover_from_region               = local.failover_from_region
-  failover_to_region                 = local.failover_to_region
-  istio_test_virtual_services        = local.istio_test_virtual_services
+  failover_from_region               = local.regions[each.key]
+  failover_to_region                 = local.failover_to_region[each.key]
+  istio_test_virtual_services        = local.istio_test_virtual_services[each.key]
   virtual_services                   = {}
 }
 
@@ -16,6 +22,10 @@ module "kubernetes_istio_manifests" {
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
 
 resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
+  for_each = local.gateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
   manifest = {
     apiVersion = "networking.istio.io/v1alpha3"
     kind       = "EnvoyFilter"
@@ -40,7 +50,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
               http2_protocol_options = {}
               lb_policy              = "ROUND_ROBIN"
               load_assignment = {
-                cluster_name = "pt-${module.core_helpers.region}-${module.core_helpers.zone}"
+                cluster_name = "pt-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
                 endpoints = [
                   {
                     lb_endpoints = [
@@ -58,7 +68,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
                   }
                 ]
               }
-              name = "pt-${module.core_helpers.region}-${module.core_helpers.zone}"
+              name = "pt-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
               transport_socket = {
                 name = "envoy.transport_sockets.tls"
                 typed_config = {
@@ -94,7 +104,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
                 failure_mode_allow = true
                 grpc_service = {
                   envoy_grpc = {
-                    cluster_name = "pt-${module.core_helpers.region}-${module.core_helpers.zone}"
+                    cluster_name = "pt-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
                   }
                   timeout = "0.5s"
                 }

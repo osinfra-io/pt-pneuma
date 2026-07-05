@@ -17,6 +17,6 @@ locals {
   }
 
   # This deployment zone, parsed from the workspace name (e.g.
-  # "us-east1-b-opa-gatekeeper-non-production" → "us-east1-b"). Static context safe.
+  # "us-east1-b-cert-manager-non-production" → "us-east1-b"). Static context safe.
   zone = try(regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0], "")
 }

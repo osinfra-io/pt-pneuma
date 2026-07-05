@@ -7,7 +7,7 @@ description: Validates istio-test DNS endpoints for all clusters in an environme
 
 Every GKE cluster exposes an istio-test metadata endpoint via its zonal DNS name. The global (MCI) endpoint exposes a health check. This skill runs a script that discovers all endpoints from DNS A records in the team's Cloud DNS managed zone, then validates every endpoint is responding correctly.
 
-The script works for any team that has a DNS zone managed in the pt-corpus shared VPC host project. It only needs the environment and DNS subdomain (e.g., `pneuma`, `ethos`).
+The script works for any team that has a DNS zone managed in the pt-corpus shared VPC host project. It only needs the environment and DNS subdomain — the subdomain matches the team name without the `pt-` prefix (e.g., `pneuma` for pt-pneuma, `kryptos` for pt-kryptos).
 
 ## When to run
 
@@ -26,7 +26,12 @@ Ask the user which environment to target if not already stated:
 - `nonprod` — non-production
 - `prod` — production
 
-Ask which subdomain if not obvious from context (e.g., `pneuma`, `ethos`).
+Ask which subdomain if not obvious from context. The subdomain is the team name without the `pt-` prefix:
+
+| Team | Subdomain |
+|------|-----------|
+| pt-pneuma | `pneuma` |
+| pt-kryptos | `kryptos` |
 
 ### 2. Confirm prerequisites
 
@@ -53,8 +58,11 @@ Examples:
 # pneuma sandbox
 ./regional/istio/scripts/check-endpoints.sh sb pneuma
 
-# ethos non-production
-./regional/istio/scripts/check-endpoints.sh np ethos
+# kryptos sandbox
+./regional/istio/scripts/check-endpoints.sh sb kryptos
+
+# pneuma non-production
+./regional/istio/scripts/check-endpoints.sh nonprod pneuma
 ```
 
 The script will:

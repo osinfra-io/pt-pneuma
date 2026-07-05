@@ -101,20 +101,27 @@ for RECORD in "${RECORDS[@]}"; do
   # Zonal:  {zone}.{base_domain} — check /istio-test/metadata/cluster-name.
 
   if [[ "${HOST}" == "${BASE_DOMAIN}" ]]; then
-    URL="https://${HOST}/istio-test/health"
+    URL="https://${HOST}/istio-test/metadata/cluster-name"
 
     echo "── ${URL} (global) ──"
 
     HTTP_CODE=$(curl -s -o "${BODY_FILE}" -w "%{http_code}" --connect-timeout 10 --max-time 15 "${URL}" 2>&1) || true
+    BODY=$(cat "${BODY_FILE}" 2>/dev/null) || true
 
-    if [[ "${HTTP_CODE}" == "200" ]]; then
-      echo "  PASS: HTTP 200"
-      PASS=$((PASS + 1))
-    else
+    if [[ "${HTTP_CODE}" != "200" ]]; then
       echo "  FAIL: HTTP ${HTTP_CODE}"
-      BODY=$(cat "${BODY_FILE}" 2>/dev/null) || true
       [[ -n "${BODY}" ]] && echo "  Body: ${BODY}"
       FAIL=$((FAIL + 1))
+    else
+      CLUSTER_NAME=$(echo "${BODY}" | grep -o '"cluster-name":"[^"]*"' | cut -d'"' -f4) || true
+
+      if [[ "${CLUSTER_NAME}" == *"${SUBDOMAIN}"* ]]; then
+        echo "  PASS: cluster-name=${CLUSTER_NAME}"
+        PASS=$((PASS + 1))
+      else
+        echo "  FAIL: cluster-name '${CLUSTER_NAME}' does not contain subdomain '${SUBDOMAIN}'"
+        FAIL=$((FAIL + 1))
+      fi
     fi
   else
     # Extract the zone prefix (everything before .{base_domain}).
@@ -133,9 +140,12 @@ for RECORD in "${RECORDS[@]}"; do
     else
       CLUSTER_NAME=$(echo "${BODY}" | grep -o '"cluster-name":"[^"]*"' | cut -d'"' -f4) || true
 
-      if [[ "${CLUSTER_NAME}" == *"${ZONE}" ]]; then
+      if [[ "${CLUSTER_NAME}" == *"${SUBDOMAIN}"* ]] && [[ "${CLUSTER_NAME}" == *"${ZONE}" ]]; then
         echo "  PASS: cluster-name=${CLUSTER_NAME}"
         PASS=$((PASS + 1))
+      elif [[ "${CLUSTER_NAME}" != *"${SUBDOMAIN}"* ]]; then
+        echo "  FAIL: cluster-name '${CLUSTER_NAME}' does not contain subdomain '${SUBDOMAIN}'"
+        FAIL=$((FAIL + 1))
       else
         echo "  FAIL: cluster-name '${CLUSTER_NAME}' does not end with zone '${ZONE}'"
         FAIL=$((FAIL + 1))
