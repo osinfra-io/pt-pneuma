@@ -72,6 +72,20 @@ resource "kubernetes_namespace_v1" "istio_test" {
   }
 }
 
+resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
+  for_each = local.gateway_stub_namespaces
+
+  provider = kubernetes.by_cluster[local.gateway_cluster]
+
+  metadata {
+    labels = {
+      "istio-injection" = "enabled"
+    }
+
+    name = each.key
+  }
+}
+
 # Kubernetes Deployment Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/deployment_v1
 
@@ -257,7 +271,7 @@ resource "kubernetes_manifest" "istio_test" {
             {
               source = {
                 namespaces = ["istio-ingress"]
-                # principals = ["cluster.local/ns/istio-ingress/sa/gateway"]
+                # principals = ["cluster.local/ns/istio-ingress/sa/gateway-istio"]
               }
             }
           ]
@@ -313,6 +327,32 @@ resource "kubernetes_service_v1" "istio_test" {
 
     selector = {
       app = "istio-test"
+    }
+
+    type = "ClusterIP"
+  }
+}
+
+resource "kubernetes_service_v1" "istio_test_gateway_stub" {
+  for_each = local.gateway_stub_services
+
+  depends_on = [kubernetes_namespace_v1.istio_test_gateway_stub]
+  provider   = kubernetes.by_cluster[local.gateway_cluster]
+
+  metadata {
+    name      = each.value.service
+    namespace = each.value.namespace
+  }
+
+  spec {
+
+    # Selectorless: endpoints are populated by Istio multicluster discovery from the remote team
+    # cluster, so no pod selector is set here.
+
+    port {
+      name        = "http"
+      port        = 8080
+      target_port = 8080
     }
 
     type = "ClusterIP"

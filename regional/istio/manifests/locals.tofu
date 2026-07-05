@@ -2,27 +2,29 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  # istio-test virtual services shared across regions, per cluster.
-  # Gateway (pneuma) clusters receive VirtualServices for ALL teams — because all external
+  # istio-test HTTPRoutes shared across regions, per cluster.
+  # Gateway (pneuma) clusters receive HTTPRoutes for ALL teams — because all external
   # traffic enters through pneuma's ingress gateway. Non-gateway clusters get nothing
-  # (they have no gateway pods to route ingress traffic).
-  common_istio_test_virtual_services = {
+  # (they have no gateway data plane to route ingress traffic).
+  common_istio_test_routes = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => cluster_config.team_key == module.core_helpers.team ? merge(
       # Own entry — standard name for backward compatibility
       {
         "istio-test" = {
-          destination_host = "istio-test.istio-test.svc.cluster.local"
-          host             = local.dns_zone[cluster_name]
+          backend_namespace = "istio-test"
+          backend_service   = "istio-test"
+          host              = local.dns_zone[cluster_name]
         }
       },
-      # Other teams' entries — team-qualified names to avoid key collisions;
-      # destination uses team-prefixed namespace so routing stays within that team's clusters
+      # Other teams' entries — team-qualified names to avoid key collisions; the backend
+      # Service lives in the team-prefixed namespace so routing stays within that team's clusters
       {
         for peer_name, peer_config in local.gke_clusters :
         "istio-test-${local.dns_subdomain[peer_name]}" => {
-          destination_host = "istio-test.${peer_config.team_key}-istio-test.svc.cluster.local"
-          host             = local.dns_zone[peer_name]
+          backend_namespace = "${peer_config.team_key}-istio-test"
+          backend_service   = "istio-test"
+          host              = local.dns_zone[peer_name]
         }
         if peer_config.team_key != module.core_helpers.team
       }
@@ -66,25 +68,27 @@ locals {
     if endswith(cluster_name, "-${local.zone}")
   }
 
-  # Region-specific istio-test virtual services, per cluster.
-  # Gateway (pneuma) clusters receive VirtualServices for ALL teams; non-gateway get nothing.
-  istio_test_virtual_services = {
+  # Region-specific istio-test HTTPRoutes, per cluster.
+  # Gateway (pneuma) clusters receive HTTPRoutes for ALL teams; non-gateway get nothing.
+  istio_test_routes = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => cluster_config.team_key == module.core_helpers.team ? merge(
       # Own entry — standard name for backward compatibility
       {
         "istio-test-${local.zone}" = {
-          destination_host = "istio-test-${local.zone}.istio-test.svc.cluster.local"
-          host             = "${local.zone}.${local.dns_zone[cluster_name]}"
+          backend_namespace = "istio-test"
+          backend_service   = "istio-test-${local.zone}"
+          host              = "${local.zone}.${local.dns_zone[cluster_name]}"
         }
       },
-      # Other teams' zonal entries — team-qualified names to avoid key collisions;
-      # destination uses team-prefixed namespace so routing stays within that team's clusters
+      # Other teams' zonal entries — team-qualified names to avoid key collisions; the backend
+      # Service lives in the team-prefixed namespace so routing stays within that team's clusters
       {
         for peer_name, peer_config in local.gke_clusters :
         "istio-test-${local.dns_subdomain[peer_name]}-${local.zone}" => {
-          destination_host = "istio-test-${local.zone}.${peer_config.team_key}-istio-test.svc.cluster.local"
-          host             = "${local.zone}.${local.dns_zone[peer_name]}"
+          backend_namespace = "${peer_config.team_key}-istio-test"
+          backend_service   = "istio-test-${local.zone}"
+          host              = "${local.zone}.${local.dns_zone[peer_name]}"
         }
         if peer_config.team_key != module.core_helpers.team
       }
