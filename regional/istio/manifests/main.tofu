@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=07059e643f1b1e421a4b8162b3477bfad0099efc" # migrate-ingress-to-gateway-api
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=506f57dcd34fce5c54cb5d0b096fc071203a7938" # migrate-ingress-to-gateway-api
 
   for_each = local.gke_clusters
 
