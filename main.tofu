@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=e68649ce530ca7e9f435545e476b220a76189e47" # v0.4.0
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=bdf6bd5950c83ab05f4ae393f8050dfbcf573e18" # v0.4.1
 
   for_each = local.teams_with_clusters
 
