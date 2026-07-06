@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine_regional" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=1cb9eb1bec72a46102235fa80c3b4894ee0244fb" # enable-gateway-api branch
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=f910c464e4292d743b22e67aa77d3ca2b80e1048" # enable-gateway-api branch
 
   for_each = local.gke_clusters
 
