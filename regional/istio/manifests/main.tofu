@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=7734e2e2846fa1d872c1f58bdab6ba964530c3e9" # v0.4.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=8b7defdd59d1940ca551daac06fbd4932470b5e8" # v0.5.0
 
   for_each = local.gke_clusters
 
@@ -10,12 +10,12 @@ module "kubernetes_istio_manifests" {
     kubernetes = kubernetes.by_cluster[each.key]
   }
 
-  common_istio_test_virtual_services = local.common_istio_test_virtual_services[each.key]
-  common_virtual_services            = {}
-  failover_from_region               = local.regions[each.key]
-  failover_to_region                 = local.failover_to_region[each.key]
-  istio_test_virtual_services        = local.istio_test_virtual_services[each.key]
-  virtual_services                   = {}
+  common_istio_test_routes = local.common_istio_test_routes[each.key]
+  common_routes            = {}
+  failover_from_region     = local.regions[each.key]
+  failover_to_region       = local.failover_to_region[each.key]
+  istio_test_routes        = local.istio_test_routes[each.key]
+  routes                   = {}
 }
 
 # Kubernetes Manifest Resource

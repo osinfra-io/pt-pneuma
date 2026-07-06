@@ -2,12 +2,13 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine_regional" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=bdf6bd5950c83ab05f4ae393f8050dfbcf573e18" # v0.4.1
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=2ca1180b72e4af807e086ab86c39b0d4c0e7dfae" # v0.4.2
 
   for_each = local.gke_clusters
 
   cluster_prefix              = each.value.team_key
   enable_deletion_protection  = false
+  enable_gateway_api          = each.value.enable_gateway_api
   enable_gke_hub_host         = lookup(each.value, "enable_gke_hub_host", false)
   gke_hub_memberships         = lookup(each.value, "gke_hub_memberships", {})
   labels                      = module.core_helpers.labels

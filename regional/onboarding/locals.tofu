@@ -15,9 +15,11 @@ locals {
 
   # Namespaces per cluster, derived from Logos team data. The team's GitHub Actions
   # service account (from pt-corpus) is bound as the namespace administrator.
-  # Member team namespaces are prefixed with the team key (e.g. "istio-test" on pt-kryptos
-  # becomes "pt-kryptos-istio-test") so each team's workloads are isolated by namespace
-  # and Istio routing can target a specific team's cluster exclusively.
+  # Member team namespaces are prefixed with the team key (e.g. "openbao" on pt-kryptos
+  # becomes "pt-kryptos-openbao") matching the prefixed keys in the main workspace's
+  # workload_identity_service_account_emails output. The prefix also ensures Istio namespace
+  # sameness works: the stub Service on the pneuma gateway cluster lives in the same prefixed
+  # namespace, so Istio multi-primary discovery merges remote endpoints automatically.
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {

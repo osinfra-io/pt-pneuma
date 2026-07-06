@@ -634,7 +634,7 @@ jobs:
     name: "Istio Manifests: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east1_b, main]
+    needs: [istio_test_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-b"
@@ -651,7 +651,7 @@ jobs:
     name: "Istio Manifests: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east1_c, main]
+    needs: [istio_test_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-c"
@@ -668,7 +668,7 @@ jobs:
     name: "Istio Manifests: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east1_d, main]
+    needs: [istio_test_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-d"
@@ -685,7 +685,7 @@ jobs:
     name: "Istio Manifests: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east4_a, main]
+    needs: [istio_test_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-a"
@@ -702,7 +702,7 @@ jobs:
     name: "Istio Manifests: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east4_b, main]
+    needs: [istio_test_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-b"
@@ -719,7 +719,7 @@ jobs:
     name: "Istio Manifests: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east4_c, main]
+    needs: [istio_test_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-c"
@@ -736,7 +736,7 @@ jobs:
     name: "Istio Test: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_manifests_us_east1_b, main]
+    needs: [istio_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east1-b"
@@ -757,7 +757,7 @@ jobs:
     name: "Istio Test: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_manifests_us_east1_c, main]
+    needs: [istio_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east1-c"
@@ -778,7 +778,7 @@ jobs:
     name: "Istio Test: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_manifests_us_east1_d, main]
+    needs: [istio_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east1-d"
@@ -799,7 +799,7 @@ jobs:
     name: "Istio Test: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_manifests_us_east4_a, main]
+    needs: [istio_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east4-a"
@@ -820,7 +820,7 @@ jobs:
     name: "Istio Test: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_manifests_us_east4_b, main]
+    needs: [istio_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east4-b"
@@ -841,7 +841,7 @@ jobs:
     name: "Istio Test: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_manifests_us_east4_c, main]
+    needs: [istio_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east4-c"

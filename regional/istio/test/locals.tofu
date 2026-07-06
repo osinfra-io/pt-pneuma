@@ -124,6 +124,40 @@ locals {
     }
   } : {}
 
+  # The pneuma gateway cluster in this zone (the platform team's own cluster). All external
+  # ingress terminates here, so peer teams' istio-test backends must be resolvable locally.
+  gateway_cluster = one([
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name
+    if cluster_config.team_key == module.core_helpers.team
+  ])
+
+  # Selectorless stub Services (and their namespaces) created on the pneuma gateway cluster for
+  # each peer team's istio-test. Gateway API HTTPRoute backendRefs require the backend Service
+  # object to exist locally on the gateway cluster (otherwise ResolvedRefs reports
+  # BackendNotFound); Istio multicluster endpoint discovery then fills their endpoints from the
+  # remote team clusters. Empty when there is no gateway cluster in this zone.
+  gateway_stub_namespaces = local.gateway_cluster == null ? {} : {
+    for cluster_name, cluster_config in local.gke_clusters :
+    "${cluster_config.team_key}-istio-test" => cluster_config.team_key
+    if cluster_config.team_key != module.core_helpers.team
+  }
+
+  gateway_stub_services = local.gateway_cluster == null ? {} : merge([
+    for cluster_name, cluster_config in local.gke_clusters : {
+      "${cluster_config.team_key}-istio-test/istio-test" = {
+        namespace = "${cluster_config.team_key}-istio-test"
+        service   = "istio-test"
+      }
+
+      "${cluster_config.team_key}-istio-test/istio-test-${local.zone}" = {
+        namespace = "${cluster_config.team_key}-istio-test"
+        service   = "istio-test-${local.zone}"
+      }
+    }
+    if cluster_config.team_key != module.core_helpers.team
+  ]...)
+
   kubernetes_project = data.terraform_remote_state.main.outputs.project_id
   registry           = "us-docker.pkg.dev/pt-corpus-tf16-prod/pt-pneuma-virtual"
 

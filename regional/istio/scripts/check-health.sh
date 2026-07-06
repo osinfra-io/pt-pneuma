@@ -99,7 +99,12 @@ for NAME in "${!CLUSTER_ZONES[@]}"; do
 
   echo ""
   echo "── istioctl analyze ──"
-  istioctl analyze --context="${CTX}" 2>&1
+  rc=0
+  timeout 60 istioctl analyze --context="${CTX}" 2>&1 || rc=$?
+  if [ "${rc}" -ne 0 ] && [ "${rc}" -ne 124 ]; then
+    echo "istioctl analyze failed with exit code ${rc}" >&2
+    exit "${rc}"
+  fi
 
   echo ""
   echo "── proxy-status ──"
