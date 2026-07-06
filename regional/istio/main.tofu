@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=b10a9055c48f5cdd24959f59a6e867dab4008d27" # migrate-ingress-to-gateway-api branch
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=4958335218faa76aa2fe7d9b69e6099177b450b5" # migrate-ingress-to-gateway-api branch
 
   for_each = local.gke_clusters
 
