@@ -69,10 +69,17 @@ locals {
   ]...)
 
   # GKE namespaces per team, derived from Logos team data.
-  # pt-pneuma provisions every team's declared namespaces in that team's own clusters.
+  # Member team namespaces are prefixed with the team key (e.g. "openbao" on pt-kryptos becomes
+  # "pt-kryptos-openbao") to ensure namespace uniqueness across all clusters and to satisfy Istio
+  # namespace sameness: when a stub Service is created on the pneuma gateway cluster under the same
+  # prefixed namespace name, Istio's multi-primary discovery merges the remote team's pod endpoints
+  # into the stub automatically. Pneuma's own namespaces are not prefixed.
   gke_namespaces_by_team = {
     for team_key, team in local.teams_with_clusters :
-    team_key => try(team.platform_managed_project.kubernetes_engine_namespaces, {})
+    team_key => {
+      for ns_name, ns in try(team.platform_managed_project.kubernetes_engine_namespaces, {}) :
+      (team_key != module.core_helpers.team ? "${team_key}-${ns_name}" : ns_name) => ns
+    }
   }
 
   # Platform-managed project ID per team, discovered from pt-corpus labels.

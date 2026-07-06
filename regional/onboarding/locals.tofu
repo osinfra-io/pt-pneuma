@@ -14,17 +14,17 @@ locals {
   main = data.terraform_remote_state.main.outputs
 
   # Namespaces per cluster, derived from Logos team data. The team's GitHub Actions
-  # service account (from pt-corpus) is bound as the namespace administrator. Namespaces
-  # use their raw declared names on each team's own cluster, matching the workload identity
-  # service accounts created by the main workspace (module.google_kubernetes_engine), which
-  # are keyed by the same raw namespace names. The team-prefixed namespaces used for
-  # cross-cluster Istio routing (e.g. "pt-kryptos-istio-test") are created separately on the
-  # pneuma gateway cluster by the regional/istio/test workspace, not here.
+  # service account (from pt-corpus) is bound as the namespace administrator.
+  # Member team namespaces are prefixed with the team key (e.g. "openbao" on pt-kryptos
+  # becomes "pt-kryptos-openbao") matching the prefixed keys in the main workspace's
+  # workload_identity_service_account_emails output. The prefix also ensures Istio namespace
+  # sameness works: the stub Service on the pneuma gateway cluster lives in the same prefixed
+  # namespace, so Istio multi-primary discovery merges remote endpoints automatically.
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {
       for namespace_name, namespace in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) :
-      namespace_name => {
+      (cluster_config.team_key != module.core_helpers.team ? "${cluster_config.team_key}-${namespace_name}" : namespace_name) => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
         istio_injection        = namespace.istio_injection
       }
