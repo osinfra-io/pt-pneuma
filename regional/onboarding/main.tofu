@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine_onboarding" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=bdf6bd5950c83ab05f4ae393f8050dfbcf573e18" # v0.4.1
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=2ca1180b72e4af807e086ab86c39b0d4c0e7dfae" # v0.4.2
 
   for_each = local.gke_clusters
 
