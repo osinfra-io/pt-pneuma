@@ -23,20 +23,14 @@ output "gke_clusters" {
 }
 
 output "kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert" {
-  description = "The self-signed certificate for the cert-manager root certificate, keyed by team"
-  value = {
-    for team_key in keys(module.kubernetes_cert_manager) :
-    team_key => tls_self_signed_cert.cert_manager_ca.cert_pem
-  }
+  description = "The self-signed certificate for the cert-manager root certificate"
+  value       = tls_self_signed_cert.cert_manager_ca.cert_pem
 }
 
 output "kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key" {
-  description = "The private key for the cert-manager root certificate, keyed by team"
+  description = "The private key for the cert-manager root certificate"
   sensitive   = true
-  value = {
-    for team_key in keys(module.kubernetes_cert_manager) :
-    team_key => tls_private_key.cert_manager_ca.private_key_pem
-  }
+  value       = tls_private_key.cert_manager_ca.private_key_pem
 }
 
 output "kubernetes_engine_workload_identity_service_account_emails" {

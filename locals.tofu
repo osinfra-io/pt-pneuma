@@ -19,18 +19,14 @@ locals {
     team_key => team.dns_subdomain != null ? team.dns_subdomain : replace(team_key, "/^[a-z]+-/", "")
   }
 
-  # Team DNS zone DNS name per team, following env-first naming convention
-  # prod: pneuma.osinfra.io   sb: pneuma.sb.osinfra.io
-  dns_zone_dns_names = {
+  # Team DNS zone config per team, following env-first naming convention
+  # prod: pneuma.osinfra.io / pneuma-osinfra-io   sb: pneuma.sb.osinfra.io / pneuma-sb-osinfra-io
+  dns_zones = {
     for team_key, subdomain in local.dns_subdomains :
-    team_key => module.core_helpers.env == "prod" ? "${subdomain}.osinfra.io" : "${subdomain}.${module.core_helpers.env}.osinfra.io"
-  }
-
-  # Team managed zone resource name per team, following env-first naming convention
-  # prod: pneuma-osinfra-io   sb: pneuma-sb-osinfra-io
-  dns_zone_names = {
-    for team_key, subdomain in local.dns_subdomains :
-    team_key => module.core_helpers.env == "prod" ? "${subdomain}-osinfra-io" : "${subdomain}-${module.core_helpers.env}-osinfra-io"
+    team_key => {
+      dns_name = module.core_helpers.env == "prod" ? "${subdomain}.osinfra.io" : "${subdomain}.${module.core_helpers.env}.osinfra.io"
+      name     = module.core_helpers.env == "prod" ? "${subdomain}-osinfra-io" : "${subdomain}-${module.core_helpers.env}-osinfra-io"
+    }
   }
 
   # Environment key for logos lookup (title case with hyphens preserved)
@@ -42,8 +38,8 @@ locals {
   gateway_dns_by_team = {
     for team_key in keys(local.teams_with_clusters) :
     team_key => length(data.google_projects.shared_vpc_host.projects) > 0 ? {
-      (local.dns_zone_dns_names[team_key]) = {
-        managed_zone = local.dns_zone_names[team_key]
+      (local.dns_zones[team_key].dns_name) = {
+        managed_zone = local.dns_zones[team_key].name
         project      = data.google_project.shared_vpc_host.project_id
       }
     } : {}
