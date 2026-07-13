@@ -34,8 +34,8 @@ module "kubernetes_istio" {
   proxy_cpu_requests                          = var.kubernetes_istio_proxy_cpu_requests
   proxy_memory_limits                         = var.kubernetes_istio_proxy_memory_limits
   proxy_memory_requests                       = var.kubernetes_istio_proxy_memory_requests
-  tls_self_signed_cert_cert_manager_root_cert = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert[each.value.team_key]
-  tls_self_signed_cert_cert_manager_root_key  = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key[each.value.team_key]
+  tls_self_signed_cert_cert_manager_root_cert = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert
+  tls_self_signed_cert_cert_manager_root_key  = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key
 }
 
 # Kubernetes Deployment Resource
