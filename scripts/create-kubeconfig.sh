@@ -55,6 +55,9 @@ for PROJECT in "${PROJECTS[@]}"; do
   for row in "${CLUSTER_ROWS[@]}"; do
     NAME="${row%%,*}"
     ZONE="${row##*,}"
+    if [[ -v CLUSTER_ZONES["${NAME}"] ]]; then
+      echo "  Warning: cluster name '${NAME}' exists in both '${CLUSTER_PROJECT[${NAME}]}' and '${PROJECT}' — keeping the latter"
+    fi
     CLUSTER_ZONES["${NAME}"]="${ZONE}"
     CLUSTER_PROJECT["${NAME}"]="${PROJECT}"
   done
@@ -80,13 +83,13 @@ echo
 
 for NAME in "${!CLUSTER_ZONES[@]}"; do
   PROJECT="${CLUSTER_PROJECT[${NAME}]}"
-  ZONE="${CLUSTER_ZONES[${NAME}]}"
-  DEFAULT_CONTEXT="gke_${PROJECT}_${ZONE}_${NAME}"
+  LOCATION="${CLUSTER_ZONES[${NAME}]}"
+  DEFAULT_CONTEXT="gke_${PROJECT}_${LOCATION}_${NAME}"
 
   echo "  ${NAME}..."
 
   gcloud container clusters get-credentials "${NAME}" \
-    --zone="${ZONE}" \
+    --location="${LOCATION}" \
     --project="${PROJECT}" \
     --quiet
 
