@@ -54,20 +54,11 @@ resource "datadog_synthetics_test" "this" {
 # Kubernetes Namespace Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/namespace_v1
 
-resource "kubernetes_namespace_v1" "istio_test" {
-  for_each = local.gke_clusters
-
-  provider = kubernetes.by_cluster[each.key]
-
-  metadata {
-    labels = {
-      "istio-injection"         = "enabled"
-      "osinfra.io/route-prefix" = local.dns_subdomains[each.value.team_key]
-    }
-
-    name = local.namespace[each.key]
-  }
-}
+# The per-team istio-test namespace (pt-<team>-istio-test) is declared in each team's Logos spec
+# and created by the regional/onboarding workspace, so pneuma dogfoods the exact provisioning path
+# a member team uses. Only the gateway-cluster stub namespaces (peer teams' shadow backends) are
+# created here — they are a Gateway API requirement local to the gateway cluster, not a team
+# namespace, so they cannot originate from a team's onboarding.
 
 resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
   for_each = local.gateway_stub_namespaces
@@ -105,8 +96,7 @@ resource "kubernetes_deployment_v1" "istio_test" {
 
   for_each = local.gke_clusters
 
-  depends_on = [kubernetes_namespace_v1.istio_test]
-  provider   = kubernetes.by_cluster[each.key]
+  provider = kubernetes.by_cluster[each.key]
 
   metadata {
     labels = {
@@ -249,8 +239,7 @@ resource "kubernetes_deployment_v1" "istio_test" {
 resource "kubernetes_manifest" "istio_test" {
   for_each = local.gke_clusters
 
-  depends_on = [kubernetes_namespace_v1.istio_test]
-  provider   = kubernetes.by_cluster[each.key]
+  provider = kubernetes.by_cluster[each.key]
 
   manifest = {
     apiVersion = "security.istio.io/v1"
@@ -308,8 +297,7 @@ resource "kubernetes_manifest" "istio_test" {
 resource "kubernetes_service_v1" "istio_test" {
   for_each = local.gke_clusters
 
-  depends_on = [kubernetes_namespace_v1.istio_test]
-  provider   = kubernetes.by_cluster[each.key]
+  provider = kubernetes.by_cluster[each.key]
 
   metadata {
     name      = "istio-test"
@@ -360,8 +348,7 @@ resource "kubernetes_service_v1" "istio_test_gateway_stub" {
 resource "kubernetes_service_v1" "istio_test_regional" {
   for_each = local.gke_clusters
 
-  depends_on = [kubernetes_namespace_v1.istio_test]
-  provider   = kubernetes.by_cluster[each.key]
+  provider = kubernetes.by_cluster[each.key]
 
   metadata {
     name      = "istio-test-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"

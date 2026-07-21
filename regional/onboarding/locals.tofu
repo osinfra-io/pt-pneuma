@@ -23,11 +23,14 @@ locals {
 
   # Namespaces per cluster, derived from Logos team data. The team's GitHub Actions
   # service account (from pt-corpus) is bound as the namespace administrator.
-  # Member team namespaces are prefixed with the team key (e.g. "openbao" on pt-kryptos
-  # becomes "pt-kryptos-openbao") matching the prefixed keys in the main workspace's
+  # Every team's namespaces — including pneuma's own — are prefixed with the team key
+  # (e.g. "openbao" on pt-kryptos becomes "pt-kryptos-openbao", "istio-test" on pt-pneuma
+  # becomes "pt-pneuma-istio-test") matching the prefixed keys in the main workspace's
   # workload_identity_service_account_emails output. The prefix also ensures Istio namespace
   # sameness works: the stub Service on the pneuma gateway cluster lives in the same prefixed
-  # namespace, so Istio multi-primary discovery merges remote endpoints automatically.
+  # namespace, so Istio multi-primary discovery merges remote endpoints automatically. Prefixing
+  # uniformly (with no platform-team exception) lets pneuma dogfood the model exactly like a
+  # member team.
   # route_prefix (the team's resolved subdomain) is applied only to mesh-enabled namespaces so the
   # arche onboarding module can add the osinfra.io/route-prefix label that lets the namespace attach
   # HTTPRoutes to the team's shared gateway listener. Off-mesh namespaces (istio_injection disabled,
@@ -36,7 +39,7 @@ locals {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {
       for namespace_name, namespace in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) :
-      (cluster_config.team_key != module.core_helpers.team ? "${cluster_config.team_key}-${namespace_name}" : namespace_name) => {
+      "${cluster_config.team_key}-${namespace_name}" => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
         istio_injection        = namespace.istio_injection
         route_prefix           = namespace.istio_injection == "enabled" ? local.dns_subdomains[cluster_config.team_key] : null
