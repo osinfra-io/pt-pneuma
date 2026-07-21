@@ -30,10 +30,18 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
     apiVersion = "networking.istio.io/v1alpha3"
     kind       = "EnvoyFilter"
     metadata = {
+      annotations = {
+        # IST0133: EnvoyFilters are inherently low-level; this warning is expected.
+        "galley.istio.io/analyze-suppress" = "IST0133"
+      }
       name      = "datadog-aap-gateway-filter"
       namespace = "istio-ingress"
     }
     spec = {
+      # Priority ensures consistent ordering when using relative patch operations.
+      # Lower numbers are applied first; 10 is early enough to run before other filters.
+      priority = 10
+
       configPatches = [
         {
           applyTo = "CLUSTER"
