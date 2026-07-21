@@ -17,6 +17,11 @@ output "gateway_dns" {
   value       = local.gateway_dns_by_team
 }
 
+output "gateway_listeners" {
+  description = "Per-team HTTPS gateway listeners for the shared Istio gateway, keyed by team route prefix"
+  value       = local.gateway_listeners
+}
+
 output "gke_clusters" {
   description = "GKE clusters aggregated from all teams"
   value       = local.gke_clusters

@@ -50,6 +50,21 @@ locals {
   # pneuma's gateway (e.g. both pneuma.sb.osinfra.io and kryptos.sb.osinfra.io).
   gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(values(local.gateway_dns_by_team)...) : {}
 
+  # Per-team HTTPS listeners for pneuma's shared Istio gateway, keyed by the team's
+  # route_prefix. Each team that sets route_prefix in its Logos spec gets a dedicated
+  # listener whose hostname (<route-prefix>.osinfra.io in prod, <route-prefix>.<env>.osinfra.io
+  # otherwise) and osinfra.io/route-prefix namespace selector confine it to its own subdomain.
+  # Empty when no team sets route_prefix — the arche istio module then falls back to a single
+  # from:All listener, so existing deployments see no change until a team opts in.
+  gateway_listeners = {
+    for team_key, team in module.core_helpers.teams :
+    team.route_prefix => {
+      hostname     = module.core_helpers.env == "prod" ? "${team.route_prefix}.osinfra.io" : "${team.route_prefix}.${module.core_helpers.env}.osinfra.io"
+      route_prefix = team.route_prefix
+    }
+    if team.route_prefix != null
+  }
+
   # GKE clusters aggregated from all teams, filtered by active zones for this environment
   # Derives cluster name as {team_key}-{location} from the flat locations map in pt-logos
   # Merges project_id for each team so regional workspaces can construct correct cluster resource IDs

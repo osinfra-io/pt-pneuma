@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=3317d38d97fd1cb3298d5933bdbb265e45280eb0" # v0.5.4
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=add-per-team-gateway-listeners" # branch: add-per-team-gateway-listeners (PR #98, pin to SHA after merge)
 
   for_each = local.gke_clusters
 
@@ -18,6 +18,7 @@ module "kubernetes_istio" {
   gateway_cpu_limits         = var.kubernetes_istio_gateway_cpu_limits
   gateway_cpu_requests       = var.kubernetes_istio_gateway_cpu_requests
   gateway_dns                = each.value.team_key == module.core_helpers.team ? local.gateway_dns[each.key] : {}
+  gateway_listeners          = each.value.team_key == module.core_helpers.team ? local.gateway_listeners[each.key] : {}
   gateway_mci_global_address = try(local.main.kubernetes_istio_gateway_mci_global_address[each.value.team_key], null)
   gateway_memory_limits      = var.kubernetes_istio_gateway_memory_limits
   gateway_memory_requests    = var.kubernetes_istio_gateway_memory_requests

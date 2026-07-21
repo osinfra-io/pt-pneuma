@@ -20,6 +20,9 @@ locals {
   # workload_identity_service_account_emails output. The prefix also ensures Istio namespace
   # sameness works: the stub Service on the pneuma gateway cluster lives in the same prefixed
   # namespace, so Istio multi-primary discovery merges remote endpoints automatically.
+  # route_prefix (the team's subdomain label) is applied to every namespace so the arche
+  # onboarding module can add the osinfra.io/route-prefix label that lets the namespace
+  # attach HTTPRoutes to the team's shared gateway listener.
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {
@@ -27,6 +30,7 @@ locals {
       (cluster_config.team_key != module.core_helpers.team ? "${cluster_config.team_key}-${namespace_name}" : namespace_name) => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
         istio_injection        = namespace.istio_injection
+        route_prefix           = module.core_helpers.teams[cluster_config.team_key].route_prefix
       }
     }
   }
