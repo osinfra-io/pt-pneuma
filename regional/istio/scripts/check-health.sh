@@ -246,9 +246,9 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
 
   echo -e "\n${GREEN}✓ Proxies: ${synced_count} synced${RESET}"
 
-  # Remote clusters — just show sync status.
+  # Remote clusters — count unique cluster names (not per-istiod lines).
   remote_output=$(istioctl remote-clusters --context="${CTX}" 2>&1 || true)
-  remote_total=$(echo "${remote_output}" | grep -c "synced" || true)
+  remote_total=$(echo "${remote_output}" | awk '/synced/ {print $1}' | sort -u | wc -l)
   remote_total=${remote_total:-0}
   REMOTE_SYNCED["${NAME}"]="${remote_total}"
 
