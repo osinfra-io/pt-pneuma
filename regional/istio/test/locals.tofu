@@ -124,6 +124,14 @@ locals {
     }
   } : {}
 
+  # Resolved DNS subdomain per team — the team's dns_subdomain from Logos, or the team key with
+  # its topology prefix stripped (e.g. "pt-kryptos" → "kryptos"). Applied as the
+  # osinfra.io/route-prefix namespace label so istio-test HTTPRoutes attach to the team's listener.
+  dns_subdomains = {
+    for team_key, team in module.core_helpers.teams :
+    team_key => team.dns_subdomain != null ? team.dns_subdomain : replace(team_key, "/^[a-z]+-/", "")
+  }
+
   # The pneuma gateway cluster in this zone (the platform team's own cluster). All external
   # ingress terminates here, so peer teams' istio-test backends must be resolvable locally.
   gateway_cluster = one([
@@ -136,10 +144,12 @@ locals {
   # each peer team's istio-test. Gateway API HTTPRoute backendRefs require the backend Service
   # object to exist locally on the gateway cluster (otherwise ResolvedRefs reports
   # BackendNotFound); Istio multicluster endpoint discovery then fills their endpoints from the
-  # remote team clusters. Empty when there is no gateway cluster in this zone.
+  # remote team clusters. The map value is the team's route prefix, applied as the
+  # osinfra.io/route-prefix label so the namespace attaches routes to that team's gateway listener.
+  # Empty when there is no gateway cluster in this zone.
   gateway_stub_namespaces = local.gateway_cluster == null ? {} : {
     for cluster_name, cluster_config in local.gke_clusters :
-    "${cluster_config.team_key}-istio-test" => cluster_config.team_key
+    "${cluster_config.team_key}-istio-test" => local.dns_subdomains[cluster_config.team_key]
     if cluster_config.team_key != module.core_helpers.team
   }
 

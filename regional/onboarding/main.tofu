@@ -10,6 +10,7 @@ module "google_kubernetes_engine_onboarding" {
     kubernetes = kubernetes.by_cluster[each.key]
   }
 
+  istio_test_route_prefix                  = local.dns_subdomains[each.value.team_key]
   namespaces                               = local.namespaces[each.key]
   project                                  = each.value.project_id
   workload_identity_service_account_emails = local.main.kubernetes_engine_workload_identity_service_account_emails[each.value.team_key]
