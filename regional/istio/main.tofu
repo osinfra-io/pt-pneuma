@@ -75,12 +75,12 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
             DD_ENV     = module.core_helpers.environment
             DD_SERVICE = "istio-gateway"
           })
-          "sidecar.istio.io/inject" = "false"
         }
 
         labels = {
           "admission.datadoghq.com/enabled" = "true"
           app                               = "datadog-aap-extproc"
+          "sidecar.istio.io/inject"         = "false"
           "tags.datadoghq.com/env"          = module.core_helpers.environment
           "tags.datadoghq.com/service"      = "istio-gateway"
         }
