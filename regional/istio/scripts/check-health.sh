@@ -161,9 +161,17 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
   INFO_COUNT["${NAME}"]=0
 
   # Get all namespaces and filter out the skip list.
-  mapfile -t NAMESPACES < <(kubectl get namespaces \
+  ns_output=$(kubectl get namespaces \
     --context="${CTX}" \
-    -o jsonpath='{.items[*].metadata.name}' 2>/dev/null | tr ' ' '\n' | sort)
+    -o jsonpath='{.items[*].metadata.name}' 2>&1) || {
+    echo -e "${RED}✗ Unable to connect to cluster${RESET}"
+    ERROR_COUNT["${NAME}"]=1
+    PROXY_SYNCED["${NAME}"]=0
+    REMOTE_SYNCED["${NAME}"]=0
+    echo
+    continue
+  }
+  mapfile -t NAMESPACES < <(echo "${ns_output}" | tr ' ' '\n' | sort)
 
   # Collect analyze output for all namespaces.
   > "${ANALYZE_OUTPUT}"
@@ -244,7 +252,11 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
   synced_count=${synced_count:-0}
   PROXY_SYNCED["${NAME}"]="${synced_count}"
 
-  echo -e "\n${GREEN}✓ Proxies: ${synced_count} synced${RESET}"
+  if [[ ${synced_count} -gt 0 ]]; then
+    echo -e "\n${GREEN}✓ Proxies: ${synced_count} synced${RESET}"
+  else
+    echo -e "\n${YELLOW}⚠ Proxies: ${synced_count} synced${RESET}"
+  fi
 
   # Remote clusters — count unique cluster names (not per-istiod lines).
   remote_output=$(istioctl remote-clusters --context="${CTX}" 2>&1 || true)
