@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=d0b3845fb3bab524093ccab9f33f94a1b76c7789" # v0.5.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=3317d38d97fd1cb3298d5933bdbb265e45280eb0" # v0.5.4
 
   for_each = local.gke_clusters
 
@@ -30,10 +30,18 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
     apiVersion = "networking.istio.io/v1alpha3"
     kind       = "EnvoyFilter"
     metadata = {
+      annotations = {
+        # IST0133: EnvoyFilters are inherently low-level; this warning is expected.
+        "galley.istio.io/analyze-suppress" = "IST0133"
+      }
       name      = "datadog-aap-gateway-filter"
       namespace = "istio-ingress"
     }
     spec = {
+      # Priority ensures consistent ordering when using relative patch operations.
+      # Lower numbers are applied first; 10 is early enough to run before other filters.
+      priority = 10
+
       configPatches = [
         {
           applyTo = "CLUSTER"

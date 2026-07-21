@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=d0b3845fb3bab524093ccab9f33f94a1b76c7789" # v0.5.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=3317d38d97fd1cb3298d5933bdbb265e45280eb0" # v0.5.4
 
   for_each = local.gke_clusters
 
@@ -75,12 +75,12 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
             DD_ENV     = module.core_helpers.environment
             DD_SERVICE = "istio-gateway"
           })
-          "sidecar.istio.io/inject" = "false"
         }
 
         labels = {
           "admission.datadoghq.com/enabled" = "true"
           app                               = "datadog-aap-extproc"
+          "sidecar.istio.io/inject"         = "false"
           "tags.datadoghq.com/env"          = module.core_helpers.environment
           "tags.datadoghq.com/service"      = "istio-gateway"
         }
