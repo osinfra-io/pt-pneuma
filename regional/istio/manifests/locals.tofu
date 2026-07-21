@@ -5,30 +5,20 @@ locals {
   # istio-test HTTPRoutes shared across regions, per cluster.
   # Gateway (pneuma) clusters receive HTTPRoutes for ALL teams — because all external
   # traffic enters through pneuma's ingress gateway. Non-gateway clusters get nothing
-  # (they have no gateway data plane to route ingress traffic).
+  # (they have no gateway data plane to route ingress traffic). Every team — including
+  # pneuma — is treated uniformly: its backend Service lives in the team-prefixed
+  # namespace (e.g. "pt-pneuma-istio-test", "pt-kryptos-istio-test") and its route key is
+  # qualified by the team's subdomain to avoid collisions.
   common_istio_test_routes = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key == module.core_helpers.team ? merge(
-      # Own entry — standard name for backward compatibility
-      {
-        "istio-test" = {
-          backend_namespace = "istio-test"
-          backend_service   = "istio-test"
-          host              = local.dns_zone[cluster_name]
-        }
-      },
-      # Other teams' entries — team-qualified names to avoid key collisions; the backend
-      # Service lives in the team-prefixed namespace so routing stays within that team's clusters
-      {
-        for peer_name, peer_config in local.gke_clusters :
-        "istio-test-${local.dns_subdomain[peer_name]}" => {
-          backend_namespace = "${peer_config.team_key}-istio-test"
-          backend_service   = "istio-test"
-          host              = local.dns_zone[peer_name]
-        }
-        if peer_config.team_key != module.core_helpers.team
+    cluster_name => cluster_config.team_key == module.core_helpers.team ? {
+      for peer_name, peer_config in local.gke_clusters :
+      "istio-test-${local.dns_subdomain[peer_name]}" => {
+        backend_namespace = "${peer_config.team_key}-istio-test"
+        backend_service   = "istio-test"
+        host              = local.dns_zone[peer_name]
       }
-    ) : {}
+    } : {}
   }
 
   # DNS subdomain per cluster, extracted from the gateway DNS zone name
@@ -70,29 +60,18 @@ locals {
 
   # Region-specific istio-test HTTPRoutes, per cluster.
   # Gateway (pneuma) clusters receive HTTPRoutes for ALL teams; non-gateway get nothing.
+  # Every team — including pneuma — is treated uniformly: the backend Service lives in the
+  # team-prefixed namespace and the route key is qualified by the team's subdomain.
   istio_test_routes = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key == module.core_helpers.team ? merge(
-      # Own entry — standard name for backward compatibility
-      {
-        "istio-test-${local.zone}" = {
-          backend_namespace = "istio-test"
-          backend_service   = "istio-test-${local.zone}"
-          host              = "${local.zone}.${local.dns_zone[cluster_name]}"
-        }
-      },
-      # Other teams' zonal entries — team-qualified names to avoid key collisions; the backend
-      # Service lives in the team-prefixed namespace so routing stays within that team's clusters
-      {
-        for peer_name, peer_config in local.gke_clusters :
-        "istio-test-${local.dns_subdomain[peer_name]}-${local.zone}" => {
-          backend_namespace = "${peer_config.team_key}-istio-test"
-          backend_service   = "istio-test-${local.zone}"
-          host              = "${local.zone}.${local.dns_zone[peer_name]}"
-        }
-        if peer_config.team_key != module.core_helpers.team
+    cluster_name => cluster_config.team_key == module.core_helpers.team ? {
+      for peer_name, peer_config in local.gke_clusters :
+      "istio-test-${local.dns_subdomain[peer_name]}-${local.zone}" => {
+        backend_namespace = "${peer_config.team_key}-istio-test"
+        backend_service   = "istio-test-${local.zone}"
+        host              = "${local.zone}.${local.dns_zone[peer_name]}"
       }
-    ) : {}
+    } : {}
   }
 
   # Main workspace outputs

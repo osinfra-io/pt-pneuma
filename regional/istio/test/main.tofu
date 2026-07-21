@@ -55,17 +55,14 @@ resource "datadog_synthetics_test" "this" {
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/namespace_v1
 
 resource "kubernetes_namespace_v1" "istio_test" {
-  for_each = {
-    for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config
-    if cluster_config.team_key != module.core_helpers.team
-  }
+  for_each = local.gke_clusters
 
   provider = kubernetes.by_cluster[each.key]
 
   metadata {
     labels = {
-      "istio-injection" = "enabled"
+      "istio-injection"         = "enabled"
+      "osinfra.io/route-prefix" = local.dns_subdomains[each.value.team_key]
     }
 
     name = local.namespace[each.key]
