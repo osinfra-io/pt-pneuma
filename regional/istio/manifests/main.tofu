@@ -10,12 +10,10 @@ module "kubernetes_istio_manifests" {
     kubernetes = kubernetes.by_cluster[each.key]
   }
 
-  common_istio_test_routes = local.common_istio_test_routes[each.key]
-  common_routes            = {}
-  failover_from_region     = local.regions[each.key]
-  failover_to_region       = local.failover_to_region[each.key]
-  istio_test_routes        = local.istio_test_routes[each.key]
-  routes                   = {}
+  common_routes        = local.common_routes[each.key]
+  failover_from_region = local.regions[each.key]
+  failover_to_region   = local.failover_to_region[each.key]
+  routes               = local.routes[each.key]
 }
 
 # Kubernetes Manifest Resource

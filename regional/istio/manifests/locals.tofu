@@ -2,23 +2,17 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  # istio-test HTTPRoutes shared across regions, per cluster.
-  # Gateway (pneuma) clusters receive HTTPRoutes for ALL teams — because all external
-  # traffic enters through pneuma's ingress gateway. Non-gateway clusters get nothing
-  # (they have no gateway data plane to route ingress traffic). Every team — including
-  # pneuma — is treated uniformly: its backend Service lives in the team-prefixed
-  # namespace (e.g. "pt-pneuma-istio-test", "pt-kryptos-istio-test") and its route key is
-  # qualified by the team's subdomain to avoid collisions.
-  common_istio_test_routes = {
+  # Apex HTTPRoutes for the gateway cluster, aggregated across every team present in this
+  # zone. Gateway (pneuma) clusters receive HTTPRoutes for ALL teams — because all external
+  # traffic enters through pneuma's ingress gateway. Non-gateway clusters get nothing (they
+  # have no gateway data plane to route ingress traffic). Route keys embed the team subdomain
+  # to avoid collisions across teams.
+  common_routes = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key == module.core_helpers.team ? {
+    cluster_name => cluster_config.team_key == module.core_helpers.team ? merge([
       for peer_name, peer_config in local.gke_clusters :
-      "istio-test-${local.dns_subdomain[peer_name]}" => {
-        backend_namespace = "${peer_config.team_key}-istio-test"
-        backend_service   = "istio-test"
-        host              = local.dns_zone[peer_name]
-      }
-    } : {}
+      local.team_apex_routes[peer_name]
+    ]...) : {}
   }
 
   # DNS subdomain per cluster, extracted from the gateway DNS zone name
@@ -58,22 +52,6 @@ locals {
     if endswith(cluster_name, "-${local.zone}")
   }
 
-  # Region-specific istio-test HTTPRoutes, per cluster.
-  # Gateway (pneuma) clusters receive HTTPRoutes for ALL teams; non-gateway get nothing.
-  # Every team — including pneuma — is treated uniformly: the backend Service lives in the
-  # team-prefixed namespace and the route key is qualified by the team's subdomain.
-  istio_test_routes = {
-    for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key == module.core_helpers.team ? {
-      for peer_name, peer_config in local.gke_clusters :
-      "istio-test-${local.dns_subdomain[peer_name]}-${local.zone}" => {
-        backend_namespace = "${peer_config.team_key}-istio-test"
-        backend_service   = "istio-test-${local.zone}"
-        host              = "${local.zone}.${local.dns_zone[peer_name]}"
-      }
-    } : {}
-  }
-
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
@@ -81,6 +59,57 @@ locals {
   regions = {
     for cluster_name in keys(var.clusters) :
     cluster_name => regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]
+  }
+
+  # Region-specific (zonal) probe HTTPRoutes for the gateway cluster, aggregated across every
+  # team present in this zone. These are pneuma-managed test scaffolding derived from each
+  # team's declared istio-test route: they target the per-zone Service ("<service>-<zone>")
+  # under the zonal host ("<zone>.<subdomain>.osinfra.io") so the platform can probe every zone
+  # independently. Teams declare only the apex route; the zonal variants are added here.
+  routes = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => cluster_config.team_key == module.core_helpers.team ? merge([
+      for peer_name, peer_config in local.gke_clusters :
+      local.team_zonal_routes[peer_name]
+    ]...) : {}
+  }
+
+  # Per-team apex HTTPRoutes derived from each team's Logos-declared namespace routes. Keyed by
+  # the team's cluster in this zone. Every route declared under a mesh-enabled namespace becomes
+  # an apex HTTPRoute on the team's subdomain, co-located with its backend Service in the
+  # team-prefixed namespace (e.g. "pt-kryptos-istio-test").
+  team_apex_routes = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => merge([
+      for ns_name, ns in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) : {
+        for route_name, route in try(ns.routes, {}) :
+        "${route_name}-${local.dns_subdomain[cluster_name]}" => {
+          backend_namespace = "${cluster_config.team_key}-${ns_name}"
+          backend_port      = route.port
+          backend_service   = route.service
+          host              = local.dns_zone[cluster_name]
+          path              = route.path
+        }
+      }
+    ]...)
+  }
+
+  # Per-team zonal probe HTTPRoutes derived from each team's Logos-declared istio-test routes.
+  # Keyed by the team's cluster in this zone. Only the istio-test namespace is scaffolded per
+  # zone (a platform test convention); each apex route gets a zonal sibling targeting the
+  # per-zone Service under the zonal host.
+  team_zonal_routes = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => {
+      for route_name, route in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces["istio-test"].routes, {}) :
+      "${route_name}-${local.dns_subdomain[cluster_name]}-${local.zone}" => {
+        backend_namespace = "${cluster_config.team_key}-istio-test"
+        backend_port      = route.port
+        backend_service   = "${route.service}-${local.zone}"
+        host              = "${local.zone}.${local.dns_zone[cluster_name]}"
+        path              = route.path
+      }
+    }
   }
 
   # This deployment zone, parsed from the workspace name (e.g.
