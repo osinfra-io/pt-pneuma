@@ -60,6 +60,18 @@ resource "datadog_synthetics_test" "this" {
 # created here — they are a Gateway API requirement local to the gateway cluster, not a team
 # namespace, so they cannot originate from a team's onboarding.
 
+# This workspace previously created the member-team istio-test namespaces (e.g.
+# pt-kryptos-istio-test). Ownership has moved to regional/onboarding, so release them from this
+# workspace's state without destroying them — the onboarding workspace now manages the live
+# objects, and destroying here would delete the namespace (and its workload) out from under it.
+removed {
+  from = kubernetes_namespace_v1.istio_test
+
+  lifecycle {
+    destroy = false
+  }
+}
+
 resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
   for_each = local.gateway_stub_namespaces
 
