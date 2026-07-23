@@ -22,15 +22,6 @@ locals {
     if cluster_config.team_key == module.core_helpers.team
   }
 
-  # Per-team gateway listeners per cluster. Only pneuma (gateway) clusters carry the
-  # per-team listeners — every team's subdomain routes through pneuma's single gateway.
-  # Member team clusters run no gateway and get nothing. Empty until a team sets
-  # route_prefix, in which case the arche istio module falls back to a from:All listener.
-  gateway_listeners = {
-    for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key == module.core_helpers.team ? local.main.gateway_listeners : {}
-  }
-
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
   gke_clusters = {

@@ -2,14 +2,6 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  # Resolved DNS subdomain per team — the team's dns_subdomain from Logos, or the team key with
-  # its topology prefix stripped (e.g. "pt-kryptos" → "kryptos"). This is the value applied as the
-  # osinfra.io/route-prefix namespace label and must match the team's gateway listener hostname.
-  dns_subdomains = {
-    for team_key, team in module.core_helpers.teams :
-    team_key => team.dns_subdomain != null ? team.dns_subdomain : replace(team_key, "/^[a-z]+-/", "")
-  }
-
   # GKE clusters in this zone — the subset that actually receives namespaces.
   # The zone is parsed from the workspace name (static context safe).
   gke_clusters = {
@@ -31,10 +23,6 @@ locals {
   # namespace, so Istio multi-primary discovery merges remote endpoints automatically. Prefixing
   # uniformly (with no platform-team exception) lets pneuma dogfood the model exactly like a
   # member team.
-  # route_prefix (the team's resolved subdomain) is applied only to mesh-enabled namespaces so the
-  # arche onboarding module can add the osinfra.io/route-prefix label that lets the namespace attach
-  # HTTPRoutes to the team's shared gateway listener. Off-mesh namespaces (istio_injection disabled,
-  # e.g. openbao) are never routed, so they are left unlabeled.
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {
@@ -42,7 +30,6 @@ locals {
       "${cluster_config.team_key}-${namespace_name}" => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
         istio_injection        = namespace.istio_injection
-        route_prefix           = namespace.istio_injection == "enabled" ? local.dns_subdomains[cluster_config.team_key] : null
       }
     }
   }

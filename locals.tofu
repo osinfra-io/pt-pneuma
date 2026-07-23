@@ -50,28 +50,6 @@ locals {
   # pneuma's gateway (e.g. both pneuma.sb.osinfra.io and kryptos.sb.osinfra.io).
   gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(values(local.gateway_dns_by_team)...) : {}
 
-  # Per-team HTTPS listeners for pneuma's shared Istio gateway. Each team that owns a GKE
-  # cluster gets a pair of listeners derived from its resolved DNS subdomain:
-  #   - apex     <sub>.osinfra.io   (prod) / <sub>.<env>.osinfra.io   — matches the apex host
-  #              used by common (all-region) routes such as istio-test.
-  #   - wildcard *.<sub>.osinfra.io (prod) / *.<sub>.<env>.osinfra.io — matches the zonal host
-  #              (<zone>.<sub>...) used by region-specific routes.
-  # Both carry an osinfra.io/route-prefix=<sub> namespace selector, so a team's routes attach
-  # only from its own labeled namespaces and only for its own subdomain (hostname intersection).
-  # Keyed by listener name (Gateway API section name); the subdomain is a valid RFC 1123 label.
-  gateway_listeners = merge([
-    for team_key, subdomain in local.dns_subdomains : {
-      (subdomain) = {
-        hostname     = local.dns_zones[team_key].dns_name
-        route_prefix = subdomain
-      }
-
-      "${subdomain}-wildcard" = {
-        hostname     = "*.${local.dns_zones[team_key].dns_name}"
-        route_prefix = subdomain
-      }
-    }
-  ]...)
 
   # GKE clusters aggregated from all teams, filtered by active zones for this environment
   # Derives cluster name as {team_key}-{location} from the flat locations map in pt-logos

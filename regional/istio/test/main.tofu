@@ -67,8 +67,7 @@ resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
 
   metadata {
     labels = {
-      "istio-injection"         = "enabled"
-      "osinfra.io/route-prefix" = each.value
+      "istio-injection" = "enabled"
     }
 
     name = each.key
