@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine_onboarding" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=add-route-prefix-label" # branch: add-route-prefix-label (PR #178, pin to SHA after merge)
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=011cd45f614c5c93c24e338bd1317f4a004d6789" # post-#178 merge (untagged; re-pin to release tag at finalize)
 
   for_each = local.gke_clusters
 
