@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=3317d38d97fd1cb3298d5933bdbb265e45280eb0" # v0.5.4
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=add-per-team-gateway-listeners" # branch: add-per-team-gateway-listeners (PR #98, pin to SHA after merge)
 
   for_each = local.gke_clusters
 
@@ -10,12 +10,9 @@ module "kubernetes_istio_manifests" {
     kubernetes = kubernetes.by_cluster[each.key]
   }
 
-  common_istio_test_routes = local.common_istio_test_routes[each.key]
-  common_routes            = {}
-  failover_from_region     = local.regions[each.key]
-  failover_to_region       = local.failover_to_region[each.key]
-  istio_test_routes        = local.istio_test_routes[each.key]
-  routes                   = {}
+  failover_from_region = local.regions[each.key]
+  failover_to_region   = local.failover_to_region[each.key]
+  routes               = local.routes[each.key]
 }
 
 # Kubernetes Manifest Resource

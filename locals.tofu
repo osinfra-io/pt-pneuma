@@ -50,6 +50,7 @@ locals {
   # pneuma's gateway (e.g. both pneuma.sb.osinfra.io and kryptos.sb.osinfra.io).
   gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(values(local.gateway_dns_by_team)...) : {}
 
+
   # GKE clusters aggregated from all teams, filtered by active zones for this environment
   # Derives cluster name as {team_key}-{location} from the flat locations map in pt-logos
   # Merges project_id for each team so regional workspaces can construct correct cluster resource IDs
@@ -65,16 +66,18 @@ locals {
   ]...)
 
   # GKE namespaces per team, derived from Logos team data.
-  # Member team namespaces are prefixed with the team key (e.g. "openbao" on pt-kryptos becomes
-  # "pt-kryptos-openbao") to ensure namespace uniqueness across all clusters and to satisfy Istio
+  # Every team's namespaces — including pneuma's own — are prefixed with the team key (e.g. "openbao"
+  # on pt-kryptos becomes "pt-kryptos-openbao", "istio-test" on pt-pneuma becomes
+  # "pt-pneuma-istio-test") to ensure namespace uniqueness across all clusters and to satisfy Istio
   # namespace sameness: when a stub Service is created on the pneuma gateway cluster under the same
   # prefixed namespace name, Istio's multi-primary discovery merges the remote team's pod endpoints
-  # into the stub automatically. Pneuma's own namespaces are not prefixed.
+  # into the stub automatically. Prefixing uniformly (with no platform-team exception) lets pneuma
+  # dogfood the model exactly like a member team.
   gke_namespaces_by_team = {
     for team_key, team in local.teams_with_clusters :
     team_key => {
       for ns_name, ns in try(team.platform_managed_project.kubernetes_engine_namespaces, {}) :
-      (team_key != module.core_helpers.team ? "${team_key}-${ns_name}" : ns_name) => ns
+      "${team_key}-${ns_name}" => ns
     }
   }
 

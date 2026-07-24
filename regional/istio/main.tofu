@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=3317d38d97fd1cb3298d5933bdbb265e45280eb0" # v0.5.4
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=add-per-team-gateway-listeners" # branch: add-per-team-gateway-listeners (PR #98, pin to SHA after merge)
 
   for_each = local.gke_clusters
 

@@ -137,11 +137,11 @@ locals {
   # object to exist locally on the gateway cluster (otherwise ResolvedRefs reports
   # BackendNotFound); Istio multicluster endpoint discovery then fills their endpoints from the
   # remote team clusters. Empty when there is no gateway cluster in this zone.
-  gateway_stub_namespaces = local.gateway_cluster == null ? {} : {
+  gateway_stub_namespaces = local.gateway_cluster == null ? toset([]) : toset([
     for cluster_name, cluster_config in local.gke_clusters :
-    "${cluster_config.team_key}-istio-test" => cluster_config.team_key
+    "${cluster_config.team_key}-istio-test"
     if cluster_config.team_key != module.core_helpers.team
-  }
+  ])
 
   gateway_stub_services = local.gateway_cluster == null ? {} : merge([
     for cluster_name, cluster_config in local.gke_clusters : {
@@ -169,12 +169,13 @@ locals {
     if endswith(cluster_name, "-${local.zone}")
   }
 
-  # Namespace per cluster. Pneuma (platform team) uses "istio-test"; member team clusters
-  # use a team-prefixed namespace (e.g. "pt-kryptos-istio-test") so each team's workload
-  # is isolated and Istio routing targets only that team's cluster pods.
+  # Namespace per cluster — team-prefixed for every team, including pneuma (e.g.
+  # "pt-pneuma-istio-test", "pt-kryptos-istio-test"). Each team's istio-test workload is isolated
+  # in its own namespace and dogfooded exactly like a member team, so Istio routing targets only
+  # that team's cluster pods.
   namespace = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key != module.core_helpers.team ? "${cluster_config.team_key}-istio-test" : "istio-test"
+    cluster_name => "${cluster_config.team_key}-istio-test"
   }
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
