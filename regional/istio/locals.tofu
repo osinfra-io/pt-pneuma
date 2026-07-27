@@ -75,8 +75,8 @@ locals {
               "x-forwarded-user",
             ]
 
-            port    = data.terraform_remote_state.oauth2_proxy.outputs.service_port[cluster_name]
-            service = "${data.terraform_remote_state.oauth2_proxy.outputs.service_name[cluster_name]}.${data.terraform_remote_state.oauth2_proxy.outputs.namespace[cluster_name]}.svc.cluster.local"
+            port    = try(data.terraform_remote_state.oauth2_proxy.outputs.service_port[cluster_name], local.oauth2_proxy_service_port)
+            service = "${try(data.terraform_remote_state.oauth2_proxy.outputs.service_name[cluster_name], local.oauth2_proxy_service_name)}.${try(data.terraform_remote_state.oauth2_proxy.outputs.namespace[cluster_name], local.oauth2_proxy_namespace)}.svc.cluster.local"
           }
 
           name = local.oauth2_proxy_extension_provider_name
@@ -99,6 +99,13 @@ locals {
   }
 
   oauth2_proxy_extension_provider_name = "oauth2-proxy"
+
+  # Well-known OAuth2 Proxy Service coordinates used as fallbacks for the ext_authz provider, since the
+  # Istio mesh config is applied before the oauth2-proxy workspace exists (its remote state is empty on
+  # first apply). Once oauth2-proxy is applied, its authoritative outputs take precedence via try().
+  oauth2_proxy_namespace    = "oauth2-proxy"
+  oauth2_proxy_service_name = "oauth2-proxy"
+  oauth2_proxy_service_port = 80
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {
