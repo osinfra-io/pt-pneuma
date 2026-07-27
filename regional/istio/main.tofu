@@ -38,6 +38,30 @@ module "kubernetes_istio" {
   tls_self_signed_cert_cert_manager_root_key  = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key
 }
 
+# Kubernetes Config Map Data Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/config_map_v1_data
+
+resource "kubernetes_config_map_v1_data" "istio_mesh_config" {
+  depends_on = [
+    module.kubernetes_istio
+  ]
+
+  for_each = local.gateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  data = {
+    mesh = local.istio_mesh_configs[each.key]
+  }
+
+  force = true
+
+  metadata {
+    name      = "istio"
+    namespace = "istio-system"
+  }
+}
+
 # Kubernetes Deployment Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/deployment_v1
 

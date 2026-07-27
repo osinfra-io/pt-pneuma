@@ -33,6 +33,56 @@ locals {
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
+  istio_mesh_configs = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => yamlencode({
+      accessLogFile = "/dev/stdout"
+
+      defaultConfig = {
+        proxyMetadata = {
+          ECC_CURVE               = "P256"
+          ECC_SIGNATURE_ALGORITHM = "ECDSA"
+          ISTIO_META_DNS_CAPTURE  = "true"
+        }
+      }
+
+      extensionProviders = [
+        {
+          envoyExtAuthzHttp = {
+            headersToDownstreamOnDeny = [
+              "content-type",
+              "set-cookie",
+            ]
+
+            headersToUpstreamOnAllow = [
+              "authorization",
+              "path",
+              "x-auth-request-access-token",
+              "x-auth-request-email",
+              "x-auth-request-user",
+            ]
+
+            includeRequestHeadersInCheck = [
+              "authorization",
+              "cookie",
+              "x-forwarded-access-token",
+              "x-forwarded-email",
+              "x-forwarded-host",
+              "x-forwarded-proto",
+              "x-forwarded-uri",
+              "x-forwarded-user",
+            ]
+
+            port    = data.terraform_remote_state.oauth2_proxy.outputs.service_port[cluster_name]
+            service = "${data.terraform_remote_state.oauth2_proxy.outputs.service_name[cluster_name]}.${data.terraform_remote_state.oauth2_proxy.outputs.namespace[cluster_name]}.svc.cluster.local"
+          }
+
+          name = local.oauth2_proxy_extension_provider_name
+        }
+      ]
+    })
+  }
+
   # Multi-cluster service links per cluster — the set of the owning team's clusters
   # (across all zones) that participate in the Istio multi-cluster mesh.
   multi_cluster_service_clusters = {
@@ -45,6 +95,8 @@ locals {
       if peer_config.team_key == cluster_config.team_key
     ]
   }
+
+  oauth2_proxy_extension_provider_name = "oauth2-proxy"
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {

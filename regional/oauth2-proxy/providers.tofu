@@ -44,14 +44,6 @@ terraform {
       remote_state_data_source "main" {
         method = method.aes_gcm.default
       }
-
-      remote_state_data_source "oauth2_proxy" {
-        method = method.aes_gcm.default
-      }
-
-      remote_state_data_source "regional" {
-        method = method.aes_gcm.default
-      }
     }
 
     state {
@@ -80,11 +72,11 @@ terraform {
       source = "hashicorp/helm"
     }
 
-    # Kubernetes Provider
-    # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs
+    # Random Provider
+    # https://search.opentofu.org/provider/hashicorp/random/latest/docs
 
-    kubernetes = {
-      source = "hashicorp/kubernetes"
+    random = {
+      source = "hashicorp/random"
     }
   }
 }
@@ -106,19 +98,4 @@ provider "helm" {
     host  = data.google_container_cluster.this[each.key].endpoint
     token = data.google_client_config.this.access_token
   }
-}
-
-# Kubernetes Provider
-# https://search.opentofu.org/provider/hashicorp/kubernetes/latest
-# One instance per cluster in this zone; modules receive the matching instance
-
-provider "kubernetes" {
-  alias    = "by_cluster"
-  for_each = var.clusters
-
-  cluster_ca_certificate = base64decode(
-    data.google_container_cluster.this[each.key].master_auth.0.cluster_ca_certificate
-  )
-  host  = "https://${data.google_container_cluster.this[each.key].endpoint}"
-  token = data.google_client_config.this.access_token
 }

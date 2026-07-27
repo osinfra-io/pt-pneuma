@@ -5,7 +5,7 @@ data "google_client_config" "this" {}
 
 # Google Container Cluster Data Source
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/container_cluster
-# Looks up every cluster so the Kubernetes and Helm provider for_each remains a superset of the
+# Looks up every cluster so the Helm provider for_each remains a superset of the
 # module for_each (required for safe removal of a cluster in a future apply)
 
 data "google_container_cluster" "this" {
@@ -16,7 +16,7 @@ data "google_container_cluster" "this" {
   project  = each.value.project_id
 }
 
-# OpenTofu Remote State Data Source - Main
+# Terraform Remote State Data Source - Main
 # https://opentofu.org/docs/language/state/remote-state-data
 
 data "terraform_remote_state" "main" {
@@ -29,28 +29,4 @@ data "terraform_remote_state" "main" {
   }
 
   workspace = "main-${module.core_helpers.environment}"
-}
-
-data "terraform_remote_state" "oauth2_proxy" {
-  backend = "gcs"
-
-  config = {
-    bucket             = var.state_bucket
-    kms_encryption_key = var.state_kms_encryption_key
-    prefix             = module.core_helpers.repository
-  }
-
-  workspace = "${module.core_helpers.zone}-oauth2-proxy-${module.core_helpers.environment}"
-}
-
-data "terraform_remote_state" "regional" {
-  backend = "gcs"
-
-  config = {
-    bucket             = var.state_bucket
-    kms_encryption_key = var.state_kms_encryption_key
-    prefix             = module.core_helpers.repository
-  }
-
-  workspace = "${module.core_helpers.region}-${module.core_helpers.zone}-${module.core_helpers.environment}"
 }
