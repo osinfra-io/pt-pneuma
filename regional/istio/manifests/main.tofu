@@ -81,6 +81,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
                   sni     = "localhost"
                 }
               }
+
               type = "STRICT_DNS"
             }
           }
@@ -120,4 +121,28 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
       ]
     }
   }
+}
+
+resource "kubernetes_manifest" "gateway_auth_custom_authorization_policy" {
+  for_each = local.gateway_auth_custom_authorization_policy_manifests
+
+  provider = kubernetes.by_cluster[local.gateway_auth_authorization_policies[each.key].cluster_name]
+
+  manifest = each.value
+}
+
+resource "kubernetes_manifest" "gateway_auth_required_claim_authorization_policy" {
+  for_each = local.gateway_auth_required_claim_authorization_policy_manifests
+
+  provider = kubernetes.by_cluster[local.gateway_auth_authorization_policies[each.key].cluster_name]
+
+  manifest = each.value
+}
+
+resource "kubernetes_manifest" "gateway_auth_request_authentication" {
+  for_each = local.gateway_auth_request_authentication_manifests
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = each.value
 }

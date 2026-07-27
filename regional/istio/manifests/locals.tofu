@@ -31,6 +31,225 @@ locals {
     if cluster_config.team_key == module.core_helpers.team
   }
 
+  # Auth policies generated from the Logos route_auth_policies contract. The gateway
+  # cluster enforces every team's external route because all ingress enters through
+  # the platform gateway data plane.
+  gateway_auth_authorization_policies = merge(concat(
+    [{}],
+    [
+      for cluster_name, policies in local.gateway_auth_policies : {
+        for key, policy in policies :
+        key => policy
+      }
+    ]
+  )...)
+
+  gateway_auth_callback_paths = [
+    "/oauth2",
+    "/oauth2/*",
+  ]
+
+  gateway_auth_default_exempt_paths = concat(
+    local.gateway_auth_health_paths,
+    local.gateway_auth_callback_paths,
+  )
+
+  gateway_auth_gateway_selector = {
+    "gateway.networking.k8s.io/gateway-name" = "gateway"
+  }
+
+  gateway_auth_health_paths = [
+    "/health",
+    "/healthz",
+    "/live",
+    "/livez",
+    "/ready",
+    "/readyz",
+  ]
+
+  gateway_auth_keycloak_jwks_uris = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => try(
+      data.terraform_remote_state.keycloak.outputs.jwks_uri[cluster_name],
+      data.terraform_remote_state.keycloak.outputs.jwks_uri,
+      local.keycloak_jwks_uri,
+    )
+  }
+
+  gateway_auth_keycloak_issuer_urls = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => try(
+      data.terraform_remote_state.keycloak.outputs.issuer_url[cluster_name],
+      data.terraform_remote_state.keycloak.outputs.issuer_url,
+      local.keycloak_issuer_url,
+    )
+  }
+
+  gateway_auth_policies = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => {
+      for item in local.gateway_auth_route_policy_items :
+      "${cluster_name}-${item.key}" => merge(item, {
+        cluster_name                     = cluster_name
+        custom_authorization_policy_name = "gateway-auth-${substr(sha1("${cluster_name}-${item.key}-custom"), 0, 8)}"
+        deny_authorization_policy_name   = "gateway-auth-${substr(sha1("${cluster_name}-${item.key}-deny"), 0, 8)}"
+        exempt_paths = distinct(concat(
+          local.gateway_auth_default_exempt_paths,
+          item.path == "/" ? [] : [
+            for path in local.gateway_auth_default_exempt_paths :
+            "${trimsuffix(item.path, "/")}${path}"
+          ],
+          item.public_paths,
+        ))
+        paths = item.path == "/" ? ["/*"] : [
+          item.path,
+          "${trimsuffix(item.path, "/")}/*",
+        ]
+      })
+    }
+  }
+
+  gateway_auth_request_authentication_manifests = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => {
+      apiVersion = "security.istio.io/v1"
+      kind       = "RequestAuthentication"
+      metadata = {
+        name      = "gateway-keycloak-jwt"
+        namespace = "istio-ingress"
+      }
+      spec = {
+        jwtRules = [
+          {
+            issuer  = local.gateway_auth_keycloak_issuer_urls[cluster_name]
+            jwksUri = local.gateway_auth_keycloak_jwks_uris[cluster_name]
+          }
+        ]
+        selector = {
+          matchLabels = local.gateway_auth_gateway_selector
+        }
+      }
+    }
+  }
+
+  gateway_auth_required_claim_authorization_policy_manifests = {
+    for key, policy in local.gateway_auth_authorization_policies :
+    key => {
+      apiVersion = "security.istio.io/v1"
+      kind       = "AuthorizationPolicy"
+      metadata = {
+        name      = policy.deny_authorization_policy_name
+        namespace = "istio-ingress"
+      }
+      spec = {
+        action = "DENY"
+        rules = concat(
+          length(policy.required_groups) == 0 ? [] : [
+            {
+              to = [
+                {
+                  operation = {
+                    hosts    = [policy.host]
+                    notPaths = policy.exempt_paths
+                    paths    = policy.paths
+                  }
+                }
+              ]
+              when = [
+                {
+                  key       = "request.auth.claims[groups]"
+                  notValues = policy.required_groups
+                }
+              ]
+            }
+          ],
+          length(policy.required_roles) == 0 ? [] : [
+            {
+              to = [
+                {
+                  operation = {
+                    hosts    = [policy.host]
+                    notPaths = policy.exempt_paths
+                    paths    = policy.paths
+                  }
+                }
+              ]
+              when = [
+                {
+                  key       = "request.auth.claims[realm_access][roles]"
+                  notValues = policy.required_roles
+                }
+              ]
+            }
+          ],
+        )
+        selector = {
+          matchLabels = local.gateway_auth_gateway_selector
+        }
+      }
+    }
+  }
+
+  gateway_auth_route_policy_items = flatten([
+    for cluster_name, cluster_config in local.gke_clusters : flatten([
+      for ns_name, ns in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) : [
+        for route_name, policy in try(ns.route_auth_policies, {}) : [
+          {
+            host            = local.dns_zone[cluster_name]
+            key             = "${cluster_config.team_key}-${ns_name}-${route_name}-${local.dns_subdomain[cluster_name]}-global"
+            path            = ns.routes[route_name].path
+            public_paths    = try(policy.public_paths, [])
+            required_groups = try(policy.required_groups, [])
+            required_roles  = try(policy.required_roles, [])
+          },
+          {
+            host            = "${local.zone}.${local.dns_zone[cluster_name]}"
+            key             = "${cluster_config.team_key}-${ns_name}-${route_name}-${local.dns_subdomain[cluster_name]}-zonal"
+            path            = ns.routes[route_name].path
+            public_paths    = try(policy.public_paths, [])
+            required_groups = try(policy.required_groups, [])
+            required_roles  = try(policy.required_roles, [])
+          },
+        ]
+        if try(policy.enforced, true)
+      ]
+    ])
+  ])
+
+  gateway_auth_custom_authorization_policy_manifests = {
+    for key, policy in local.gateway_auth_authorization_policies :
+    key => {
+      apiVersion = "security.istio.io/v1"
+      kind       = "AuthorizationPolicy"
+      metadata = {
+        name      = policy.custom_authorization_policy_name
+        namespace = "istio-ingress"
+      }
+      spec = {
+        action = "CUSTOM"
+        provider = {
+          name = local.oauth2_proxy_extension_provider_name
+        }
+        rules = [
+          {
+            to = [
+              {
+                operation = {
+                  hosts    = [policy.host]
+                  notPaths = policy.exempt_paths
+                  paths    = policy.paths
+                }
+              }
+            ]
+          }
+        ]
+        selector = {
+          matchLabels = local.gateway_auth_gateway_selector
+        }
+      }
+    }
+  }
+
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
   gke_clusters = {
@@ -61,6 +280,18 @@ locals {
 
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
+
+  oauth2_proxy_extension_provider_name = "oauth2-proxy"
+
+  keycloak_dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
+
+  keycloak_dns_zone_name = module.core_helpers.env == "prod" ? "${local.keycloak_dns_subdomain}.osinfra.io" : "${local.keycloak_dns_subdomain}.${module.core_helpers.env}.osinfra.io"
+
+  keycloak_hostname = "keycloak.${local.keycloak_dns_zone_name}"
+
+  keycloak_issuer_url = "https://${local.keycloak_hostname}/realms/master"
+
+  keycloak_jwks_uri = "${local.keycloak_issuer_url}/protocol/openid-connect/certs"
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {

@@ -49,6 +49,8 @@ locals {
       extensionProviders = [
         {
           envoyExtAuthzHttp = {
+            failOpen = false
+
             headersToDownstreamOnDeny = [
               "content-type",
               "set-cookie",
