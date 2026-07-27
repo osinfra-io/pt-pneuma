@@ -58,6 +58,13 @@ terraform {
 
   required_providers {
 
+    # Datadog Provider
+    # https://search.opentofu.org/provider/datadog/datadog/latest/docs
+
+    datadog = {
+      source = "datadog/datadog"
+    }
+
     # Google Cloud Platform Provider
     # https://search.opentofu.org/provider/hashicorp/google/latest/docs
 
@@ -79,6 +86,14 @@ terraform {
       source = "hashicorp/kubernetes"
     }
   }
+}
+
+# Datadog Provider
+# https://search.opentofu.org/provider/datadog/datadog/latest/docs
+
+provider "datadog" {
+  api_key = var.datadog_api_key
+  app_key = var.datadog_app_key
 }
 
 # Helm Provider
