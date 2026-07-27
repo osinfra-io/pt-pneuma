@@ -10,3 +10,14 @@ module "kubernetes_opa_gatekeeper_templates" {
     kubernetes = kubernetes.by_cluster[each.key]
   }
 }
+
+# Kubernetes Manifest Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
+
+resource "kubernetes_manifest" "gateway_auth_guardrail_constraint_template" {
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = local.gateway_auth_guardrail_constraint_template_manifest
+}
