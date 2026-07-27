@@ -634,7 +634,7 @@ jobs:
     name: "Istio Manifests: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east1_b, main]
+    needs: [istio_test_us_east1_b, keycloak_us_east1_b, oauth2_proxy_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-b"
@@ -651,7 +651,7 @@ jobs:
     name: "Istio Manifests: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east1_c, main]
+    needs: [istio_test_us_east1_c, keycloak_us_east1_c, oauth2_proxy_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-c"
@@ -668,7 +668,7 @@ jobs:
     name: "Istio Manifests: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east1_d, main]
+    needs: [istio_test_us_east1_d, keycloak_us_east1_d, oauth2_proxy_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-d"
@@ -685,7 +685,7 @@ jobs:
     name: "Istio Manifests: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east4_a, main]
+    needs: [istio_test_us_east4_a, keycloak_us_east4_a, oauth2_proxy_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-a"
@@ -702,7 +702,7 @@ jobs:
     name: "Istio Manifests: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east4_b, main]
+    needs: [istio_test_us_east4_b, keycloak_us_east4_b, oauth2_proxy_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-b"
@@ -719,7 +719,7 @@ jobs:
     name: "Istio Manifests: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east4_c, main]
+    needs: [istio_test_us_east4_c, keycloak_us_east4_c, oauth2_proxy_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-c"
@@ -858,6 +858,40 @@ jobs:
         -var=datadog_api_key=${{ secrets.DATADOG_API_KEY }}
         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 
+  keycloak_us_east1_b:
+    name: "Keycloak: us-east1-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [istio_test_us_east1_b, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production Keycloak: us-east1-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-b-keycloak-production
+      working_directory: regional/keycloak
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  oauth2_proxy_us_east1_b:
+    name: "OAuth2 Proxy: us-east1-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [keycloak_us_east1_b, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OAuth2 Proxy: us-east1-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-b-oauth2-proxy-production
+      working_directory: regional/oauth2-proxy
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   istio_us_east1_b:
     name: "Istio: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
@@ -871,6 +905,40 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-production
       working_directory: regional/istio
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  keycloak_us_east1_c:
+    name: "Keycloak: us-east1-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [istio_test_us_east1_c, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production Keycloak: us-east1-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-c-keycloak-production
+      working_directory: regional/keycloak
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  oauth2_proxy_us_east1_c:
+    name: "OAuth2 Proxy: us-east1-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [keycloak_us_east1_c, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OAuth2 Proxy: us-east1-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-c-oauth2-proxy-production
+      working_directory: regional/oauth2-proxy
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   istio_us_east1_c:
@@ -888,6 +956,40 @@ jobs:
       working_directory: regional/istio
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  keycloak_us_east1_d:
+    name: "Keycloak: us-east1-d"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [istio_test_us_east1_d, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production Keycloak: us-east1-d"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-d-keycloak-production
+      working_directory: regional/keycloak
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  oauth2_proxy_us_east1_d:
+    name: "OAuth2 Proxy: us-east1-d"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [keycloak_us_east1_d, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OAuth2 Proxy: us-east1-d"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-d-oauth2-proxy-production
+      working_directory: regional/oauth2-proxy
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   istio_us_east1_d:
     name: "Istio: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
@@ -901,6 +1003,40 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-istio-production
       working_directory: regional/istio
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  keycloak_us_east4_a:
+    name: "Keycloak: us-east4-a"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [istio_test_us_east4_a, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production Keycloak: us-east4-a"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-a-keycloak-production
+      working_directory: regional/keycloak
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  oauth2_proxy_us_east4_a:
+    name: "OAuth2 Proxy: us-east4-a"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [keycloak_us_east4_a, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OAuth2 Proxy: us-east4-a"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-a-oauth2-proxy-production
+      working_directory: regional/oauth2-proxy
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   istio_us_east4_a:
@@ -918,6 +1054,40 @@ jobs:
       working_directory: regional/istio
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  keycloak_us_east4_b:
+    name: "Keycloak: us-east4-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [istio_test_us_east4_b, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production Keycloak: us-east4-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-b-keycloak-production
+      working_directory: regional/keycloak
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  oauth2_proxy_us_east4_b:
+    name: "OAuth2 Proxy: us-east4-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [keycloak_us_east4_b, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OAuth2 Proxy: us-east4-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-b-oauth2-proxy-production
+      working_directory: regional/oauth2-proxy
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   istio_us_east4_b:
     name: "Istio: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
@@ -931,6 +1101,40 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-istio-production
       working_directory: regional/istio
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  keycloak_us_east4_c:
+    name: "Keycloak: us-east4-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [istio_test_us_east4_c, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production Keycloak: us-east4-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-c-keycloak-production
+      working_directory: regional/keycloak
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  oauth2_proxy_us_east4_c:
+    name: "OAuth2 Proxy: us-east4-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    if: github.actor != 'dependabot[bot]'
+    needs: [keycloak_us_east4_c, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OAuth2 Proxy: us-east4-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-c-oauth2-proxy-production
+      working_directory: regional/oauth2-proxy
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   istio_us_east4_c:
