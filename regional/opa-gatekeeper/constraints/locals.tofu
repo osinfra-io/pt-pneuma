@@ -66,8 +66,7 @@ locals {
   ]
 
   gateway_auth_guardrail_protected_namespaces = [
-    "keycloak",
-    "oauth2-proxy",
+    "authentik",
   ]
 
   # GKE clusters in this zone — the subset that actually receives the add-on.

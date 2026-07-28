@@ -16,10 +16,10 @@ data "google_container_cluster" "this" {
   project  = each.value.project_id
 }
 
-# Terraform Remote State Data Source - Keycloak
+# Terraform Remote State Data Source - Authentik Config
 # https://opentofu.org/docs/language/state/remote-state-data
 
-data "terraform_remote_state" "keycloak" {
+data "terraform_remote_state" "authentik_config" {
   backend = "gcs"
 
   config = {
@@ -28,7 +28,7 @@ data "terraform_remote_state" "keycloak" {
     prefix             = module.core_helpers.repository
   }
 
-  workspace = "${module.core_helpers.zone}-keycloak-${module.core_helpers.environment}"
+  workspace = "${module.core_helpers.zone}-authentik-config-${module.core_helpers.environment}"
 }
 
 # Terraform Remote State Data Source - Main

@@ -45,8 +45,8 @@ locals {
   )...)
 
   gateway_auth_callback_paths = [
-    "/oauth2",
-    "/oauth2/*",
+    "/outpost.goauthentik.io",
+    "/outpost.goauthentik.io/*",
   ]
 
   gateway_auth_default_exempt_paths = concat(
@@ -67,21 +67,19 @@ locals {
     "/readyz",
   ]
 
-  gateway_auth_keycloak_jwks_uris = {
+  gateway_auth_authentik_jwks_uris = {
     for cluster_name in keys(local.gateway_clusters) :
     cluster_name => try(
-      data.terraform_remote_state.keycloak.outputs.jwks_uri[cluster_name],
-      data.terraform_remote_state.keycloak.outputs.jwks_uri,
-      local.keycloak_jwks_uri,
+      data.terraform_remote_state.authentik_config.outputs.jwks_uri,
+      local.authentik_jwks_uri,
     )
   }
 
-  gateway_auth_keycloak_issuer_urls = {
+  gateway_auth_authentik_issuer_urls = {
     for cluster_name in keys(local.gateway_clusters) :
     cluster_name => try(
-      data.terraform_remote_state.keycloak.outputs.issuer_url[cluster_name],
-      data.terraform_remote_state.keycloak.outputs.issuer_url,
-      local.keycloak_issuer_url,
+      data.terraform_remote_state.authentik_config.outputs.issuer_url,
+      local.authentik_issuer_url,
     )
   }
 
@@ -115,14 +113,14 @@ locals {
       apiVersion = "security.istio.io/v1"
       kind       = "RequestAuthentication"
       metadata = {
-        name      = "gateway-keycloak-jwt"
+        name      = "gateway-authentik-jwt"
         namespace = "istio-ingress"
       }
       spec = {
         jwtRules = [
           {
-            issuer  = local.gateway_auth_keycloak_issuer_urls[cluster_name]
-            jwksUri = local.gateway_auth_keycloak_jwks_uris[cluster_name]
+            issuer  = local.gateway_auth_authentik_issuer_urls[cluster_name]
+            jwksUri = local.gateway_auth_authentik_jwks_uris[cluster_name]
           }
         ]
         selector = {
@@ -228,7 +226,7 @@ locals {
       spec = {
         action = "CUSTOM"
         provider = {
-          name = local.oauth2_proxy_extension_provider_name
+          name = local.authentik_extension_provider_name
         }
         rules = [
           {
@@ -281,17 +279,17 @@ locals {
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
-  oauth2_proxy_extension_provider_name = "oauth2-proxy"
+  authentik_extension_provider_name = "authentik"
 
-  keycloak_dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
+  authentik_dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
 
-  keycloak_dns_zone_name = module.core_helpers.env == "prod" ? "${local.keycloak_dns_subdomain}.osinfra.io" : "${local.keycloak_dns_subdomain}.${module.core_helpers.env}.osinfra.io"
+  authentik_dns_zone_name = module.core_helpers.env == "prod" ? "${local.authentik_dns_subdomain}.osinfra.io" : "${local.authentik_dns_subdomain}.${module.core_helpers.env}.osinfra.io"
 
-  keycloak_hostname = "keycloak.${local.keycloak_dns_zone_name}"
+  authentik_hostname = "authentik.${local.authentik_dns_zone_name}"
 
-  keycloak_issuer_url = "https://${local.keycloak_hostname}/realms/master"
+  authentik_issuer_url = "https://${local.authentik_hostname}/application/o/gateway/"
 
-  keycloak_jwks_uri = "${local.keycloak_issuer_url}/protocol/openid-connect/certs"
+  authentik_jwks_uri = "${local.authentik_issuer_url}jwks/"
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {

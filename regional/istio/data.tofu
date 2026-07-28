@@ -31,7 +31,7 @@ data "terraform_remote_state" "main" {
   workspace = "main-${module.core_helpers.environment}"
 }
 
-data "terraform_remote_state" "oauth2_proxy" {
+data "terraform_remote_state" "authentik_config" {
   backend = "gcs"
 
   config = {
@@ -40,7 +40,7 @@ data "terraform_remote_state" "oauth2_proxy" {
     prefix             = module.core_helpers.repository
   }
 
-  workspace = "${module.core_helpers.zone}-oauth2-proxy-${module.core_helpers.environment}"
+  workspace = "${module.core_helpers.zone}-authentik-config-${module.core_helpers.environment}"
 }
 
 data "terraform_remote_state" "regional" {

@@ -41,7 +41,7 @@ terraform {
         method = method.aes_gcm.logos
       }
 
-      remote_state_data_source "keycloak" {
+      remote_state_data_source "authentik_config" {
         method = method.aes_gcm.default
       }
 

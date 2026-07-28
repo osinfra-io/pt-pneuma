@@ -2,16 +2,38 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  admin_password_secret_key = "admin-password"
+  authentik_base_url = "https://${local.authentik_hostname}"
 
-  admin_secret_names = {
-    for cluster_name in keys(local.keycloak_clusters) :
-    cluster_name => "keycloak-admin"
+  authentik_clusters = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => cluster_config
+    if cluster_config.team_key == module.core_helpers.team
+  }
+
+  authentik_hostname = "authentik.${local.dns_zone_name}"
+
+  authentik_namespace = "authentik"
+
+  # Keys in the Authentik environment Secret, mounted into the server and worker via the chart's
+  # global.envFrom so no secrets are stored in the Helm release.
+  authentik_secret_env = {
+    for cluster_name in keys(local.authentik_clusters) :
+    cluster_name => {
+      AUTHENTIK_BOOTSTRAP_PASSWORD   = random_password.authentik_admin[cluster_name].result
+      AUTHENTIK_BOOTSTRAP_TOKEN      = random_password.authentik_bootstrap_token[cluster_name].result
+      AUTHENTIK_POSTGRESQL__PASSWORD = random_password.authentik_database[cluster_name].result
+      AUTHENTIK_SECRET_KEY           = random_password.authentik_secret_key[cluster_name].result
+    }
+  }
+
+  authentik_secret_names = {
+    for cluster_name in keys(local.authentik_clusters) :
+    cluster_name => "authentik"
   }
 
   cloud_sql_database_names = {
-    for cluster_name in keys(local.keycloak_clusters) :
-    cluster_name => "keycloak"
+    for cluster_name in keys(local.authentik_clusters) :
+    cluster_name => "authentik"
   }
 
   cloud_sql_database_version = "POSTGRES_16"
@@ -19,30 +41,21 @@ locals {
   cloud_sql_deletion_protection = module.core_helpers.env == "prod"
 
   cloud_sql_instance_names = {
-    for cluster_name in keys(local.keycloak_clusters) :
-    cluster_name => "keycloak-${cluster_name}"
+    for cluster_name in keys(local.authentik_clusters) :
+    cluster_name => "authentik-${cluster_name}"
   }
 
   cloud_sql_labels = {
-    for cluster_name, cluster_config in local.keycloak_clusters :
+    for cluster_name, cluster_config in local.authentik_clusters :
     cluster_name => merge(module.core_helpers.labels, { cluster = cluster_name, team = cluster_config.team_key })
   }
 
   cloud_sql_machine_tier = "db-f1-micro"
 
   cloud_sql_user_names = {
-    for cluster_name in keys(local.keycloak_clusters) :
-    cluster_name => "keycloak"
+    for cluster_name in keys(local.authentik_clusters) :
+    cluster_name => "authentik"
   }
-
-  database_password_secret_key = "password"
-
-  database_secret_names = {
-    for cluster_name in keys(local.keycloak_clusters) :
-    cluster_name => "keycloak-database"
-  }
-
-  database_user_secret_key = "username"
 
   dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
 
@@ -56,18 +69,6 @@ locals {
     if endswith(cluster_name, "-${local.zone}")
   }
 
-  keycloak_base_url = "https://${local.keycloak_hostname}"
-
-  keycloak_clusters = {
-    for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config
-    if cluster_config.team_key == module.core_helpers.team
-  }
-
-  keycloak_hostname = "keycloak.${local.dns_zone_name}"
-
-  keycloak_namespace = "keycloak"
-
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
@@ -80,6 +81,6 @@ locals {
   shared_vpc_name = "standard-shared"
 
   # This deployment zone, parsed from the workspace name (e.g.
-  # "us-east1-b-keycloak-non-production" → "us-east1-b"). Static context safe.
+  # "us-east1-b-authentik-non-production" → "us-east1-b"). Static context safe.
   zone = try(regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0], "")
 }

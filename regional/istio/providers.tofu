@@ -41,11 +41,11 @@ terraform {
         method = method.aes_gcm.logos
       }
 
-      remote_state_data_source "main" {
+      remote_state_data_source "authentik_config" {
         method = method.aes_gcm.default
       }
 
-      remote_state_data_source "oauth2_proxy" {
+      remote_state_data_source "main" {
         method = method.aes_gcm.default
       }
 

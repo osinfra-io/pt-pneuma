@@ -51,35 +51,30 @@ locals {
           envoyExtAuthzHttp = {
             failOpen = false
 
+            headersToDownstreamOnAllow = [
+              "cookie",
+            ]
+
             headersToDownstreamOnDeny = [
               "content-type",
               "set-cookie",
             ]
 
             headersToUpstreamOnAllow = [
-              "authorization",
-              "path",
-              "x-auth-request-access-token",
-              "x-auth-request-email",
-              "x-auth-request-user",
+              "set-cookie",
+              "x-authentik-*",
             ]
 
             includeRequestHeadersInCheck = [
-              "authorization",
               "cookie",
-              "x-forwarded-access-token",
-              "x-forwarded-email",
-              "x-forwarded-host",
-              "x-forwarded-proto",
-              "x-forwarded-uri",
-              "x-forwarded-user",
             ]
 
-            port    = try(data.terraform_remote_state.oauth2_proxy.outputs.service_port[cluster_name], local.oauth2_proxy_service_port)
-            service = "${try(data.terraform_remote_state.oauth2_proxy.outputs.service_name[cluster_name], local.oauth2_proxy_service_name)}.${try(data.terraform_remote_state.oauth2_proxy.outputs.namespace[cluster_name], local.oauth2_proxy_namespace)}.svc.cluster.local"
+            pathPrefix = local.authentik_outpost_path_prefix
+            port       = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
+            service    = "${try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)}.${try(data.terraform_remote_state.authentik_config.outputs.outpost_namespace, local.authentik_outpost_namespace)}.svc.cluster.local"
           }
 
-          name = local.oauth2_proxy_extension_provider_name
+          name = local.authentik_extension_provider_name
         }
       ]
     })
@@ -98,14 +93,16 @@ locals {
     ]
   }
 
-  oauth2_proxy_extension_provider_name = "oauth2-proxy"
+  authentik_extension_provider_name = "authentik"
 
-  # Well-known OAuth2 Proxy Service coordinates used as fallbacks for the ext_authz provider, since the
-  # Istio mesh config is applied before the oauth2-proxy workspace exists (its remote state is empty on
-  # first apply). Once oauth2-proxy is applied, its authoritative outputs take precedence via try().
-  oauth2_proxy_namespace    = "oauth2-proxy"
-  oauth2_proxy_service_name = "oauth2-proxy"
-  oauth2_proxy_service_port = 80
+  # Well-known Authentik managed proxy outpost coordinates used as fallbacks for the ext_authz
+  # provider, since the Istio mesh config is applied before the authentik-config workspace exists
+  # (its remote state is empty on first apply). Once authentik-config is applied, its authoritative
+  # outputs take precedence via try().
+  authentik_outpost_namespace    = "authentik"
+  authentik_outpost_path_prefix  = "/outpost.goauthentik.io/auth/envoy"
+  authentik_outpost_service_name = "ak-outpost-gateway"
+  authentik_outpost_service_port = 9000
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {
