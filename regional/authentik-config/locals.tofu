@@ -2,11 +2,12 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  # A single gateway Authentik per zonal workspace: take the one deployment's base URL and
-  # bootstrap token from the authentik workspace outputs.
-  authentik_token = one(values(data.terraform_remote_state.authentik.outputs.bootstrap_token))
+  # One logical Authentik service: the bootstrap token and public base URL are created once in
+  # the main workspace and shared by every regional instance, so this workspace configures the
+  # provider/application/outpost a single time per environment.
+  authentik_token = local.main.authentik_secret_env["AUTHENTIK_BOOTSTRAP_TOKEN"]
 
-  authentik_url = one(values(data.terraform_remote_state.authentik.outputs.base_url))
+  authentik_url = local.main.authentik_base_url
 
   dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
 
@@ -15,7 +16,10 @@ locals {
   # The protected gateway host used as the proxy provider external host for forward-auth.
   external_host = "https://${local.dns_zone_name}"
 
-  namespace = one(values(data.terraform_remote_state.authentik.outputs.namespace))
+  # Main workspace outputs (shared Authentik base URL and secret env).
+  main = data.terraform_remote_state.main.outputs
+
+  namespace = "authentik"
 
   # OAuth2 redirect URIs the gateway is allowed to return to after authentication.
   redirect_uris = [
@@ -24,8 +28,4 @@ locals {
       url           = "https://.*\\.${replace(local.dns_zone_name, ".", "\\.")}/outpost.goauthentik.io/callback.*"
     }
   ]
-
-  # This deployment zone, parsed from the workspace name (e.g.
-  # "us-east1-b-authentik-config-non-production" → "us-east1-b"). Static context safe.
-  zone = try(regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0], "")
 }

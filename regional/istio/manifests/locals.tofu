@@ -142,6 +142,45 @@ locals {
       spec = {
         action = "DENY"
         rules = concat(
+          policy.mode != "api-jwt" ? [] : [
+            {
+              from = [
+                {
+                  source = {
+                    notRequestPrincipals = ["*"]
+                  }
+                }
+              ]
+              to = [
+                {
+                  operation = {
+                    hosts    = [policy.host]
+                    notPaths = policy.exempt_paths
+                    paths    = policy.paths
+                  }
+                }
+              ]
+            }
+          ],
+          policy.mode != "api-jwt" || length(policy.audiences) == 0 ? [] : [
+            {
+              to = [
+                {
+                  operation = {
+                    hosts    = [policy.host]
+                    notPaths = policy.exempt_paths
+                    paths    = policy.paths
+                  }
+                }
+              ]
+              when = [
+                {
+                  key       = "request.auth.audiences"
+                  notValues = policy.audiences
+                }
+              ]
+            }
+          ],
           length(policy.required_groups) == 0 ? [] : [
             {
               to = [
@@ -193,23 +232,27 @@ locals {
       for ns_name, ns in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) : [
         for route_name, policy in try(ns.route_auth_policies, {}) : [
           {
+            audiences       = try(policy.audiences, [])
             host            = local.dns_zone[cluster_name]
             key             = "${cluster_config.team_key}-${ns_name}-${route_name}-${local.dns_subdomain[cluster_name]}-global"
+            mode            = try(policy.mode, "browser")
             path            = ns.routes[route_name].path
             public_paths    = try(policy.public_paths, [])
             required_groups = try(policy.required_groups, [])
             required_roles  = try(policy.required_roles, [])
           },
           {
+            audiences       = try(policy.audiences, [])
             host            = "${local.zone}.${local.dns_zone[cluster_name]}"
             key             = "${cluster_config.team_key}-${ns_name}-${route_name}-${local.dns_subdomain[cluster_name]}-zonal"
+            mode            = try(policy.mode, "browser")
             path            = ns.routes[route_name].path
             public_paths    = try(policy.public_paths, [])
             required_groups = try(policy.required_groups, [])
             required_roles  = try(policy.required_roles, [])
           },
         ]
-        if try(policy.enforced, true)
+        if try(policy.mode, "browser") != "public"
       ]
     ])
   ])
@@ -246,6 +289,7 @@ locals {
         }
       }
     }
+    if policy.mode == "browser"
   }
 
   # GKE clusters in this zone — the subset that actually receives the add-on.

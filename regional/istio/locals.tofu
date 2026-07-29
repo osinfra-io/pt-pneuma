@@ -77,6 +77,22 @@ locals {
           name = local.authentik_extension_provider_name
         }
       ]
+
+      # Keep the Authentik service cluster-local so a gateway in one region never depends
+      # synchronously on an authentik-server in another region. Cross-region failover is handled
+      # by the external load balancer, not by the mesh.
+      # https://istio.io/latest/docs/ops/configuration/traffic-management/multicluster
+      serviceSettings = [
+        {
+          hosts = [
+            "*.${local.authentik_outpost_namespace}.svc.cluster.local",
+          ]
+
+          settings = {
+            clusterLocal = true
+          }
+        }
+      ]
     })
   }
 
@@ -95,14 +111,15 @@ locals {
 
   authentik_extension_provider_name = "authentik"
 
-  # Well-known Authentik managed proxy outpost coordinates used as fallbacks for the ext_authz
+  # Well-known Authentik embedded outpost coordinates used as fallbacks for the ext_authz
   # provider, since the Istio mesh config is applied before the authentik-config workspace exists
   # (its remote state is empty on first apply). Once authentik-config is applied, its authoritative
-  # outputs take precedence via try().
+  # outputs take precedence via try(). The embedded outpost is served by the authentik-server
+  # Service, so a gateway always calls its region-local authentik-server for forward-auth.
   authentik_outpost_namespace    = "authentik"
   authentik_outpost_path_prefix  = "/outpost.goauthentik.io/auth/envoy"
-  authentik_outpost_service_name = "ak-outpost-gateway"
-  authentik_outpost_service_port = 9000
+  authentik_outpost_service_name = "authentik-server"
+  authentik_outpost_service_port = 80
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {

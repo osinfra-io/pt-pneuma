@@ -2,6 +2,39 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  # Single logical Authentik service (pt-pneuma#142): one shared Cloud SQL primary, one secret
+  # key and one issuer are created here in main and consumed by every regional authentik workspace,
+  # so all stateless regional server/worker instances form one identity provider (not per-zone IdPs).
+  authentik_base_url = "https://${local.authentik_hostname}"
+
+  authentik_cloud_sql_database_version = "POSTGRES_16"
+
+  authentik_cloud_sql_deletion_protection = module.core_helpers.env == "prod"
+
+  authentik_cloud_sql_instance_name = "authentik"
+
+  # Regional HA requires a dedicated-core tier; shared-core tiers (db-f1-micro) do not support HA.
+  authentik_cloud_sql_machine_tier = "db-custom-1-3840"
+
+  authentik_database_name = "authentik"
+
+  authentik_database_user = "authentik"
+
+  authentik_hostname = "authentik.${local.dns_zones[module.core_helpers.team].dns_name}"
+
+  # The primary region hosting the single shared Cloud SQL instance. Present in every environment's
+  # active zones; regional clusters reach it privately over the shared VPC.
+  authentik_primary_region = "us-east1"
+
+  # Keys in the Authentik environment Secret, generated once and shared by every regional workspace
+  # via main's outputs (mounted into server and worker through the chart's global.envFrom).
+  authentik_secret_env = {
+    AUTHENTIK_BOOTSTRAP_PASSWORD   = random_password.authentik_admin.result
+    AUTHENTIK_BOOTSTRAP_TOKEN      = random_password.authentik_bootstrap_token.result
+    AUTHENTIK_POSTGRESQL__PASSWORD = random_password.authentik_database.result
+    AUTHENTIK_SECRET_KEY           = random_password.authentik_secret_key.result
+  }
+
   # Active zones per environment — controls which GKE clusters are included in outputs
   # Sandbox and non-production use 2 zones (1 per region) for multi-cluster testing
   # Production uses all 6 zones (3 per region) for full HA
@@ -80,6 +113,9 @@ locals {
       "${team_key}-${ns_name}" => ns
     }
   }
+
+  # Shared VPC network name for private Cloud SQL connectivity (created by pt-corpus).
+  shared_vpc_name = "standard-shared"
 
   # Platform-managed project ID per team, discovered from pt-corpus labels.
   team_project_ids = {

@@ -1,6 +1,32 @@
 # Output Values
 # https://opentofu.org/docs/language/values/outputs
 
+output "authentik_base_url" {
+  description = "Public base URL (OIDC issuer/provider host) for the single logical Authentik service"
+  value       = local.authentik_base_url
+}
+
+output "authentik_database_host" {
+  description = "Private IP of the shared Authentik Cloud SQL primary, consumed by regional authentik workspaces"
+  value       = module.google_cloud_sql.private_ip_address
+}
+
+output "authentik_database_name" {
+  description = "Name of the shared Authentik PostgreSQL database"
+  value       = google_sql_database.authentik.name
+}
+
+output "authentik_database_user" {
+  description = "User for the shared Authentik PostgreSQL database"
+  value       = google_sql_user.authentik.name
+}
+
+output "authentik_secret_env" {
+  description = "Shared Authentik environment secret values (secret key, DB and bootstrap credentials) generated once and consumed by every regional authentik workspace"
+  sensitive   = true
+  value       = local.authentik_secret_env
+}
+
 output "clusters" {
   description = "Slim GKE cluster map (all teams, all zones) for the deployment workflow to pass to zone workspaces as TF_VAR_clusters, keyed by cluster name"
   value = {

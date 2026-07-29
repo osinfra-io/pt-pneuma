@@ -231,7 +231,7 @@ jobs:
 
   istio_manifests_us_east1_b:
     name: "Istio Manifests: us-east1-b"
-    needs: [authentik_config_us_east1_b, read_clusters]
+    needs: [authentik_config, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -246,20 +246,20 @@ jobs:
       working_directory: regional/istio/manifests
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  authentik_config_us_east1_b:
-    name: "Authentik Config: us-east1-b"
+  authentik_config:
+    name: "Authentik Config"
     needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
-      github_environment: "Sandbox Authentik Config: us-east1-b"
+      github_environment: "Sandbox Authentik Config"
       service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_plan_args: -destroy
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_var_json: "{\"clusters\": ${{ needs.read_clusters.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east1-b-authentik-config-sandbox
+      opentofu_workspace: authentik-config-sandbox
       working_directory: regional/authentik-config
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
@@ -282,7 +282,7 @@ jobs:
 
   istio_manifests_us_east4_a:
     name: "Istio Manifests: us-east4-a"
-    needs: [authentik_config_us_east4_a, read_clusters]
+    needs: [authentik_config, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -295,23 +295,6 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-manifests-sandbox
       working_directory: regional/istio/manifests
-      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
-  authentik_config_us_east4_a:
-    name: "Authentik Config: us-east4-a"
-    needs: read_clusters
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Sandbox Authentik Config: us-east4-a"
-      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -destroy
-      opentofu_state_bucket: pt-pneuma-state-sb
-      opentofu_var_json: "{\"clusters\": ${{ needs.read_clusters.outputs.passthrough || '{}' }}}"
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: us-east4-a-authentik-config-sandbox
-      working_directory: regional/authentik-config
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_us_east4_a:

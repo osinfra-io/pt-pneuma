@@ -1,7 +1,7 @@
-# Terraform Remote State Data Source - Authentik
+# Terraform Remote State Data Source - Main
 # https://opentofu.org/docs/language/state/remote-state-data
 
-data "terraform_remote_state" "authentik" {
+data "terraform_remote_state" "main" {
   backend = "gcs"
 
   config = {
@@ -10,5 +10,12 @@ data "terraform_remote_state" "authentik" {
     prefix             = module.core_helpers.repository
   }
 
-  workspace = "${local.zone}-authentik-${module.core_helpers.environment}"
+  workspace = "main-${module.core_helpers.environment}"
+}
+
+# Authentik Outpost Data Source
+# https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/data-sources/outpost
+
+data "authentik_outpost" "embedded" {
+  name = module.authentik_config.embedded_outpost_name
 }

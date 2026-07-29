@@ -37,7 +37,7 @@ terraform {
         method = method.aes_gcm.logos
       }
 
-      remote_state_data_source "authentik" {
+      remote_state_data_source "main" {
         method = method.aes_gcm.default
       }
     }
@@ -64,7 +64,7 @@ terraform {
 
 # Authentik Provider
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs
-# A single gateway Authentik per zonal workspace; configured from the authentik workspace outputs.
+# One logical Authentik service; configured once per environment from the main workspace outputs.
 
 provider "authentik" {
   token = local.authentik_token

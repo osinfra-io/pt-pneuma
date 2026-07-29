@@ -28,7 +28,7 @@ data "terraform_remote_state" "authentik_config" {
     prefix             = module.core_helpers.repository
   }
 
-  workspace = "${module.core_helpers.zone}-authentik-config-${module.core_helpers.environment}"
+  workspace = "authentik-config-${module.core_helpers.environment}"
 }
 
 # Terraform Remote State Data Source - Main

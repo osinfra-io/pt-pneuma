@@ -43,33 +43,15 @@ resource "datadog_monitor" "authentik_error" {
   }
 }
 
-resource "datadog_monitor" "authentik_outpost_unavailable" {
-  for_each = local.gateway_clusters
-
-  include_tags      = true
-  message           = "The Authentik proxy outpost has no ready replicas for ${each.key}. Istio ext_authz fails closed, so gateway traffic requiring auth will be denied until it recovers. Parent: osinfra-io/pt-pneuma#142."
-  name              = "Authentik proxy outpost unavailable - ${each.key}"
-  no_data_timeframe = 10
-  notify_no_data    = true
-  priority          = 1
-  query             = local.datadog_gateway_auth_monitor_queries[each.key].authentik_outpost_unavailable
-  tags              = local.datadog_gateway_auth_monitor_tags[each.key]
-  type              = "metric alert"
-
-  monitor_thresholds {
-    critical = local.datadog_gateway_auth_monitor_thresholds.authentik_outpost_ready_replicas_critical
-  }
-}
-
 resource "datadog_monitor" "authentik_unavailable" {
   for_each = local.gateway_clusters
 
   include_tags      = true
-  message           = "Authentik has no ready server replicas for ${each.key}. Gateway authentication depends on Authentik for OIDC/JWKS, so user auth may fail. Parent: osinfra-io/pt-pneuma#142."
+  message           = "Authentik has no ready server replicas for ${each.key}. The server also runs the embedded outpost, so gateway OIDC/JWKS and ext_authz forward-auth both depend on it. Istio ext_authz fails closed, so gateway traffic requiring auth will be denied until it recovers. Parent: osinfra-io/pt-pneuma#142."
   name              = "Authentik unavailable - ${each.key}"
   no_data_timeframe = 10
   notify_no_data    = true
-  priority          = 2
+  priority          = 1
   query             = local.datadog_gateway_auth_monitor_queries[each.key].authentik_unavailable
   tags              = local.datadog_gateway_auth_monitor_tags[each.key]
   type              = "metric alert"

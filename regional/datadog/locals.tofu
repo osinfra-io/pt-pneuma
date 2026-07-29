@@ -17,7 +17,7 @@ locals {
     for cluster_name in keys(local.gateway_clusters) :
     cluster_name => {
       gateway     = "Istio gateway Envoy access logs via service:istio-gateway"
-      authentik   = "Authentik IdP and proxy-outpost auth-decision logs via service:authentik"
+      authentik   = "Authentik IdP and embedded-outpost auth-decision logs via service:authentik"
       query_scope = "env:${module.core_helpers.environment} cluster_name:${cluster_name}"
     }
   }
@@ -41,7 +41,7 @@ locals {
 
             Auth decision logs are collected cluster-wide by the Datadog Agent and filtered by service tags:
             - service:istio-gateway for Envoy access logs, including RequestAuthentication 401s and AuthorizationPolicy/ext_authz 403s.
-            - service:authentik for Authentik IdP health, OIDC/JWKS, and proxy-outpost forward-auth decisions.
+            - service:authentik for Authentik IdP health, OIDC/JWKS, and embedded-outpost forward-auth decisions.
             EOT
             type    = "note"
           }
@@ -104,7 +104,7 @@ locals {
               requests = [
                 {
                   display_type = "line"
-                  q            = "avg:envoy.cluster.upstream_rq_time{cluster_name:${cluster_name},env:${module.core_helpers.environment},service:istio-gateway,envoy_cluster_name:*ak-outpost-gateway*}.rollup(avg)"
+                  q            = "avg:envoy.cluster.upstream_rq_time{cluster_name:${cluster_name},env:${module.core_helpers.environment},service:istio-gateway,envoy_cluster_name:*authentik-server*}.rollup(avg)"
                 }
               ]
               title = "${cluster_name} ext_authz upstream latency"
@@ -117,13 +117,9 @@ locals {
                 {
                   display_type = "line"
                   q            = "sum:kubernetes_state.deployment.replicas_available{cluster_name:${cluster_name},kube_namespace:authentik,kube_deployment:authentik-server}"
-                },
-                {
-                  display_type = "line"
-                  q            = "sum:kubernetes_state.deployment.replicas_available{cluster_name:${cluster_name},kube_namespace:authentik,kube_deployment:ak-outpost-gateway}"
                 }
               ]
-              title = "${cluster_name} Authentik server and proxy outpost ready replicas"
+              title = "${cluster_name} Authentik server ready replicas"
               type  = "timeseries"
             }
           },
@@ -150,14 +146,13 @@ locals {
   # sustained 401/403 bursts are suspicious, while any sustained auth dependency
   # outage pages because Istio ext_authz fails closed.
   datadog_gateway_auth_monitor_thresholds = {
-    authentik_errors_critical                 = 10
-    authentik_errors_warning                  = 5
-    authentik_outpost_ready_replicas_critical = 1
-    authentik_ready_replicas_critical         = 1
-    gateway_401_critical                      = 50
-    gateway_401_warning                       = 25
-    gateway_403_critical                      = 25
-    gateway_403_warning                       = 10
+    authentik_errors_critical         = 10
+    authentik_errors_warning          = 5
+    authentik_ready_replicas_critical = 1
+    gateway_401_critical              = 50
+    gateway_401_warning               = 25
+    gateway_403_critical              = 25
+    gateway_403_warning               = 10
   }
 
   datadog_gateway_auth_monitor_tags = {
@@ -174,11 +169,10 @@ locals {
   datadog_gateway_auth_monitor_queries = {
     for cluster_name in keys(local.gateway_clusters) :
     cluster_name => {
-      authentik_errors              = "logs(\"service:authentik env:${module.core_helpers.environment} cluster_name:${cluster_name} (status:error OR @http.status_code:[500 TO 599])\").index(\"*\").rollup(\"count\").last(\"5m\") > ${local.datadog_gateway_auth_monitor_thresholds.authentik_errors_critical}"
-      authentik_outpost_unavailable = "min(last_5m):sum:kubernetes_state.deployment.replicas_available{cluster_name:${cluster_name},kube_namespace:authentik,kube_deployment:ak-outpost-gateway} < ${local.datadog_gateway_auth_monitor_thresholds.authentik_outpost_ready_replicas_critical}"
-      authentik_unavailable         = "min(last_5m):sum:kubernetes_state.deployment.replicas_available{cluster_name:${cluster_name},kube_namespace:authentik,kube_deployment:authentik-server} < ${local.datadog_gateway_auth_monitor_thresholds.authentik_ready_replicas_critical}"
-      gateway_401                   = "logs(\"${local.datadog_auth_decision_log_queries[cluster_name].gateway_401}\").index(\"*\").rollup(\"count\").last(\"5m\") > ${local.datadog_gateway_auth_monitor_thresholds.gateway_401_critical}"
-      gateway_403                   = "logs(\"${local.datadog_auth_decision_log_queries[cluster_name].gateway_403}\").index(\"*\").rollup(\"count\").last(\"5m\") > ${local.datadog_gateway_auth_monitor_thresholds.gateway_403_critical}"
+      authentik_errors      = "logs(\"service:authentik env:${module.core_helpers.environment} cluster_name:${cluster_name} (status:error OR @http.status_code:[500 TO 599])\").index(\"*\").rollup(\"count\").last(\"5m\") > ${local.datadog_gateway_auth_monitor_thresholds.authentik_errors_critical}"
+      authentik_unavailable = "min(last_5m):sum:kubernetes_state.deployment.replicas_available{cluster_name:${cluster_name},kube_namespace:authentik,kube_deployment:authentik-server} < ${local.datadog_gateway_auth_monitor_thresholds.authentik_ready_replicas_critical}"
+      gateway_401           = "logs(\"${local.datadog_auth_decision_log_queries[cluster_name].gateway_401}\").index(\"*\").rollup(\"count\").last(\"5m\") > ${local.datadog_gateway_auth_monitor_thresholds.gateway_401_critical}"
+      gateway_403           = "logs(\"${local.datadog_auth_decision_log_queries[cluster_name].gateway_403}\").index(\"*\").rollup(\"count\").last(\"5m\") > ${local.datadog_gateway_auth_monitor_thresholds.gateway_403_critical}"
     }
   }
 
