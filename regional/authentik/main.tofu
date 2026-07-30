@@ -22,6 +22,51 @@ module "kubernetes_authentik" {
   namespace              = kubernetes_namespace_v1.authentik[each.key].metadata[0].name
 }
 
+# Kubernetes Manifest Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
+
+# Under the mesh's default-deny AuthorizationPolicy, an injected Authentik would be unreachable.
+# Allow the ingress gateway (istio-ingress) to reach the Authentik server for both the ext_authz
+# forward-auth calls and the UI/OIDC traffic routed through the shared gateway. No path/method
+# restriction: as the identity provider, every Authentik endpoint must be reachable.
+resource "kubernetes_manifest" "authentik_allow_gateway" {
+  for_each = local.authentik_clusters
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = {
+    apiVersion = "security.istio.io/v1"
+    kind       = "AuthorizationPolicy"
+
+    metadata = {
+      name      = "authentik-allow-gateway"
+      namespace = kubernetes_namespace_v1.authentik[each.key].metadata[0].name
+    }
+
+    spec = {
+      action = "ALLOW"
+      rules = [
+        {
+          from = [
+            {
+              source = {
+                namespaces = ["istio-ingress"]
+              }
+            }
+          ]
+        }
+      ]
+
+      selector = {
+        matchLabels = {
+          "app.kubernetes.io/component" = "server"
+          "app.kubernetes.io/instance"  = "authentik"
+          "app.kubernetes.io/name"      = "authentik"
+        }
+      }
+    }
+  }
+}
+
 # Kubernetes Namespace Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/namespace_v1
 
