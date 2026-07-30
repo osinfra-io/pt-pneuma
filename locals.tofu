@@ -11,6 +11,15 @@ locals {
   # tfvars, keyed "authentik"). Discover it in the pneuma project via the google_sql_database_instances
   # data source (cross-repo state access is not permitted) and read its generated name (which corpus
   # prefixes with the instance key) for the database/user.
+  # Connection name (project:region:instance) of the same corpus-managed instance, used by the
+  # Cloud SQL Auth Proxy sidecar in the Authentik pods to reach the private-IP, ENCRYPTED_ONLY
+  # database over Workload Identity.
+  authentik_cloud_sql_connection_name = one([
+    for instance in data.google_sql_database_instances.authentik.instances :
+    instance.connection_name
+    if instance.region == local.authentik_primary_region && startswith(instance.name, "authentik-")
+  ])
+
   authentik_cloud_sql_instance_name = one([
     for instance in data.google_sql_database_instances.authentik.instances :
     instance.name
@@ -26,6 +35,13 @@ locals {
   authentik_database_user = "authentik"
 
   authentik_hostname = "authentik.${local.dns_zones[module.core_helpers.team].dns_name}"
+
+  # Namespace and chart-created Kubernetes service account for Authentik. The regional authentik
+  # workspace deploys into this namespace; the goauthentik chart names its ServiceAccount after the
+  # release ("authentik"). Both are needed here to bind Workload Identity for the Cloud SQL Auth Proxy.
+  authentik_kubernetes_namespace = "authentik"
+
+  authentik_kubernetes_service_account = "authentik"
 
   # The primary region hosting the single shared Cloud SQL instance. Present in every environment's
   # active zones; regional clusters reach it privately over the shared VPC.

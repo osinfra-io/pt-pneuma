@@ -67,6 +67,39 @@ module "kubernetes_istio" {
   project                   = local.team_project_ids[each.key]
 }
 
+# Google Project IAM Member Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/project_iam_member
+
+# The Cloud SQL Auth Proxy sidecar in the Authentik pods connects as this service account via
+# Workload Identity; roles/cloudsql.client lets it open the proxied connection to the instance.
+resource "google_project_iam_member" "authentik_cloud_sql_client" {
+  member  = "serviceAccount:${google_service_account.authentik_cloud_sql.email}"
+  project = local.team_project_ids[module.core_helpers.team]
+  role    = "roles/cloudsql.client"
+}
+
+# Google Service Account Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/service_account
+
+# Identity the Cloud SQL Auth Proxy sidecar impersonates. Every regional Authentik cluster shares
+# the project's Workload Identity pool, namespace and chart ServiceAccount, so one account serves them all.
+resource "google_service_account" "authentik_cloud_sql" {
+  account_id   = "authentik-cloud-sql"
+  display_name = "Authentik Cloud SQL Auth Proxy"
+  project      = local.team_project_ids[module.core_helpers.team]
+}
+
+# Google Service Account IAM Member Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/service_account_iam_member
+
+# Bind the Authentik Kubernetes service account (authentik/authentik) to the Google service account
+# so the Cloud SQL Auth Proxy sidecar authenticates through GKE Workload Identity.
+resource "google_service_account_iam_member" "authentik_cloud_sql_workload_identity" {
+  member             = "serviceAccount:${local.team_project_ids[module.core_helpers.team]}.svc.id.goog[${local.authentik_kubernetes_namespace}/${local.authentik_kubernetes_service_account}]"
+  role               = "roles/iam.workloadIdentityUser"
+  service_account_id = google_service_account.authentik_cloud_sql.name
+}
+
 # Google SQL Database Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/sql_database
 # The instance itself is platform-managed by pt-corpus (dogfooding the platform Cloud SQL); pneuma

@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "kubernetes_authentik" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=ba2ae8d9bfb6f9b3d57aba851902d409a7c7a346" # create-authentik-module (branch ref pending release)
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=d62515a77efee0b92d749c3ca652c487a12e82ea" # create-authentik-module (branch ref pending release)
 
   depends_on = [
     kubernetes_namespace_v1.authentik,
@@ -15,11 +15,12 @@ module "kubernetes_authentik" {
     helm = helm.by_cluster[each.key]
   }
 
-  existing_secret        = kubernetes_secret_v1.authentik[each.key].metadata[0].name
-  external_database_host = local.main.authentik_database_host
-  external_database_name = local.main.authentik_database_name
-  external_database_user = local.main.authentik_database_user
-  namespace              = kubernetes_namespace_v1.authentik[each.key].metadata[0].name
+  cloud_sql_connection_name    = local.main.authentik_cloud_sql_connection_name
+  existing_secret              = kubernetes_secret_v1.authentik[each.key].metadata[0].name
+  external_database_name       = local.main.authentik_database_name
+  external_database_user       = local.main.authentik_database_user
+  google_service_account_email = local.main.authentik_cloud_sql_service_account_email
+  namespace                    = kubernetes_namespace_v1.authentik[each.key].metadata[0].name
 }
 
 # Kubernetes Manifest Resource

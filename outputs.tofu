@@ -6,6 +6,16 @@ output "authentik_base_url" {
   value       = local.authentik_base_url
 }
 
+output "authentik_cloud_sql_connection_name" {
+  description = "Connection name (project:region:instance) of the platform-managed Authentik Cloud SQL instance, consumed by the regional authentik workspaces for the Cloud SQL Auth Proxy sidecar"
+  value       = local.authentik_cloud_sql_connection_name
+}
+
+output "authentik_cloud_sql_service_account_email" {
+  description = "Email of the Google service account the Authentik Cloud SQL Auth Proxy impersonates via Workload Identity, consumed by the regional authentik workspaces"
+  value       = google_service_account.authentik_cloud_sql.email
+}
+
 output "authentik_database_host" {
   description = "Private DNS FQDN of the platform-managed (pt-corpus) Authentik Cloud SQL primary, consumed by regional authentik workspaces"
   value       = local.authentik_database_host
