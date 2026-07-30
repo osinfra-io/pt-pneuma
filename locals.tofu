@@ -19,7 +19,7 @@ locals {
 
   # Private DNS FQDN of the corpus-managed Cloud SQL instance. Corpus creates the record
   # {instance}.{region}.{team} in the environment private zone (gcp.priv[.env].osinfra.io).
-  authentik_database_host = "authentik.${local.authentik_primary_region}.${module.core_helpers.team}.${local.authentik_private_dns_domain}"
+  authentik_database_host = "authentik.${local.authentik_primary_region}.sql.${module.core_helpers.team}.${local.authentik_private_dns_domain}"
 
   authentik_database_name = "authentik"
 
