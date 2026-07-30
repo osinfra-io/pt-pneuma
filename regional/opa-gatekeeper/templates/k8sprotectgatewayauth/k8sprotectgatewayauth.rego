@@ -1,7 +1,5 @@
 package k8sprotectgatewayauth
 
-import rego.v1
-
 allowed_platform_principal if {
 	input.review.userInfo.username in object.get(input.parameters, "allowedUsers", [])
 }
