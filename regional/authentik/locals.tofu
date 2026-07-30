@@ -13,7 +13,7 @@ locals {
 
   authentik_namespace = "authentik"
 
-  authentik_secret_name = "authentik"
+  authentik_secret_name = "authentik-env"
 
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
