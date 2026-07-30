@@ -30,6 +30,10 @@ resource "kubernetes_namespace_v1" "authentik" {
   provider = kubernetes.by_cluster[each.key]
 
   metadata {
+    labels = {
+      "istio-injection" = "enabled"
+    }
+
     name = local.authentik_namespace
   }
 }
