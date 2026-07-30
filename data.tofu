@@ -41,3 +41,12 @@ data "google_projects" "team_platform_managed" {
   # Strip 'folders/' prefix from folder ID since API expects just the numeric ID
   filter = "parent.id:${replace(module.core_helpers.teams[each.key].environments[local.environment_key], "folders/", "")} labels.repository:pt-corpus labels.team:${each.key} labels.project-type:platform-managed lifecycleState:ACTIVE"
 }
+
+# Data Source: Google SQL Database Instances
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/sql_database_instances
+# The Authentik Cloud SQL instance is platform-managed by pt-corpus; discover it in the pneuma
+# project rather than reading corpus state (cross-repo state access is not permitted)
+
+data "google_sql_database_instances" "authentik" {
+  project = local.team_project_ids[module.core_helpers.team]
+}

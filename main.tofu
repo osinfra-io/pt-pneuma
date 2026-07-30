@@ -70,7 +70,7 @@ module "kubernetes_istio" {
 # Google SQL Database Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/sql_database
 # The instance itself is platform-managed by pt-corpus (dogfooding the platform Cloud SQL); pneuma
-# owns only the authentik database and user on it, referenced by the corpus deterministic name.
+# owns only the authentik database and user on it, discovered in-project via a data source.
 
 resource "google_sql_database" "authentik" {
   instance = local.authentik_cloud_sql_instance_name
