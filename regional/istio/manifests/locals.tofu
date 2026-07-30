@@ -337,9 +337,12 @@ locals {
 
   authentik_dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
 
-  authentik_dns_zone_name = module.core_helpers.env == "prod" ? "${local.authentik_dns_subdomain}.osinfra.io" : "${local.authentik_dns_subdomain}.${module.core_helpers.env}.osinfra.io"
+  # Authentik is a single platform-wide IdP shared by every team, so it is published at the
+  # environment-level public zone (authentik.<env>.osinfra.io), not under any one team's subdomain.
+  # Prod drops the env segment.
+  authentik_public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
 
-  authentik_hostname = "authentik.${local.authentik_dns_zone_name}"
+  authentik_hostname = "authentik.${local.authentik_public_dns_domain}"
 
   authentik_issuer_url = "https://${local.authentik_hostname}/application/o/gateway/"
 
@@ -348,7 +351,7 @@ locals {
   # HTTPRoute exposing the Authentik IdP UI and OIDC endpoints on the shared ingress gateway.
   # Authentik is a single platform-managed IdP running in the gateway team's cluster (namespace
   # "authentik"), so the route exists only on the gateway cluster. Its host
-  # ("authentik.<subdomain>.osinfra.io") is a distinct hostname from every team apex/zonal host, so
+  # ("authentik.<env>.osinfra.io") is a distinct hostname from every team apex/zonal host, so
   # the host-scoped gateway_auth AuthorizationPolicies never match it — the IdP is reachable without
   # forward-auth, as an identity provider must be (it authenticates users itself).
   authentik_routes = {

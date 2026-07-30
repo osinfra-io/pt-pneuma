@@ -34,7 +34,15 @@ locals {
 
   authentik_database_user = "authentik"
 
-  authentik_hostname = "authentik.${local.dns_zones[module.core_helpers.team].dns_name}"
+  # Authentik is a single platform-wide IdP shared by every team, so it is published at the
+  # environment-level public zone (authentik.<env>.osinfra.io) rather than under any one team's
+  # subdomain. The <env>.osinfra.io zone is owned by pt-corpus in the shared VPC host project; prod
+  # drops the env segment. The A record is created below via the main gateway module.
+  authentik_hostname = "authentik.${local.authentik_public_dns_domain}"
+
+  authentik_public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
+
+  authentik_public_dns_zone_name = module.core_helpers.env == "prod" ? "osinfra-io" : "${module.core_helpers.env}-osinfra-io"
 
   # Namespace and chart-created Kubernetes service account for Authentik. The regional authentik
   # workspace deploys into this namespace; the goauthentik chart names its ServiceAccount after the
@@ -89,6 +97,17 @@ locals {
   # Converts workspace environment (e.g., "non-production") to logos format (e.g., "Non-Production")
   environment_key = title(module.core_helpers.environment)
 
+  # Apex A record for the shared platform Authentik IdP, published in the environment-level
+  # <env>.osinfra.io public zone (owned by pt-corpus in the shared VPC host project). It is merged
+  # into the main gateway module's DNS input only — not the gateway_dns output that regional/istio
+  # zonal-prefixes — so it resolves to the single MCI global address, not per-zone gateway LBs.
+  authentik_gateway_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
+    (local.authentik_hostname) = {
+      managed_zone = local.authentik_public_dns_zone_name
+      project      = data.google_project.shared_vpc_host.project_id
+    }
+  } : {}
+
   # Gateway DNS configuration for Istio per team
   # Constructs DNS zone information for each team's public DNS zone created in pt-corpus
   gateway_dns_by_team = {
@@ -103,8 +122,12 @@ locals {
 
   # Merged gateway DNS for all teams — passed to pneuma's MCI module instance so the
   # single MCI global address creates DNS A records for every team that routes through
-  # pneuma's gateway (e.g. both pneuma.sb.osinfra.io and kryptos.sb.osinfra.io).
-  gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(values(local.gateway_dns_by_team)...) : {}
+  # pneuma's gateway (e.g. both pneuma.sb.osinfra.io and kryptos.sb.osinfra.io), plus the
+  # environment-level authentik.<env>.osinfra.io record for the shared IdP.
+  gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(
+    merge(values(local.gateway_dns_by_team)...),
+    local.authentik_gateway_dns,
+  ) : {}
 
 
   # GKE clusters aggregated from all teams, filtered by active zones for this environment
