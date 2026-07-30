@@ -7,14 +7,14 @@ locals {
   # so all stateless regional server/worker instances form one identity provider (not per-zone IdPs).
   authentik_base_url = "https://${local.authentik_hostname}"
 
-  authentik_cloud_sql_database_version = "POSTGRES_16"
+  # The Cloud SQL instance is platform-managed by pt-corpus (see cloud_sql in the pt-pneuma Logos
+  # tfvars). Corpus creates it with a deterministic name (team-region) and a private DNS record, so
+  # pneuma references both by convention without reading corpus state.
+  authentik_cloud_sql_instance_name = "${module.core_helpers.team}-${local.authentik_primary_region}"
 
-  authentik_cloud_sql_deletion_protection = module.core_helpers.env == "prod"
-
-  authentik_cloud_sql_instance_name = "authentik"
-
-  # Regional HA requires a dedicated-core tier; shared-core tiers (db-f1-micro) do not support HA.
-  authentik_cloud_sql_machine_tier = "db-custom-1-3840"
+  # Private DNS FQDN of the corpus-managed Cloud SQL primary. Corpus creates the record
+  # team-cloud-sql in the environment private zone (gcp.priv[.env].osinfra.io).
+  authentik_database_host = "${module.core_helpers.team}-cloud-sql.${local.authentik_private_dns_domain}"
 
   authentik_database_name = "authentik"
 
@@ -25,6 +25,8 @@ locals {
   # The primary region hosting the single shared Cloud SQL instance. Present in every environment's
   # active zones; regional clusters reach it privately over the shared VPC.
   authentik_primary_region = "us-east1"
+
+  authentik_private_dns_domain = module.core_helpers.env == "prod" ? "gcp.priv.osinfra.io" : "gcp.priv.${module.core_helpers.env}.osinfra.io"
 
   # Keys in the Authentik environment Secret, generated once and shared by every regional workspace
   # via main's outputs (mounted into server and worker through the chart's global.envFrom).
@@ -113,9 +115,6 @@ locals {
       "${team_key}-${ns_name}" => ns
     }
   }
-
-  # Shared VPC network name for private Cloud SQL connectivity (created by pt-corpus).
-  shared_vpc_name = "standard-shared"
 
   # Platform-managed project ID per team, discovered from pt-corpus labels.
   team_project_ids = {

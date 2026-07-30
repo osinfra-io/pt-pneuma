@@ -7,8 +7,8 @@ output "authentik_base_url" {
 }
 
 output "authentik_database_host" {
-  description = "Private IP of the shared Authentik Cloud SQL primary, consumed by regional authentik workspaces"
-  value       = module.google_cloud_sql.private_ip_address
+  description = "Private DNS FQDN of the platform-managed (pt-corpus) Authentik Cloud SQL primary, consumed by regional authentik workspaces"
+  value       = local.authentik_database_host
 }
 
 output "authentik_database_name" {

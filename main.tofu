@@ -1,21 +1,3 @@
-# Google Cloud SQL Module (osinfra.io)
-# https://github.com/osinfra-io/pt-arche-google-cloud-sql
-
-module "google_cloud_sql" {
-  source = "github.com/osinfra-io/pt-arche-google-cloud-sql//regional?ref=a1325d4daffb3e5b7f18c48d9780509cc33d5aec" # v0.2.8
-
-  availability_type   = "REGIONAL"
-  database_version    = local.authentik_cloud_sql_database_version
-  deletion_protection = local.authentik_cloud_sql_deletion_protection
-  host_project_id     = data.google_project.shared_vpc_host.project_id
-  instance_name       = local.authentik_cloud_sql_instance_name
-  labels              = module.core_helpers.labels
-  machine_tier        = local.authentik_cloud_sql_machine_tier
-  network             = local.shared_vpc_name
-  project             = local.team_project_ids[module.core_helpers.team]
-  region              = local.authentik_primary_region
-}
-
 # Google Kubernetes Engine Module (osinfra.io)
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
@@ -87,9 +69,11 @@ module "kubernetes_istio" {
 
 # Google SQL Database Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/sql_database
+# The instance itself is platform-managed by pt-corpus (dogfooding the platform Cloud SQL); pneuma
+# owns only the authentik database and user on it, referenced by the corpus deterministic name.
 
 resource "google_sql_database" "authentik" {
-  instance = module.google_cloud_sql.instance
+  instance = local.authentik_cloud_sql_instance_name
   name     = local.authentik_database_name
   project  = local.team_project_ids[module.core_helpers.team]
 }
@@ -98,7 +82,7 @@ resource "google_sql_database" "authentik" {
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/sql_user
 
 resource "google_sql_user" "authentik" {
-  instance = module.google_cloud_sql.instance
+  instance = local.authentik_cloud_sql_instance_name
   name     = local.authentik_database_user
   password = random_password.authentik_database.result
   project  = local.team_project_ids[module.core_helpers.team]
