@@ -345,6 +345,25 @@ locals {
 
   authentik_jwks_uri = "${local.authentik_issuer_url}jwks/"
 
+  # HTTPRoute exposing the Authentik IdP UI and OIDC endpoints on the shared ingress gateway.
+  # Authentik is a single platform-managed IdP running in the gateway team's cluster (namespace
+  # "authentik"), so the route exists only on the gateway cluster. Its host
+  # ("authentik.<subdomain>.osinfra.io") is a distinct hostname from every team apex/zonal host, so
+  # the host-scoped gateway_auth AuthorizationPolicies never match it — the IdP is reachable without
+  # forward-auth, as an identity provider must be (it authenticates users itself).
+  authentik_routes = {
+    for cluster_name, cluster_config in local.gateway_clusters :
+    cluster_name => {
+      "authentik-${local.authentik_dns_subdomain}" = {
+        backend_namespace = "authentik"
+        backend_port      = 80
+        backend_service   = "authentik-server"
+        host              = local.authentik_hostname
+        path              = "/"
+      }
+    }
+  }
+
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :
@@ -358,10 +377,13 @@ locals {
   # subdomain to avoid collisions across teams.
   routes = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key == module.core_helpers.team ? merge([
-      for peer_name, peer_config in local.gke_clusters :
-      merge(local.global_routes[peer_name], local.zonal_routes[peer_name])
-    ]...) : {}
+    cluster_name => cluster_config.team_key == module.core_helpers.team ? merge(
+      merge([
+        for peer_name, peer_config in local.gke_clusters :
+        merge(local.global_routes[peer_name], local.zonal_routes[peer_name])
+      ]...),
+      try(local.authentik_routes[cluster_name], {}),
+    ) : {}
   }
 
   # Per-team zonal probe HTTPRoutes derived from each team's Logos-declared istio-test routes. Keyed
