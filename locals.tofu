@@ -8,16 +8,18 @@ locals {
   authentik_base_url = "https://${local.authentik_hostname}"
 
   # The Cloud SQL instance is platform-managed by pt-corpus (see cloud_sql in the pt-pneuma Logos
-  # tfvars). Discover it in the pneuma project via the google_sql_database_instances data source
-  # (cross-repo state access is not permitted) and read its generated name for the database/user.
+  # tfvars, keyed "authentik"). Discover it in the pneuma project via the google_sql_database_instances
+  # data source (cross-repo state access is not permitted) and read its generated name (which corpus
+  # prefixes with the instance key) for the database/user.
   authentik_cloud_sql_instance_name = one([
     for instance in data.google_sql_database_instances.authentik.instances :
-    instance.name if instance.region == local.authentik_primary_region
+    instance.name
+    if instance.region == local.authentik_primary_region && startswith(instance.name, "authentik-")
   ])
 
-  # Private DNS FQDN of the corpus-managed Cloud SQL primary. Corpus creates the record
-  # team-cloud-sql in the environment private zone (gcp.priv[.env].osinfra.io).
-  authentik_database_host = "${module.core_helpers.team}-cloud-sql.${local.authentik_private_dns_domain}"
+  # Private DNS FQDN of the corpus-managed Cloud SQL instance. Corpus creates the record
+  # {instance}.{region}.{team} in the environment private zone (gcp.priv[.env].osinfra.io).
+  authentik_database_host = "authentik.${local.authentik_primary_region}.${module.core_helpers.team}.${local.authentik_private_dns_domain}"
 
   authentik_database_name = "authentik"
 
