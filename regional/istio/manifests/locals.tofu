@@ -130,6 +130,10 @@ locals {
     }
   }
 
+  # DENY policy for api-jwt routes only. It requires a validated request principal (rejects
+  # requests with no JWT), then denies any request whose audience, groups, or roles claims do
+  # not match. browser routes are authorized by the embedded outpost via the CUSTOM ext_authz
+  # policy instead, since forward-auth sessions carry no JWT for Istio to evaluate claims on.
   gateway_auth_required_claim_authorization_policy_manifests = {
     for key, policy in local.gateway_auth_authorization_policies :
     key => {
@@ -142,7 +146,7 @@ locals {
       spec = {
         action = "DENY"
         rules = concat(
-          policy.mode != "api-jwt" ? [] : [
+          [
             {
               from = [
                 {
@@ -162,7 +166,7 @@ locals {
               ]
             }
           ],
-          policy.mode != "api-jwt" || length(policy.audiences) == 0 ? [] : [
+          length(policy.audiences) == 0 ? [] : [
             {
               to = [
                 {
@@ -225,6 +229,7 @@ locals {
         }
       }
     }
+    if policy.mode == "api-jwt"
   }
 
   gateway_auth_route_policy_items = flatten([
@@ -257,6 +262,11 @@ locals {
     ])
   ])
 
+  # CUSTOM ext_authz policy for browser routes only. It sends the request to the embedded
+  # outpost for forward-auth, which establishes the Authentik session (authentication). Per-route
+  # required_groups authorization is enforced by Authentik application policy bindings, which
+  # require one application/provider per protected host; until those exist a browser route is
+  # authenticated-only. api-jwt routes skip this and use the native claim DENY policy above.
   gateway_auth_custom_authorization_policy_manifests = {
     for key, policy in local.gateway_auth_authorization_policies :
     key => {
