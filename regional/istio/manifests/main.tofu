@@ -217,3 +217,58 @@ resource "kubernetes_manifest" "gateway_authentik_inbound_header_strip_filter" {
     }
   }
 }
+
+resource "kubernetes_manifest" "gateway_authentik_jwt_bypass_filter" {
+  for_each = local.gateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = {
+    apiVersion = "networking.istio.io/v1alpha3"
+    kind       = "EnvoyFilter"
+    metadata = {
+      annotations = {
+        # IST0133: EnvoyFilters are inherently low-level; this warning is expected.
+        "galley.istio.io/analyze-suppress" = "IST0133"
+      }
+      name      = "gateway-authentik-jwt-bypass"
+      namespace = "istio-ingress"
+    }
+    spec = {
+      # The gateway-wide RequestAuthentication (gateway-authentik-jwt) is workload-scoped and
+      # rejects any request carrying an Authorization: Bearer token that is not a valid JWT for
+      # the configured issuer. Authentik is the IdP: it authenticates its own API and OIDC token
+      # clients (including the authentik-config OpenTofu provider) with opaque Bearer tokens that
+      # are not JWTs. This disables the jwt_authn filter for the Authentik virtual host only, so
+      # those opaque tokens pass through to Authentik while every other host still enforces JWT.
+      configPatches = [
+        {
+          applyTo = "VIRTUAL_HOST"
+          match = {
+            context = "GATEWAY"
+            routeConfiguration = {
+              vhost = {
+                name = "${local.authentik_hostname}:443"
+              }
+            }
+          }
+          patch = {
+            operation = "MERGE"
+            value = {
+              typed_per_filter_config = {
+                "envoy.filters.http.jwt_authn" = {
+                  "@type"  = "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.PerRouteConfig"
+                  disabled = true
+                }
+              }
+            }
+          }
+        }
+      ]
+
+      workloadSelector = {
+        labels = local.gateway_auth_gateway_selector
+      }
+    }
+  }
+}
