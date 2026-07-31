@@ -19,17 +19,19 @@ The Pneuma layer is where infrastructure breathes — where the static order est
 
 Links to documentation and other resources required to develop and iterate in this repository successfully.
 
+- [authentik](https://docs.goauthentik.io/)
 - [cert-manager](https://cert-manager.io/docs/)
 - [datadog kubernetes monitoring](https://docs.datadoghq.com/containers/kubernetes/)
 - [datadog synthetics](https://docs.datadoghq.com/synthetics/)
 - [google kubernetes engine](https://cloud.google.com/kubernetes-engine/docs)
 - [istio service mesh](https://istio.io/latest/docs/)
 - [kubernetes](https://kubernetes.io/docs/home/)
+- [kubernetes gateway api](https://gateway-api.sigs.k8s.io/)
 - [opa gatekeeper](https://open-policy-agent.github.io/gatekeeper/website/docs/)
 
 ## 🔄 Deployment Dependency Graph
 
-Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain.
+Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain. Authentik is deployed per zone (the primary us-east1-b zone first, then the rest), while a single global **Authentik Config** job runs last, once every zone's Istio manifests are in place.
 
 ```mermaid
 flowchart LR
@@ -38,6 +40,7 @@ flowchart LR
     classDef istio fill:#466BB0,stroke:#466BB0,color:#fff
     classDef datadog fill:#632CA6,stroke:#632CA6,color:#fff
     classDef opa fill:#23263B,stroke:#23263B,color:#fff
+    classDef authentik fill:#FD4B2D,stroke:#FD4B2D,color:#fff
 
     main["Main"]:::gke
 
@@ -48,8 +51,11 @@ flowchart LR
     z1_cert_manager --> z1_cert_manager_istio_csr["cert-manager Istio CSR: us-east1-b"]:::certmanager
     z1_cert_manager --> z1_opa_gatekeeper["OPA Gatekeeper: us-east1-b"]:::opa
     z1_cert_manager_istio_csr --> z1_istio["Istio: us-east1-b"]:::istio
-    z1_istio --> z1_istio_manifests["Istio Manifests: us-east1-b"]:::istio
-    z1_istio_manifests --> z1_istio_test["Istio Test: us-east1-b"]:::istio
+    z1_istio --> z1_istio_test["Istio Test: us-east1-b"]:::istio
+    z1_istio_test --> z1_authentik["Authentik: us-east1-b"]:::authentik
+    z1_istio_test --> z1_istio_manifests["Istio Manifests: us-east1-b"]:::istio
+    z1_authentik --> z1_istio_manifests
+    z1_istio_manifests --> authentik_config["Authentik Config (global)"]:::authentik
     z1_datadog --> z1_datadog_manifests["Datadog Manifests: us-east1-b"]:::datadog
     z1_opa_gatekeeper --> z1_opa_templates["OPA Gatekeeper Templates: us-east1-b"]:::opa
     z1_opa_templates --> z1_opa_constraints["OPA Gatekeeper Constraints: us-east1-b"]:::opa
@@ -61,8 +67,12 @@ flowchart LR
     z2_cert_manager --> z2_cert_manager_istio_csr["cert-manager Istio CSR: us-east4-a"]:::certmanager
     z2_cert_manager --> z2_opa_gatekeeper["OPA Gatekeeper: us-east4-a"]:::opa
     z2_cert_manager_istio_csr --> z2_istio["Istio: us-east4-a"]:::istio
-    z2_istio --> z2_istio_manifests["Istio Manifests: us-east4-a"]:::istio
-    z2_istio_manifests --> z2_istio_test["Istio Test: us-east4-a"]:::istio
+    z2_istio --> z2_istio_test["Istio Test: us-east4-a"]:::istio
+    z2_istio_test --> z2_authentik["Authentik: us-east4-a"]:::authentik
+    z1_authentik --> z2_authentik
+    z2_istio_test --> z2_istio_manifests["Istio Manifests: us-east4-a"]:::istio
+    z2_authentik --> z2_istio_manifests
+    z2_istio_manifests --> authentik_config
     z2_datadog --> z2_datadog_manifests["Datadog Manifests: us-east4-a"]:::datadog
     z2_opa_gatekeeper --> z2_opa_templates["OPA Gatekeeper Templates: us-east4-a"]:::opa
     z2_opa_templates --> z2_opa_constraints["OPA Gatekeeper Constraints: us-east4-a"]:::opa
