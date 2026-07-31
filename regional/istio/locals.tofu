@@ -33,6 +33,69 @@ locals {
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
+  istio_mesh_configs = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => yamlencode({
+      accessLogFile = "/dev/stdout"
+
+      defaultConfig = {
+        proxyMetadata = {
+          ECC_CURVE               = "P256"
+          ECC_SIGNATURE_ALGORITHM = "ECDSA"
+          ISTIO_META_DNS_CAPTURE  = "true"
+        }
+      }
+
+      extensionProviders = [
+        {
+          envoyExtAuthzHttp = {
+            failOpen = false
+
+            headersToDownstreamOnAllow = [
+              "cookie",
+            ]
+
+            headersToDownstreamOnDeny = [
+              "content-type",
+              "set-cookie",
+            ]
+
+            headersToUpstreamOnAllow = [
+              "set-cookie",
+              "x-authentik-*",
+            ]
+
+            includeRequestHeadersInCheck = [
+              "cookie",
+            ]
+
+            pathPrefix = local.authentik_outpost_path_prefix
+            port       = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
+            service    = "${try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)}.${local.authentik_resolved_outpost_namespace}.svc.cluster.local"
+          }
+
+          name = local.authentik_extension_provider_name
+        }
+      ]
+
+      # Keep the Authentik service cluster-local so a gateway in one region never depends
+      # synchronously on an authentik-server in another region. Cross-region failover is handled
+      # by the external load balancer, not by the mesh.
+      # https://istio.io/latest/docs/ops/configuration/traffic-management/multicluster
+      serviceSettings = [
+        {
+          hosts = [
+            "*.${local.authentik_resolved_outpost_namespace}.svc.cluster.local",
+          ]
+
+          settings = {
+            clusterLocal = true
+          }
+        }
+      ]
+    })
+  }
+
   # Multi-cluster service links per cluster — the set of the owning team's clusters
   # (across all zones) that participate in the Istio multi-cluster mesh.
   multi_cluster_service_clusters = {
@@ -45,6 +108,23 @@ locals {
       if peer_config.team_key == cluster_config.team_key
     ]
   }
+
+  authentik_extension_provider_name = "authentik"
+
+  # Well-known Authentik embedded outpost coordinates used as fallbacks for the ext_authz
+  # provider, since the Istio mesh config is applied before the authentik-config workspace exists
+  # (its remote state is empty on first apply). Once authentik-config is applied, its authoritative
+  # outputs take precedence via try(). The embedded outpost is served by the authentik-server
+  # Service, so a gateway always calls its region-local authentik-server for forward-auth.
+  authentik_outpost_namespace    = "authentik"
+  authentik_outpost_path_prefix  = "/outpost.goauthentik.io/auth/envoy"
+  authentik_outpost_service_name = "authentik-server"
+  authentik_outpost_service_port = 80
+
+  # Resolve the outpost namespace once so the ext_authz service and the clusterLocal serviceSettings
+  # host always target the same namespace; a mismatch would let the gateway route forward-auth to
+  # another region's authentik-server.
+  authentik_resolved_outpost_namespace = try(data.terraform_remote_state.authentik_config.outputs.outpost_namespace, local.authentik_outpost_namespace)
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {

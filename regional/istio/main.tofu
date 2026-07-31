@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=a1521a2eca85085be58664633502dd6a4c4434a0" # v0.5.5
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=e056b5ff60ab457afb4536e2787f381fdb94e3cf" # v0.5.6
 
   for_each = local.gke_clusters
 
@@ -36,6 +36,30 @@ module "kubernetes_istio" {
   proxy_memory_requests                       = var.kubernetes_istio_proxy_memory_requests
   tls_self_signed_cert_cert_manager_root_cert = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert
   tls_self_signed_cert_cert_manager_root_key  = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key
+}
+
+# Kubernetes Config Map Data Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/config_map_v1_data
+
+resource "kubernetes_config_map_v1_data" "istio_mesh_config" {
+  depends_on = [
+    module.kubernetes_istio
+  ]
+
+  for_each = local.gateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  data = {
+    mesh = local.istio_mesh_configs[each.key]
+  }
+
+  force = true
+
+  metadata {
+    name      = "istio"
+    namespace = "istio-system"
+  }
 }
 
 # Kubernetes Deployment Resource

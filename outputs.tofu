@@ -1,6 +1,42 @@
 # Output Values
 # https://opentofu.org/docs/language/values/outputs
 
+output "authentik_base_url" {
+  description = "Public base URL (OIDC issuer/provider host) for the single logical Authentik service"
+  value       = local.authentik_base_url
+}
+
+output "authentik_cloud_sql_connection_name" {
+  description = "Connection name (project:region:instance) of the platform-managed Authentik Cloud SQL instance, consumed by the regional authentik workspaces for the Cloud SQL Auth Proxy sidecar"
+  value       = local.authentik_cloud_sql_connection_name
+}
+
+output "authentik_cloud_sql_service_account_email" {
+  description = "Email of the Google service account the Authentik Cloud SQL Auth Proxy impersonates via Workload Identity, consumed by the regional authentik workspaces"
+  value       = google_service_account.authentik_cloud_sql.email
+}
+
+output "authentik_database_host" {
+  description = "Private DNS FQDN of the platform-managed (pt-corpus) Authentik Cloud SQL primary, consumed by regional authentik workspaces"
+  value       = local.authentik_database_host
+}
+
+output "authentik_database_name" {
+  description = "Name of the shared Authentik PostgreSQL database"
+  value       = google_sql_database.authentik.name
+}
+
+output "authentik_database_user" {
+  description = "User for the shared Authentik PostgreSQL database"
+  value       = google_sql_user.authentik.name
+}
+
+output "authentik_secret_env" {
+  description = "Shared Authentik environment secret values (secret key, DB and bootstrap credentials) generated once and consumed by every regional authentik workspace"
+  sensitive   = true
+  value       = local.authentik_secret_env
+}
+
 output "clusters" {
   description = "Slim GKE cluster map (all teams, all zones) for the deployment workflow to pass to zone workspaces as TF_VAR_clusters, keyed by cluster name"
   value = {

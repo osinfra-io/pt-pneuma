@@ -41,15 +41,7 @@ terraform {
         method = method.aes_gcm.logos
       }
 
-      remote_state_data_source "authentik_config" {
-        method = method.aes_gcm.default
-      }
-
       remote_state_data_source "main" {
-        method = method.aes_gcm.default
-      }
-
-      remote_state_data_source "regional" {
         method = method.aes_gcm.default
       }
     }
@@ -86,6 +78,13 @@ terraform {
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
+
+    # Random Provider
+    # https://search.opentofu.org/provider/hashicorp/random/latest/docs
+
+    random = {
+      source = "hashicorp/random"
+    }
   }
 }
 
@@ -110,7 +109,7 @@ provider "helm" {
 
 # Kubernetes Provider
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest
-# One instance per cluster in this zone; modules receive the matching instance
+# One instance per cluster in this zone; resources receive the matching instance
 
 provider "kubernetes" {
   alias    = "by_cluster"

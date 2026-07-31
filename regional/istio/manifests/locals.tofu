@@ -31,6 +31,297 @@ locals {
     if cluster_config.team_key == module.core_helpers.team
   }
 
+  # Auth policies generated from the Logos route_auth_policies contract. The gateway
+  # cluster enforces every team's external route because all ingress enters through
+  # the platform gateway data plane.
+  gateway_auth_authorization_policies = merge(concat(
+    [{}],
+    [
+      for cluster_name, policies in local.gateway_auth_policies : {
+        for key, policy in policies :
+        key => policy
+      }
+    ]
+  )...)
+
+  gateway_auth_callback_paths = [
+    "/outpost.goauthentik.io",
+    "/outpost.goauthentik.io/*",
+  ]
+
+  gateway_auth_default_exempt_paths = concat(
+    local.gateway_auth_health_paths,
+    local.gateway_auth_callback_paths,
+  )
+
+  gateway_auth_gateway_selector = {
+    "gateway.networking.k8s.io/gateway-name" = "gateway"
+  }
+
+  gateway_auth_health_paths = [
+    "/health",
+    "/healthz",
+    "/live",
+    "/livez",
+    "/ready",
+    "/readyz",
+  ]
+
+  # Route auth policy modes that generate an enforced AuthorizationPolicy. "public" is intentionally
+  # excluded upstream; any other value would silently produce no policy (fail-open) and is rejected
+  # before apply by terraform_data.gateway_auth_policy_validation.
+  gateway_auth_enforced_modes = ["api-jwt", "browser"]
+
+  gateway_auth_invalid_mode_route_keys = [
+    for item in local.gateway_auth_route_policy_items : item.key
+    if !contains(local.gateway_auth_enforced_modes, item.mode)
+  ]
+
+  # public_paths entries are copied verbatim into notPaths (auth exemptions). A wildcard-only or
+  # root entry would exempt the whole route from authentication, so such entries are rejected.
+  gateway_auth_invalid_public_path_route_keys = [
+    for item in local.gateway_auth_route_policy_items : item.key
+    if anytrue([
+      for path in item.public_paths :
+      !startswith(path, "/") || contains(["/", "/*", "*"], path)
+    ])
+  ]
+
+  gateway_auth_authentik_jwks_uris = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => try(
+      data.terraform_remote_state.authentik_config.outputs.jwks_uri,
+      local.authentik_jwks_uri,
+    )
+  }
+
+  gateway_auth_authentik_issuer_urls = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => try(
+      data.terraform_remote_state.authentik_config.outputs.issuer_url,
+      local.authentik_issuer_url,
+    )
+  }
+
+  gateway_auth_policies = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => {
+      for item in local.gateway_auth_route_policy_items :
+      "${cluster_name}-${item.key}" => merge(item, {
+        cluster_name                     = cluster_name
+        custom_authorization_policy_name = "gateway-auth-${substr(sha1("${cluster_name}-${item.key}-custom"), 0, 8)}"
+        deny_authorization_policy_name   = "gateway-auth-${substr(sha1("${cluster_name}-${item.key}-deny"), 0, 8)}"
+        exempt_paths = distinct(concat(
+          local.gateway_auth_default_exempt_paths,
+          item.path == "/" ? [] : [
+            for path in local.gateway_auth_default_exempt_paths :
+            "${trimsuffix(item.path, "/")}${path}"
+          ],
+          item.public_paths,
+        ))
+        paths = item.path == "/" ? ["/*"] : [
+          trimsuffix(item.path, "/"),
+          "${trimsuffix(item.path, "/")}/*",
+        ]
+      })
+    }
+  }
+
+  gateway_auth_request_authentication_manifests = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => {
+      apiVersion = "security.istio.io/v1"
+      kind       = "RequestAuthentication"
+      metadata = {
+        name      = "gateway-authentik-jwt"
+        namespace = "istio-ingress"
+      }
+      spec = {
+        jwtRules = [
+          {
+            issuer  = local.gateway_auth_authentik_issuer_urls[cluster_name]
+            jwksUri = local.gateway_auth_authentik_jwks_uris[cluster_name]
+          }
+        ]
+        selector = {
+          matchLabels = local.gateway_auth_gateway_selector
+        }
+      }
+    }
+  }
+
+  # DENY policy for api-jwt routes only. It requires a validated request principal (rejects
+  # requests with no JWT), then denies any request whose audience, groups, or roles claims do
+  # not match. browser routes are authorized by the embedded outpost via the CUSTOM ext_authz
+  # policy instead, since forward-auth sessions carry no JWT for Istio to evaluate claims on.
+  gateway_auth_required_claim_authorization_policy_manifests = {
+    for key, policy in local.gateway_auth_authorization_policies :
+    key => {
+      apiVersion = "security.istio.io/v1"
+      kind       = "AuthorizationPolicy"
+      metadata = {
+        name      = policy.deny_authorization_policy_name
+        namespace = "istio-ingress"
+      }
+      spec = {
+        action = "DENY"
+        rules = concat(
+          [
+            {
+              from = [
+                {
+                  source = {
+                    notRequestPrincipals = ["*"]
+                  }
+                }
+              ]
+              to = [
+                {
+                  operation = {
+                    hosts    = [policy.host]
+                    notPaths = policy.exempt_paths
+                    paths    = policy.paths
+                  }
+                }
+              ]
+            }
+          ],
+          length(policy.audiences) == 0 ? [] : [
+            {
+              to = [
+                {
+                  operation = {
+                    hosts    = [policy.host]
+                    notPaths = policy.exempt_paths
+                    paths    = policy.paths
+                  }
+                }
+              ]
+              when = [
+                {
+                  key       = "request.auth.audiences"
+                  notValues = policy.audiences
+                }
+              ]
+            }
+          ],
+          length(policy.required_groups) == 0 ? [] : [
+            {
+              to = [
+                {
+                  operation = {
+                    hosts    = [policy.host]
+                    notPaths = policy.exempt_paths
+                    paths    = policy.paths
+                  }
+                }
+              ]
+              when = [
+                {
+                  key       = "request.auth.claims[groups]"
+                  notValues = policy.required_groups
+                }
+              ]
+            }
+          ],
+          length(policy.required_roles) == 0 ? [] : [
+            {
+              to = [
+                {
+                  operation = {
+                    hosts    = [policy.host]
+                    notPaths = policy.exempt_paths
+                    paths    = policy.paths
+                  }
+                }
+              ]
+              when = [
+                {
+                  key       = "request.auth.claims[roles]"
+                  notValues = policy.required_roles
+                }
+              ]
+            }
+          ],
+        )
+        selector = {
+          matchLabels = local.gateway_auth_gateway_selector
+        }
+      }
+    }
+    if policy.mode == "api-jwt"
+  }
+
+  gateway_auth_route_policy_items = flatten([
+    for cluster_name, cluster_config in local.gke_clusters : flatten([
+      for ns_name, ns in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) : [
+        for route_name, policy in try(ns.route_auth_policies, {}) : [
+          {
+            audiences       = try(policy.audiences, [])
+            host            = local.dns_zone[cluster_name]
+            key             = "${cluster_config.team_key}-${ns_name}-${route_name}-${local.dns_subdomain[cluster_name]}-global"
+            mode            = try(policy.mode, "browser")
+            path            = ns.routes[route_name].path
+            public_paths    = try(policy.public_paths, [])
+            required_groups = try(policy.required_groups, [])
+            required_roles  = try(policy.required_roles, [])
+          },
+          {
+            audiences       = try(policy.audiences, [])
+            host            = "${local.zone}.${local.dns_zone[cluster_name]}"
+            key             = "${cluster_config.team_key}-${ns_name}-${route_name}-${local.dns_subdomain[cluster_name]}-zonal"
+            mode            = try(policy.mode, "browser")
+            path            = ns.routes[route_name].path
+            public_paths    = try(policy.public_paths, [])
+            required_groups = try(policy.required_groups, [])
+            required_roles  = try(policy.required_roles, [])
+          },
+        ]
+        if try(policy.mode, "browser") != "public"
+      ]
+    ])
+  ])
+
+  # CUSTOM ext_authz policy for browser routes only. It sends the request to the embedded
+  # outpost for forward-auth, which establishes the Authentik session (authentication). Per-route
+  # required_groups authorization is enforced by Authentik application policy bindings, which
+  # require one application/provider per protected host; until those exist a browser route is
+  # authenticated-only. api-jwt routes skip this and use the native claim DENY policy above.
+  gateway_auth_custom_authorization_policy_manifests = {
+    for key, policy in local.gateway_auth_authorization_policies :
+    key => {
+      apiVersion = "security.istio.io/v1"
+      kind       = "AuthorizationPolicy"
+      metadata = {
+        name      = policy.custom_authorization_policy_name
+        namespace = "istio-ingress"
+      }
+      spec = {
+        action = "CUSTOM"
+        provider = {
+          name = local.authentik_extension_provider_name
+        }
+        rules = [
+          {
+            to = [
+              {
+                operation = {
+                  hosts    = [policy.host]
+                  notPaths = policy.exempt_paths
+                  paths    = policy.paths
+                }
+              }
+            ]
+          }
+        ]
+        selector = {
+          matchLabels = local.gateway_auth_gateway_selector
+        }
+      }
+    }
+    if policy.mode == "browser"
+  }
+
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
   gke_clusters = {
@@ -62,6 +353,40 @@ locals {
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
+  authentik_extension_provider_name = "authentik"
+
+  authentik_dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
+
+  # Authentik is a single platform-wide IdP shared by every team, so it is published at the
+  # environment-level public zone (authentik.<env>.osinfra.io), not under any one team's subdomain.
+  # Prod drops the env segment.
+  authentik_public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
+
+  authentik_hostname = "authentik.${local.authentik_public_dns_domain}"
+
+  authentik_issuer_url = "https://${local.authentik_hostname}/application/o/gateway/"
+
+  authentik_jwks_uri = "${local.authentik_issuer_url}jwks/"
+
+  # HTTPRoute exposing the Authentik IdP UI and OIDC endpoints on the shared ingress gateway.
+  # Authentik is a single platform-managed IdP running in the gateway team's cluster (namespace
+  # "authentik"), so the route exists only on the gateway cluster. Its host
+  # ("authentik.<env>.osinfra.io") is a distinct hostname from every team apex/zonal host, so
+  # the host-scoped gateway_auth AuthorizationPolicies never match it — the IdP is reachable without
+  # forward-auth, as an identity provider must be (it authenticates users itself).
+  authentik_routes = {
+    for cluster_name, cluster_config in local.gateway_clusters :
+    cluster_name => {
+      "authentik-${local.authentik_dns_subdomain}" = {
+        backend_namespace = "authentik"
+        backend_port      = 80
+        backend_service   = "authentik-server"
+        host              = local.authentik_hostname
+        path              = "/"
+      }
+    }
+  }
+
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :
@@ -75,10 +400,13 @@ locals {
   # subdomain to avoid collisions across teams.
   routes = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key == module.core_helpers.team ? merge([
-      for peer_name, peer_config in local.gke_clusters :
-      merge(local.global_routes[peer_name], local.zonal_routes[peer_name])
-    ]...) : {}
+    cluster_name => cluster_config.team_key == module.core_helpers.team ? merge(
+      merge([
+        for peer_name, peer_config in local.gke_clusters :
+        merge(local.global_routes[peer_name], local.zonal_routes[peer_name])
+      ]...),
+      try(local.authentik_routes[cluster_name], {}),
+    ) : {}
   }
 
   # Per-team zonal probe HTTPRoutes derived from each team's Logos-declared istio-test routes. Keyed

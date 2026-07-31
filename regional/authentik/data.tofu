@@ -5,7 +5,7 @@ data "google_client_config" "this" {}
 
 # Google Container Cluster Data Source
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/container_cluster
-# Looks up every cluster so the Kubernetes provider for_each remains a superset of the
+# Looks up every cluster so the Kubernetes and Helm provider for_each remain a superset of the
 # module for_each (required for safe removal of a cluster in a future apply)
 
 data "google_container_cluster" "this" {
@@ -14,21 +14,6 @@ data "google_container_cluster" "this" {
   location = local.regions[each.key]
   name     = each.key
   project  = each.value.project_id
-}
-
-# Terraform Remote State Data Source - Authentik Config
-# https://opentofu.org/docs/language/state/remote-state-data
-
-data "terraform_remote_state" "authentik_config" {
-  backend = "gcs"
-
-  config = {
-    bucket             = var.state_bucket
-    kms_encryption_key = var.state_kms_encryption_key
-    prefix             = module.core_helpers.repository
-  }
-
-  workspace = "authentik-config-${module.core_helpers.environment}"
 }
 
 # Terraform Remote State Data Source - Main
