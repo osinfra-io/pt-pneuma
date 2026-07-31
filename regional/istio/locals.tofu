@@ -71,7 +71,7 @@ locals {
 
             pathPrefix = local.authentik_outpost_path_prefix
             port       = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
-            service    = "${try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)}.${try(data.terraform_remote_state.authentik_config.outputs.outpost_namespace, local.authentik_outpost_namespace)}.svc.cluster.local"
+            service    = "${try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)}.${local.authentik_resolved_outpost_namespace}.svc.cluster.local"
           }
 
           name = local.authentik_extension_provider_name
@@ -85,7 +85,7 @@ locals {
       serviceSettings = [
         {
           hosts = [
-            "*.${local.authentik_outpost_namespace}.svc.cluster.local",
+            "*.${local.authentik_resolved_outpost_namespace}.svc.cluster.local",
           ]
 
           settings = {
@@ -120,6 +120,11 @@ locals {
   authentik_outpost_path_prefix  = "/outpost.goauthentik.io/auth/envoy"
   authentik_outpost_service_name = "authentik-server"
   authentik_outpost_service_port = 80
+
+  # Resolve the outpost namespace once so the ext_authz service and the clusterLocal serviceSettings
+  # host always target the same namespace; a mismatch would let the gateway route forward-auth to
+  # another region's authentik-server.
+  authentik_resolved_outpost_namespace = try(data.terraform_remote_state.authentik_config.outputs.outpost_namespace, local.authentik_outpost_namespace)
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {

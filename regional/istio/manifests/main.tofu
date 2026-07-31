@@ -272,3 +272,22 @@ resource "kubernetes_manifest" "gateway_authentik_jwt_bypass_filter" {
     }
   }
 }
+
+# Terraform Data Resource
+# https://search.opentofu.org/provider/hashicorp/terraform/latest/docs/resources/data
+# Fail closed if a route auth policy declares an unknown mode or an over-broad public_paths entry;
+# either would silently leave a route unauthenticated.
+
+resource "terraform_data" "gateway_auth_policy_validation" {
+  lifecycle {
+    precondition {
+      condition     = length(local.gateway_auth_invalid_mode_route_keys) == 0
+      error_message = "Route auth policies with an unknown mode (must be one of ${join(", ", local.gateway_auth_enforced_modes)}, or \"public\"): ${join(", ", local.gateway_auth_invalid_mode_route_keys)}."
+    }
+
+    precondition {
+      condition     = length(local.gateway_auth_invalid_public_path_route_keys) == 0
+      error_message = "Route auth policies with an invalid public_paths entry (each must be a concrete prefix starting with \"/\" and may not be \"/\", \"/*\" or \"*\"): ${join(", ", local.gateway_auth_invalid_public_path_route_keys)}."
+    }
+  }
+}

@@ -106,6 +106,13 @@ resource "google_service_account_iam_member" "authentik_cloud_sql_workload_ident
 # owns only the authentik database and user on it, discovered in-project via a data source.
 
 resource "google_sql_database" "authentik" {
+  lifecycle {
+    precondition {
+      condition     = local.authentik_cloud_sql_instance_name != null
+      error_message = "No Cloud SQL instance matching authentik-* was found in ${local.authentik_primary_region} for the pneuma project; ensure pt-corpus has provisioned the Authentik instance."
+    }
+  }
+
   instance = local.authentik_cloud_sql_instance_name
   name     = local.authentik_database_name
   project  = local.team_project_ids[module.core_helpers.team]

@@ -10,21 +10,20 @@ locals {
   # The Cloud SQL instance is platform-managed by pt-corpus (see cloud_sql in the pt-pneuma Logos
   # tfvars, keyed "authentik"). Discover it in the pneuma project via the google_sql_database_instances
   # data source (cross-repo state access is not permitted) and read its generated name (which corpus
-  # prefixes with the instance key) for the database/user.
-  # Connection name (project:region:instance) of the same corpus-managed instance, used by the
-  # Cloud SQL Auth Proxy sidecar in the Authentik pods to reach the private-IP, ENCRYPTED_ONLY
-  # database over Workload Identity.
-  authentik_cloud_sql_connection_name = one([
+  # prefixes with the instance key) for the database/user. one() errors on more than one match; the
+  # zero-match case is caught by the precondition on google_sql_database.authentik.
+  authentik_cloud_sql_instances = [
     for instance in data.google_sql_database_instances.authentik.instances :
-    instance.connection_name
+    instance
     if instance.region == local.authentik_primary_region && startswith(instance.name, "authentik-")
-  ])
+  ]
 
-  authentik_cloud_sql_instance_name = one([
-    for instance in data.google_sql_database_instances.authentik.instances :
-    instance.name
-    if instance.region == local.authentik_primary_region && startswith(instance.name, "authentik-")
-  ])
+  # Connection name (project:region:instance) of the corpus-managed instance, used by the Cloud SQL
+  # Auth Proxy sidecar in the Authentik pods to reach the private-IP, ENCRYPTED_ONLY database over
+  # Workload Identity.
+  authentik_cloud_sql_connection_name = one(local.authentik_cloud_sql_instances[*].connection_name)
+
+  authentik_cloud_sql_instance_name = one(local.authentik_cloud_sql_instances[*].name)
 
   # Private DNS FQDN of the corpus-managed Cloud SQL instance. Corpus creates the record
   # {instance}.{region}.{team} in the environment private zone (gcp.priv[.env].osinfra.io).

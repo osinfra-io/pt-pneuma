@@ -67,6 +67,26 @@ locals {
     "/readyz",
   ]
 
+  # Route auth policy modes that generate an enforced AuthorizationPolicy. "public" is intentionally
+  # excluded upstream; any other value would silently produce no policy (fail-open) and is rejected
+  # before apply by terraform_data.gateway_auth_policy_validation.
+  gateway_auth_enforced_modes = ["api-jwt", "browser"]
+
+  gateway_auth_invalid_mode_route_keys = [
+    for item in local.gateway_auth_route_policy_items : item.key
+    if !contains(local.gateway_auth_enforced_modes, item.mode)
+  ]
+
+  # public_paths entries are copied verbatim into notPaths (auth exemptions). A wildcard-only or
+  # root entry would exempt the whole route from authentication, so such entries are rejected.
+  gateway_auth_invalid_public_path_route_keys = [
+    for item in local.gateway_auth_route_policy_items : item.key
+    if anytrue([
+      for path in item.public_paths :
+      !startswith(path, "/") || contains(["/", "/*", "*"], path)
+    ])
+  ]
+
   gateway_auth_authentik_jwks_uris = {
     for cluster_name in keys(local.gateway_clusters) :
     cluster_name => try(
@@ -100,7 +120,7 @@ locals {
           item.public_paths,
         ))
         paths = item.path == "/" ? ["/*"] : [
-          item.path,
+          trimsuffix(item.path, "/"),
           "${trimsuffix(item.path, "/")}/*",
         ]
       })
@@ -217,7 +237,7 @@ locals {
               ]
               when = [
                 {
-                  key       = "request.auth.claims[realm_access][roles]"
+                  key       = "request.auth.claims[roles]"
                   notValues = policy.required_roles
                 }
               ]

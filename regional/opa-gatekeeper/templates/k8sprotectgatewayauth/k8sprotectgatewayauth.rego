@@ -27,7 +27,14 @@ protected_secret if {
 	object.get(review_object.metadata, "namespace", "") in object.get(input.parameters, "protectedNamespaces", [])
 }
 
-review_object := object.get(input.review, "object", object.get(input.review, "oldObject", {}))
+review_object := obj if {
+	obj := object.get(input.review, "object", null)
+	obj != null
+}
+
+review_object := object.get(input.review, "oldObject", {}) if {
+	object.get(input.review, "object", null) == null
+}
 
 violation contains {"msg": msg} if {
 	not allowed_platform_principal
