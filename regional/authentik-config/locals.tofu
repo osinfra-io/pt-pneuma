@@ -22,13 +22,14 @@ locals {
   namespace = "authentik"
 
   # OAuth2 redirect URIs the gateway is allowed to return to after authentication.
-  # Authentik matches REGEX entries with Python re.fullmatch, so the wildcard is restricted to
-  # hostname characters (no "/") to prevent an attacker-controlled host/path from satisfying the
-  # pattern, and the literal dots in the fixed path are escaped.
+  # Authentik matches REGEX entries with Python re.fullmatch. The subdomain prefix is optional so
+  # both the zone apex (the configured external_host) and zonal subdomains are accepted, but each
+  # label is restricted to hostname characters (no "/", "@" or extra dots) so an attacker-controlled
+  # host/path cannot satisfy the pattern; the literal dots in the fixed path are escaped.
   redirect_uris = [
     {
       matching_mode = "regex"
-      url           = "https://[a-z0-9.-]+\\.${replace(local.dns_zone_name, ".", "\\.")}/outpost\\.goauthentik\\.io/callback.*"
+      url           = "https://([a-z0-9-]+\\.)*${replace(local.dns_zone_name, ".", "\\.")}/outpost\\.goauthentik\\.io/callback.*"
     }
   ]
 }
