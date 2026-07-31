@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=2f13e837e5ad7b90317ad319f59e67dd8da86ba7" # create-authentik-module (branch ref pending release)
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=88b4ba2fea6dc0623e984b8729857470f2bf8134" # v0.1.0
 
   authentik_url = local.authentik_url
   external_host = local.external_host
