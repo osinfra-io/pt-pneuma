@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=f00b56ace2279ca9ff25708c188a666674e560e5" # fix-gateway-listener-hostname-drift (branch ref pending release)
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=e056b5ff60ab457afb4536e2787f381fdb94e3cf" # v0.5.6
 
   for_each = local.gke_clusters
 
