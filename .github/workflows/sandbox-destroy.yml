@@ -231,7 +231,7 @@ jobs:
 
   istio_manifests_us_east1_b:
     name: "Istio Manifests: us-east1-b"
-    needs: [authentik_config, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -282,7 +282,7 @@ jobs:
 
   istio_manifests_us_east4_a:
     name: "Istio Manifests: us-east4-a"
-    needs: [authentik_config, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
