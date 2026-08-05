@@ -258,7 +258,7 @@ jobs:
     name: "Istio Manifests: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east1_b, authentik_us_east1_b, main]
+    needs: [main]  # Authentik zones deploy in parallel
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Istio Manifests: us-east1-b"
@@ -275,7 +275,7 @@ jobs:
     name: "Istio Manifests: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east4_a, authentik_us_east4_a, main]
+    needs: [authentik_us_east4_a, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Istio Manifests: us-east4-a"
@@ -292,7 +292,7 @@ jobs:
     name: "Istio Test: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east1_b, main]
+    needs: [istio_manifests_us_east1_b, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Istio Test: us-east1-b"
@@ -313,7 +313,7 @@ jobs:
     name: "Istio Test: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east4_a, main]
+    needs: [istio_manifests_us_east4_a, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Istio Test: us-east4-a"
@@ -334,7 +334,7 @@ jobs:
     name: "Authentik: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east1_b, main]
+    needs: [main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Authentik: us-east1-b"
@@ -351,7 +351,7 @@ jobs:
     name: "Authentik Config"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_manifests_us_east1_b, istio_manifests_us_east4_a, main]
+    needs: [authentik_us_east1_b, authentik_us_east4_a, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Authentik Config"
@@ -385,7 +385,7 @@ jobs:
     name: "Authentik: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_test_us_east4_a, authentik_us_east1_b, main]
+    needs: [main] # Deploy us-east1-b first — authentik runs data migrations that require one instance to complete before the next
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Authentik: us-east4-a"
