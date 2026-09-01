@@ -9,7 +9,45 @@ locals {
 
   authentik_url = local.main.authentik_base_url
 
+  browser_group_policy_bindings = {
+    for host in distinct([for item in local.browser_group_policy_items : item.host]) : host => {
+      groups = distinct(flatten([
+        for item in local.browser_group_policy_items :
+        item.host == host ? item.groups : []
+      ]))
+      host = host
+    }
+  }
+
+  browser_group_policy_items = flatten([
+    for cluster_name, cluster_config in var.clusters : flatten([
+      for ns_name, ns in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) : [
+        for route_name, policy in try(ns.route_auth_policies, {}) : [
+          for host in [
+            "https://${local.dns_zone[cluster_name]}",
+            "https://${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${local.dns_zone[cluster_name]}",
+            ] : {
+            groups = distinct(concat(
+              try(policy.required_groups, []),
+              try(policy.required_roles, []),
+            ))
+            host = host
+          }
+          if try(policy.mode, "browser") == "browser" && length(concat(
+            try(policy.required_groups, []),
+            try(policy.required_roles, []),
+          )) > 0
+        ]
+      ]
+    ])
+  ])
+
   dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
+
+  dns_zone = {
+    for cluster_name, cluster_config in var.clusters :
+    cluster_name => one(keys(try(local.main.gateway_dns[cluster_config.team_key], {})))
+  }
 
   dns_zone_name = module.core_helpers.env == "prod" ? "${local.dns_subdomain}.osinfra.io" : "${local.dns_subdomain}.${module.core_helpers.env}.osinfra.io"
 
