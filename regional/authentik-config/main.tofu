@@ -2,10 +2,11 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=88b4ba2fea6dc0623e984b8729857470f2bf8134" # v0.1.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=b264aa90c1c82d2d463678bdac73c45af7415db1" # v0.1.1
 
-  authentik_url = local.authentik_url
-  external_host = local.external_host
-  namespace     = local.namespace
-  redirect_uris = local.redirect_uris
+  authentik_url                 = local.authentik_url
+  browser_group_policy_bindings = local.browser_group_policy_bindings
+  external_host                 = local.external_host
+  namespace                     = local.namespace
+  redirect_uris                 = local.redirect_uris
 }
