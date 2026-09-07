@@ -169,6 +169,6 @@ locals {
   teams_with_clusters = {
     for team_key, team in module.core_helpers.teams :
     team_key => team
-    if length(try(team.platform_managed_project.kubernetes_engine_locations, {})) > 0
+    if try(length(team.platform_managed_project.kubernetes_engine_locations), 0) > 0
   }
 }
