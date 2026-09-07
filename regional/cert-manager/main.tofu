@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager
 
 module "kubernetes_cert_manager" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional?ref=3028d24c2bff8e9cfd6e0237c45e99337a0cfc98" # v0.3.5
+  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional?ref=6fa7b5ce09d5e0704822d279833553472b486730" # v0.3.6
 
   for_each = local.gke_clusters
 
