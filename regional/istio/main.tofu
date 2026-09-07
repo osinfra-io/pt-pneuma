@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=e056b5ff60ab457afb4536e2787f381fdb94e3cf" # v0.5.6
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=2d86f052f5b570446bdf822d486e827df0eb900b" # v0.5.7
 
   for_each = local.gke_clusters
 
