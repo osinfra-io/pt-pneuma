@@ -35,6 +35,10 @@ jobs:
       opentofu_workspace: main-sandbox
       passthrough_output: clusters
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+    secrets:
+      opentofu_plan_secret_args: >-
+        -var=google_oauth_client_id=${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+        -var=google_oauth_client_secret=${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
 
   us_east1_b:
     name: "Regional: us-east1-b"

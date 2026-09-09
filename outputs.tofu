@@ -31,6 +31,17 @@ output "authentik_database_user" {
   value       = google_sql_user.authentik.name
 }
 
+output "authentik_google_oauth_client_id" {
+  description = "OAuth client ID for the optional Google Authentik source, consumed by the regional Authentik config workspace. Sourced from a manually-created Google OAuth 2.0 client (see README), not provisioned by this workspace."
+  value       = var.google_oauth_client_id
+}
+
+output "authentik_google_oauth_client_secret" {
+  description = "OAuth client secret for the optional Google Authentik source, consumed by the regional Authentik config workspace. Sourced from a manually-created Google OAuth 2.0 client (see README), not provisioned by this workspace."
+  sensitive   = true
+  value       = var.google_oauth_client_secret
+}
+
 output "authentik_secret_env" {
   description = "Shared Authentik environment secret values (secret key, DB and bootstrap credentials) generated once and consumed by every regional authentik workspace"
   sensitive   = true

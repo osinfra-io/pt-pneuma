@@ -54,6 +54,10 @@ locals {
   # The protected gateway host used as the proxy provider external host for forward-auth.
   external_host = "https://${local.dns_zone_name}"
 
+  google_oauth_client_id = local.main.authentik_google_oauth_client_id
+
+  google_oauth_client_secret = local.main.authentik_google_oauth_client_secret
+
   # Main workspace outputs (shared Authentik base URL and secret env).
   main = data.terraform_remote_state.main.outputs
 
