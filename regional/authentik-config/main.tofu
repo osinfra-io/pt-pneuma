@@ -2,14 +2,15 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=feedfe2bba6d1564f73b917d5c7d6851c36e7747" # testing: osinfra-io/pt-arche-kubernetes-authentik#7 (add-google-oauth-source)
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=b297b6bc36d6aa87484fd8ba58a1324bbc0a6919" # testing: osinfra-io/pt-arche-kubernetes-authentik#7 (add-google-oauth-source)
 
-  authentik_url                       = local.authentik_url
-  browser_group_policy_bindings       = local.browser_group_policy_bindings
-  default_authentication_source_uuids = local.default_authentication_source_uuids
-  external_host                       = local.external_host
-  google_oauth_client_id              = local.google_oauth_client_id
-  google_oauth_client_secret          = local.google_oauth_client_secret
-  namespace                           = local.namespace
-  redirect_uris                       = local.redirect_uris
+  authentik_url                         = local.authentik_url
+  browser_group_policy_bindings         = local.browser_group_policy_bindings
+  default_authentication_source_uuids   = local.default_authentication_source_uuids
+  default_authentication_stage_settings = local.default_authentication_stage_settings
+  external_host                         = local.external_host
+  google_oauth_client_id                = local.google_oauth_client_id
+  google_oauth_client_secret            = local.google_oauth_client_secret
+  namespace                             = local.namespace
+  redirect_uris                         = local.redirect_uris
 }
