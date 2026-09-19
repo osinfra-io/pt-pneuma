@@ -67,6 +67,33 @@ module "kubernetes_istio" {
   project                   = local.team_project_ids[each.key]
 }
 
+# Google IAM OAuth Client Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/iam_oauth_client
+
+resource "google_iam_oauth_client" "authentik_google_oauth" {
+  allowed_grant_types   = ["AUTHORIZATION_CODE_GRANT"]
+  allowed_redirect_uris = local.authentik_google_oauth_redirect_uris
+  allowed_scopes        = ["openid", "email", "profile"]
+  client_type           = "CONFIDENTIAL_CLIENT"
+  description           = "OAuth client for Authentik Google login"
+  disabled              = false
+  display_name          = "Authentik Google OAuth"
+  location              = "global"
+  oauth_client_id       = "authentik-google-oauth"
+  project               = local.team_project_ids[module.core_helpers.team]
+}
+
+# Google IAM OAuth Client Credential Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/iam_oauth_client_credential
+
+resource "google_iam_oauth_client_credential" "authentik_google_oauth" {
+  disabled                   = false
+  location                   = google_iam_oauth_client.authentik_google_oauth.location
+  oauth_client_credential_id = "authentik-google-oauth"
+  oauthclient                = google_iam_oauth_client.authentik_google_oauth.oauth_client_id
+  project                    = local.team_project_ids[module.core_helpers.team]
+}
+
 # Google Project IAM Member Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/project_iam_member
 
