@@ -6,7 +6,7 @@
 
 variable "google_oauth_client_id" {
   default     = ""
-  description = "OAuth client ID for the optional Google Authentik login source. Sourced from a Google OAuth 2.0 client created manually in the console (see README) - Terraform does not provision this client. Leave empty to disable the source."
+  description = "OAuth client ID for the optional Google Authentik login source. Set this non-sensitive value in a tfvars file from a Google OAuth 2.0 client created manually in the console (see README). Leave empty to disable the source."
   type        = string
 }
 

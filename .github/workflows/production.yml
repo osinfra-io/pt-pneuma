@@ -36,8 +36,6 @@ jobs:
       github_environment: "Production: Main"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: >-
-        -var=google_oauth_client_id=${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: main-production
