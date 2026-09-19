@@ -15,6 +15,16 @@ locals {
       expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && request.path.startsWith('/api/v3/') && has(request.headers['authorization']) && request.headers['authorization'].startsWith('Bearer ')"
       priority    = 9000
     }
+
+    # The Google OAuth callback's "scope" query parameter (e.g. "userinfo.profile") is
+    # false-positive matched by the preconfigured LFI WAF rule (owasp-crs-v030301-id930120-lfi),
+    # blocking Google OAuth logins with a 403 before they ever reach Authentik.
+
+    authentik_google_oauth_callback = {
+      description = "Allow the Google OAuth callback to bypass preconfigured WAF false positives"
+      expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && request.path == '/source/oauth/callback/google/' && request.method == 'GET'"
+      priority    = 9010
+    }
   }
 
   authentik_google_oauth_redirect_uris = module.core_helpers.env == "sb" ? [
