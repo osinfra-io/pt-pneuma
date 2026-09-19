@@ -11,6 +11,19 @@ variable "clusters" {
   }))
 }
 
+variable "google_oauth_client_id" {
+  default     = ""
+  description = "OAuth client ID for the optional Google Authentik login source. Set this non-sensitive value in the environment tfvars from a Google OAuth 2.0 client created manually in the console. Leave empty to disable the source."
+  type        = string
+}
+
+variable "google_oauth_client_secret" {
+  default     = ""
+  description = "OAuth client secret for the optional Google Authentik login source. Supply this value through the deployment workflow's secret plan arguments. Leave empty to disable the source."
+  sensitive   = true
+  type        = string
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

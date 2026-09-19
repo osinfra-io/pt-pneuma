@@ -9,8 +9,8 @@ module "authentik_config" {
   default_authentication_source_uuids   = local.default_authentication_source_uuids
   default_authentication_stage_settings = local.default_authentication_stage_settings
   external_host                         = local.external_host
-  google_oauth_client_id                = local.google_oauth_client_id
-  google_oauth_client_secret            = local.google_oauth_client_secret
+  google_oauth_client_id                = var.google_oauth_client_id
+  google_oauth_client_secret            = var.google_oauth_client_secret
   manage_default_authentication_stage   = local.manage_default_authentication_stage
   namespace                             = local.namespace
   redirect_uris                         = local.redirect_uris

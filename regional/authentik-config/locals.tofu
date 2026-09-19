@@ -71,11 +71,7 @@ locals {
     webauthn_stage            = null
   }
 
-  google_oauth_client_id = local.main.authentik_google_oauth_client_id
-
-  google_oauth_enabled = local.google_oauth_client_id != "" && local.google_oauth_client_secret != ""
-
-  google_oauth_client_secret = local.main.authentik_google_oauth_client_secret
+  google_oauth_enabled = var.google_oauth_client_id != "" && var.google_oauth_client_secret != ""
 
   # Keep the shared stage managed while Google is disabled so an apply removes only the Google
   # source. Remove its state address before setting this false.
