@@ -7,6 +7,16 @@ locals {
   # so all stateless regional server/worker instances form one identity provider (not per-zone IdPs).
   authentik_base_url = "https://${local.authentik_hostname}"
 
+  # Authentik's token-authenticated management API receives generated JSON and uses PUT/DELETE,
+  # which trigger false positives in Cloud Armor's protocol and method enforcement rules.
+  authentik_cloud_armor_allow_rules = {
+    authentik_api = {
+      description = "Allow token-authenticated Authentik API requests"
+      expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && request.path.startsWith('/api/v3/') && has(request.headers['authorization']) && request.headers['authorization'].startsWith('Bearer ')"
+      priority    = 9000
+    }
+  }
+
   authentik_google_oauth_redirect_uris = module.core_helpers.env == "sb" ? [
     "${local.authentik_base_url}/source/oauth/callback/google/",
     "http://localhost:9000/source/oauth/callback/google/",

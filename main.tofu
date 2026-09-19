@@ -57,10 +57,11 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=1983d7904757a1b9240560df7c6cf563f970a468" # v0.6.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=f14bcac16478235798806bf472414c3837eb1171" # v0.7.0
 
   for_each = local.teams_with_clusters
 
+  cloud_armor_allow_rules   = each.key == module.core_helpers.team ? local.authentik_cloud_armor_allow_rules : {}
   gateway_dns               = each.key == module.core_helpers.team ? local.gateway_dns_for_pneuma : {}
   gke_fleet_host_project_id = each.key == module.core_helpers.team ? "" : local.team_project_ids[module.core_helpers.team]
   labels                    = module.core_helpers.labels
