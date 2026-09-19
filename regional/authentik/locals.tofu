@@ -15,6 +15,18 @@ locals {
 
   authentik_secret_name = "authentik-env"
 
+  authentik_server_replicas = module.core_helpers.env == "sb" ? 1 : 2
+
+  authentik_server_resources_requests_cpu = module.core_helpers.env == "sb" ? "100m" : "200m"
+
+  authentik_server_resources_requests_memory = module.core_helpers.env == "sb" ? "256Mi" : "512Mi"
+
+  authentik_worker_replicas = 1
+
+  authentik_worker_resources_requests_cpu = module.core_helpers.env == "sb" ? "50m" : "100m"
+
+  authentik_worker_resources_requests_memory = module.core_helpers.env == "sb" ? "128Mi" : "256Mi"
+
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
   gke_clusters = {
