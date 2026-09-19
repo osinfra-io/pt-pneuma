@@ -18,13 +18,15 @@ locals {
 
     # The Google OAuth flow's "scope" query parameter (e.g. "userinfo.profile") is false-positive
     # matched by the preconfigured LFI WAF rule (owasp-crs-v030301-id930120-lfi). Authentik forwards
-    # Google's original query parameters (iss, code, scope) across multiple steps of the flow, not
-    # just the initial callback (e.g. on to /if/flow/google-source-enrollment/), so the allow rule
-    # matches on the Google-specific "iss" parameter rather than one fixed path.
+    # Google's original query parameters (iss, code, scope) across multiple steps of the flow (e.g.
+    # the browser callback, /if/flow/google-source-enrollment/, and the flow executor API), and each
+    # step re-wraps and re-encodes the query string to a different depth, so the allow rule matches
+    # on the "accounts.google.com" substring, which stays literal at every encoding depth, rather
+    # than a fixed path or a specific percent-encoding of the "iss" parameter.
 
     authentik_google_oauth_flow = {
       description = "Allow the Google OAuth flow to bypass preconfigured WAF false positives"
-      expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && request.method == 'GET' && request.query.contains('iss=https%3A%2F%2Faccounts.google.com')"
+      expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && request.method == 'GET' && request.query.contains('accounts.google.com')"
       priority    = 9010
     }
   }
