@@ -29,9 +29,9 @@ jobs:
       github_environment: "Non-Production: Main"
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: >-
+        -var=google_oauth_client_id=${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
       opentofu_state_bucket: pt-pneuma-state-nonprod
-      opentofu_var_json: >-
-        {"google_oauth_client_id": ${{ toJSON(vars.GOOGLE_OAUTH_CLIENT_ID || '') }}}
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: main-non-production
       passthrough_output: clusters
