@@ -143,9 +143,13 @@ locals {
             jwksUri = local.gateway_auth_authentik_jwks_uris[cluster_name]
           }
         ]
-        selector = {
-          matchLabels = local.gateway_auth_gateway_selector
-        }
+        targetRefs = [
+          {
+            group = "gateway.networking.k8s.io"
+            kind  = "Gateway"
+            name  = "gateway"
+          }
+        ]
       }
     }
   }
@@ -244,9 +248,13 @@ locals {
             }
           ],
         )
-        selector = {
-          matchLabels = local.gateway_auth_gateway_selector
-        }
+        targetRefs = [
+          {
+            group = "gateway.networking.k8s.io"
+            kind  = "Gateway"
+            name  = "gateway"
+          }
+        ]
       }
     }
     if policy.mode == "api-jwt"
@@ -314,9 +322,13 @@ locals {
             ]
           }
         ]
-        selector = {
-          matchLabels = local.gateway_auth_gateway_selector
-        }
+        targetRefs = [
+          {
+            group = "gateway.networking.k8s.io"
+            kind  = "Gateway"
+            name  = "gateway"
+          }
+        ]
       }
     }
     if policy.mode == "browser"
@@ -387,6 +399,26 @@ locals {
     }
   }
 
+  # Every browser-authenticated host needs to send the embedded outpost callback path directly
+  # to Authentik. The callback is exempt from the CUSTOM authorization policy because it completes
+  # that policy's OAuth exchange; without this route it falls through to the application backend.
+  authentik_callback_routes = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => {
+      for host in distinct([
+        for item in local.gateway_auth_route_policy_items : item.host
+        if item.mode == "browser"
+      ]) :
+      "authentik-callback-${substr(sha1(host), 0, 8)}" => {
+        backend_namespace = "authentik"
+        backend_port      = 80
+        backend_service   = "authentik-server"
+        host              = host
+        path              = "/outpost.goauthentik.io"
+      }
+    }
+  }
+
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :
@@ -406,6 +438,7 @@ locals {
         merge(local.global_routes[peer_name], local.zonal_routes[peer_name])
       ]...),
       try(local.authentik_routes[cluster_name], {}),
+      try(local.authentik_callback_routes[cluster_name], {}),
     ) : {}
   }
 
