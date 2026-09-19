@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=bb4730c07788a5742279cd7e33b0fe79b4344bbf" # v0.1.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=0b1a57d55026817a72a6408cf82a98b6815593d1" # v0.1.4
 
   authentik_url                         = local.authentik_url
   browser_group_policy_bindings         = local.browser_group_policy_bindings
