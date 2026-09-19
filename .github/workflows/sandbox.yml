@@ -23,7 +23,7 @@ permissions:
 jobs:
   main:
     name: "Main"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@b8a7fbaecaddd461dd2c5b60d62d9348f7987d5d # testing: osinfra-io/pt-techne-opentofu-workflows#251 (scope-opentofu-plan-secrets)
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     with:
       checkout_ref: ${{ github.ref }}
@@ -32,14 +32,14 @@ jobs:
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_var_json: >-
-        {"google_oauth_client_id": ${{ toJSON(vars.GOOGLE_OAUTH_CLIENT_ID) }}}
+        {"google_oauth_client_id": ${{ toJSON(vars.GOOGLE_OAUTH_CLIENT_ID || '') }}}
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: main-sandbox
       passthrough_output: clusters
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
-      opentofu_plan_secret_var_json: >-
-        {"google_oauth_client_secret": ${{ toJSON(secrets.GOOGLE_OAUTH_CLIENT_SECRET) }}}
+      opentofu_plan_secret_args: >-
+        -var=google_oauth_client_secret=${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
 
   us_east1_b:
     name: "Regional: us-east1-b"
