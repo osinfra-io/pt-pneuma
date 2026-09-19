@@ -24,7 +24,7 @@ data "authentik_outpost" "embedded" {
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/data-sources/stage
 
 data "authentik_stage" "default_authentication_identification" {
-  for_each = nonsensitive(local.google_oauth_enabled) ? toset(["default"]) : toset([])
+  for_each = local.manage_default_authentication_stage ? toset(["default"]) : toset([])
 
   name = module.authentik_config.default_authentication_identification_stage_name
 }

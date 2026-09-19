@@ -13,7 +13,7 @@ import {
 # into every Authentik instance. This conditional, one-time import manages it only when Google is
 # enabled; default_authentication_source_uuids preserves any independently configured sources.
 import {
-  for_each = nonsensitive(local.google_oauth_enabled) ? toset(["default"]) : toset([])
+  for_each = local.manage_default_authentication_stage ? toset(["default"]) : toset([])
 
   id = data.authentik_stage.default_authentication_identification[each.key].id
   to = module.authentik_config.authentik_stage_identification.default_authentication[0]

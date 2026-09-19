@@ -77,6 +77,10 @@ locals {
 
   google_oauth_client_secret = local.main.authentik_google_oauth_client_secret
 
+  # Keep the shared stage managed while Google is disabled so an apply removes only the Google
+  # source. Remove its state address before setting this false.
+  manage_default_authentication_stage = true
+
   # Main workspace outputs (shared Authentik base URL and secret env).
   main = data.terraform_remote_state.main.outputs
 
