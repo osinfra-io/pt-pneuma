@@ -25,11 +25,36 @@ locals {
 
   # GKE clusters in this zone that have the Istio gateway enabled (platform team only).
   # Used for resources that are gateway-specific (e.g. Datadog AAP EnvoyFilter).
+  gateway_cluster = one(keys(local.gateway_clusters))
+
   gateway_clusters = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => cluster_config
     if cluster_config.team_key == module.core_helpers.team
   }
+
+  # Selectorless stub Services and their namespaces are created before HTTPRoutes so Gateway API
+  # backendRefs resolve during this workspace. Istio multicluster discovery fills their endpoints.
+  gateway_stub_namespaces = local.gateway_cluster == null ? toset([]) : toset([
+    for cluster_name, cluster_config in local.gke_clusters :
+    "${cluster_config.team_key}-istio-test"
+    if cluster_config.team_key != module.core_helpers.team
+  ])
+
+  gateway_stub_services = local.gateway_cluster == null ? {} : merge([
+    for cluster_name, cluster_config in local.gke_clusters : {
+      "${cluster_config.team_key}-istio-test/istio-test" = {
+        namespace = "${cluster_config.team_key}-istio-test"
+        service   = "istio-test"
+      }
+
+      "${cluster_config.team_key}-istio-test/istio-test-${local.zone}" = {
+        namespace = "${cluster_config.team_key}-istio-test"
+        service   = "istio-test-${local.zone}"
+      }
+    }
+    if cluster_config.team_key != module.core_helpers.team
+  ]...)
 
   # Auth policies generated from the Logos route_auth_policies contract. The gateway
   # cluster enforces every team's external route because all ingress enters through

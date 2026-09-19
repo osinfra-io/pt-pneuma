@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=41cc456ac8a990e587763ab5a0a67597258ff96c" # v0.5.8
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=94f140135e9e6cdfcb3a44e651c26f1807d79cd0" # v0.5.9
 
   for_each = local.gke_clusters
 
@@ -270,6 +270,51 @@ resource "kubernetes_manifest" "gateway_authentik_jwt_bypass_filter" {
         labels = local.gateway_auth_gateway_selector
       }
     }
+  }
+}
+
+# Kubernetes Namespace Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/namespace_v1
+
+resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
+  for_each = local.gateway_stub_namespaces
+
+  provider = kubernetes.by_cluster[local.gateway_cluster]
+
+  metadata {
+    labels = {
+      "istio-injection" = "enabled"
+    }
+
+    name = each.key
+  }
+}
+
+# Kubernetes Service Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/service_v1
+
+resource "kubernetes_service_v1" "istio_test_gateway_stub" {
+  for_each = local.gateway_stub_services
+
+  depends_on = [kubernetes_namespace_v1.istio_test_gateway_stub]
+  provider   = kubernetes.by_cluster[local.gateway_cluster]
+
+  metadata {
+    name      = each.value.service
+    namespace = each.value.namespace
+  }
+
+  spec {
+    # Selectorless: endpoints are populated by Istio multicluster discovery from the remote team
+    # cluster, so no pod selector is set here.
+
+    port {
+      name        = "http"
+      port        = 8080
+      target_port = 8080
+    }
+
+    type = "ClusterIP"
   }
 }
 

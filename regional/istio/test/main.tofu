@@ -51,29 +51,6 @@ resource "datadog_synthetics_test" "this" {
   type = "api"
 }
 
-# Kubernetes Namespace Resource
-# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/namespace_v1
-
-# The per-team istio-test namespace (pt-<team>-istio-test) is declared in each team's Logos spec
-# and created by the regional/onboarding workspace, so pneuma dogfoods the exact provisioning path
-# a member team uses. Only the gateway-cluster stub namespaces (peer teams' shadow backends) are
-# created here — they are a Gateway API requirement local to the gateway cluster, not a team
-# namespace, so they cannot originate from a team's onboarding.
-
-resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
-  for_each = local.gateway_stub_namespaces
-
-  provider = kubernetes.by_cluster[local.gateway_cluster]
-
-  metadata {
-    labels = {
-      "istio-injection" = "enabled"
-    }
-
-    name = each.key
-  }
-}
-
 # Kubernetes Deployment Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/deployment_v1
 
@@ -270,6 +247,7 @@ resource "kubernetes_manifest" "istio_test" {
                 # The authorization policy below uses the ALLOW-with-positive-matching pattern to allow requests to specific paths.
 
                 paths = [
+                  "/istio-test/auth",
                   "/istio-test/health",
                   "/istio-test/metadata/cluster-location",
                   "/istio-test/metadata/cluster-name",
@@ -312,32 +290,6 @@ resource "kubernetes_service_v1" "istio_test" {
 
     selector = {
       app = "istio-test"
-    }
-
-    type = "ClusterIP"
-  }
-}
-
-resource "kubernetes_service_v1" "istio_test_gateway_stub" {
-  for_each = local.gateway_stub_services
-
-  depends_on = [kubernetes_namespace_v1.istio_test_gateway_stub]
-  provider   = kubernetes.by_cluster[local.gateway_cluster]
-
-  metadata {
-    name      = each.value.service
-    namespace = each.value.namespace
-  }
-
-  spec {
-
-    # Selectorless: endpoints are populated by Istio multicluster discovery from the remote team
-    # cluster, so no pod selector is set here.
-
-    port {
-      name        = "http"
-      port        = 8080
-      target_port = 8080
     }
 
     type = "ClusterIP"
