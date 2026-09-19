@@ -66,7 +66,7 @@ locals {
   ]
 
   gateway_auth_guardrail_protected_namespaces = [
-    "authentik",
+    local.main.authentik_kubernetes_namespace,
   ]
 
   # GKE clusters in this zone — the subset that actually receives the add-on.

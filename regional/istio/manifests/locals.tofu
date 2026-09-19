@@ -367,6 +367,8 @@ locals {
 
   authentik_extension_provider_name = "authentik"
 
+  authentik_namespace = local.main.authentik_kubernetes_namespace
+
   authentik_dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
 
   # Authentik is a single platform-wide IdP shared by every team, so it is published at the
@@ -381,8 +383,8 @@ locals {
   authentik_jwks_uri = "${local.authentik_issuer_url}jwks/"
 
   # HTTPRoute exposing the Authentik IdP UI and OIDC endpoints on the shared ingress gateway.
-  # Authentik is a single platform-managed IdP running in the gateway team's cluster (namespace
-  # "authentik"), so the route exists only on the gateway cluster. Its host
+  # Authentik is a single platform-managed IdP running in the gateway team's cluster, so the route
+  # exists only on the gateway cluster. Its host
   # ("authentik.<env>.osinfra.io") is a distinct hostname from every team apex/zonal host, so
   # the host-scoped gateway_auth AuthorizationPolicies never match it — the IdP is reachable without
   # forward-auth, as an identity provider must be (it authenticates users itself).
@@ -390,7 +392,7 @@ locals {
     for cluster_name, cluster_config in local.gateway_clusters :
     cluster_name => {
       "authentik-${local.authentik_dns_subdomain}" = {
-        backend_namespace = "authentik"
+        backend_namespace = local.authentik_namespace
         backend_port      = 80
         backend_service   = "authentik-server"
         host              = local.authentik_hostname
@@ -410,7 +412,7 @@ locals {
         if item.mode == "browser"
       ]) :
       "authentik-callback-${substr(sha1(host), 0, 8)}" => {
-        backend_namespace = "authentik"
+        backend_namespace = local.authentik_namespace
         backend_port      = 80
         backend_service   = "authentik-server"
         host              = host

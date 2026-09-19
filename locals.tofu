@@ -50,10 +50,10 @@ locals {
 
   authentik_public_dns_zone_name = module.core_helpers.env == "prod" ? "osinfra-io" : "${module.core_helpers.env}-osinfra-io"
 
-  # Namespace and chart-created Kubernetes service account for Authentik. The regional authentik
-  # workspace deploys into this namespace; the goauthentik chart names its ServiceAccount after the
-  # release ("authentik"). Both are needed here to bind Workload Identity for the Cloud SQL Auth Proxy.
-  authentik_kubernetes_namespace = "authentik"
+  # Namespace provisioned through the standard Logos-driven onboarding flow and the chart-created
+  # Kubernetes service account for Authentik. Both are needed here to bind Workload Identity for the
+  # Cloud SQL Auth Proxy.
+  authentik_kubernetes_namespace = "${module.core_helpers.team}-authentik"
 
   authentik_kubernetes_service_account = "authentik"
 

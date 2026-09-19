@@ -11,7 +11,7 @@ locals {
     if cluster_config.team_key == module.core_helpers.team
   }
 
-  authentik_namespace = "authentik"
+  authentik_namespace = local.main.authentik_kubernetes_namespace
 
   authentik_secret_name = "authentik-env"
 
