@@ -80,7 +80,7 @@ locals {
   # Main workspace outputs (shared Authentik base URL and secret env).
   main = data.terraform_remote_state.main.outputs
 
-  namespace = "authentik"
+  namespace = local.main.authentik_kubernetes_namespace
 
   # OAuth2 redirect URIs the gateway is allowed to return to after authentication.
   # Authentik matches REGEX entries with Python re.fullmatch. The subdomain prefix is optional so

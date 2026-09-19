@@ -57,14 +57,42 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=41cc456ac8a990e587763ab5a0a67597258ff96c" # v0.5.8
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=f14bcac16478235798806bf472414c3837eb1171" # v0.7.0
 
   for_each = local.teams_with_clusters
 
+  cloud_armor_allow_rules   = each.key == module.core_helpers.team ? local.authentik_cloud_armor_allow_rules : {}
   gateway_dns               = each.key == module.core_helpers.team ? local.gateway_dns_for_pneuma : {}
   gke_fleet_host_project_id = each.key == module.core_helpers.team ? "" : local.team_project_ids[module.core_helpers.team]
   labels                    = module.core_helpers.labels
   project                   = local.team_project_ids[each.key]
+}
+
+# Google IAM OAuth Client Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/iam_oauth_client
+
+resource "google_iam_oauth_client" "authentik_google_oauth" {
+  allowed_grant_types   = ["AUTHORIZATION_CODE_GRANT"]
+  allowed_redirect_uris = local.authentik_google_oauth_redirect_uris
+  allowed_scopes        = ["openid", "email", "profile"]
+  client_type           = "CONFIDENTIAL_CLIENT"
+  description           = "OAuth client for Authentik Google login"
+  disabled              = false
+  display_name          = "Authentik Google OAuth"
+  location              = "global"
+  oauth_client_id       = "authentik-google-oauth"
+  project               = local.team_project_ids[module.core_helpers.team]
+}
+
+# Google IAM OAuth Client Credential Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/iam_oauth_client_credential
+
+resource "google_iam_oauth_client_credential" "authentik_google_oauth" {
+  disabled                   = false
+  location                   = google_iam_oauth_client.authentik_google_oauth.location
+  oauth_client_credential_id = "authentik-google-oauth"
+  oauthclient                = google_iam_oauth_client.authentik_google_oauth.oauth_client_id
+  project                    = local.team_project_ids[module.core_helpers.team]
 }
 
 # Google Project IAM Member Resource
