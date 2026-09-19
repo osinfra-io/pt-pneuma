@@ -45,7 +45,7 @@ jobs:
   us_east1_b:
     name: "Regional: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
-    needs: main
+    needs: [main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production: us-east1-b"
@@ -60,7 +60,7 @@ jobs:
   us_east1_c:
     name: "Regional: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
-    needs: main
+    needs: [main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production: us-east1-c"
@@ -75,7 +75,7 @@ jobs:
   us_east1_d:
     name: "Regional: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
-    needs: main
+    needs: [main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production: us-east1-d"
@@ -90,7 +90,7 @@ jobs:
   us_east4_a:
     name: "Regional: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
-    needs: main
+    needs: [main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production: us-east4-a"
@@ -105,7 +105,7 @@ jobs:
   us_east4_b:
     name: "Regional: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
-    needs: main
+    needs: [main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production: us-east4-b"
@@ -120,7 +120,7 @@ jobs:
   us_east4_c:
     name: "Regional: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
-    needs: main
+    needs: [main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production: us-east4-c"
@@ -135,6 +135,7 @@ jobs:
   us_east1_b_onboarding:
     name: "Onboarding: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east1-b"
@@ -150,6 +151,7 @@ jobs:
   us_east1_c_onboarding:
     name: "Onboarding: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east1-c"
@@ -165,6 +167,7 @@ jobs:
   us_east1_d_onboarding:
     name: "Onboarding: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east1-d"
@@ -180,6 +183,7 @@ jobs:
   us_east4_a_onboarding:
     name: "Onboarding: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east4-a"
@@ -195,6 +199,7 @@ jobs:
   us_east4_b_onboarding:
     name: "Onboarding: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east4-b"
@@ -210,6 +215,7 @@ jobs:
   us_east4_c_onboarding:
     name: "Onboarding: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Onboarding: us-east4-c"
@@ -225,6 +231,7 @@ jobs:
   cert_manager_us_east1_b:
     name: "cert-manager: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_b_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east1-b"
@@ -240,6 +247,7 @@ jobs:
   cert_manager_us_east1_c:
     name: "cert-manager: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_c_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east1-c"
@@ -255,6 +263,7 @@ jobs:
   cert_manager_us_east1_d:
     name: "cert-manager: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_d_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east1-d"
@@ -270,6 +279,7 @@ jobs:
   cert_manager_us_east4_a:
     name: "cert-manager: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_a_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east4-a"
@@ -285,6 +295,7 @@ jobs:
   cert_manager_us_east4_b:
     name: "cert-manager: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_b_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east4-b"
@@ -300,6 +311,7 @@ jobs:
   cert_manager_us_east4_c:
     name: "cert-manager: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_c_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager: us-east4-c"
@@ -315,6 +327,7 @@ jobs:
   cert_manager_istio_csr_us_east1_b:
     name: "cert-manager Istio CSR: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east1-b"
@@ -330,6 +343,7 @@ jobs:
   cert_manager_istio_csr_us_east1_c:
     name: "cert-manager Istio CSR: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east1-c"
@@ -345,6 +359,7 @@ jobs:
   cert_manager_istio_csr_us_east1_d:
     name: "cert-manager Istio CSR: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east1-d"
@@ -360,6 +375,7 @@ jobs:
   cert_manager_istio_csr_us_east4_a:
     name: "cert-manager Istio CSR: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east4-a"
@@ -375,6 +391,7 @@ jobs:
   cert_manager_istio_csr_us_east4_b:
     name: "cert-manager Istio CSR: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east4-b"
@@ -390,6 +407,7 @@ jobs:
   cert_manager_istio_csr_us_east4_c:
     name: "cert-manager Istio CSR: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east4-c"
@@ -405,6 +423,7 @@ jobs:
   datadog_us_east1_b:
     name: "Datadog: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_b_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east1-b"
@@ -424,6 +443,7 @@ jobs:
   datadog_us_east1_c:
     name: "Datadog: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_c_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east1-c"
@@ -443,6 +463,7 @@ jobs:
   datadog_us_east1_d:
     name: "Datadog: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_d_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east1-d"
@@ -462,6 +483,7 @@ jobs:
   datadog_us_east4_a:
     name: "Datadog: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_a_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east4-a"
@@ -481,6 +503,7 @@ jobs:
   datadog_us_east4_b:
     name: "Datadog: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_b_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east4-b"
@@ -500,6 +523,7 @@ jobs:
   datadog_us_east4_c:
     name: "Datadog: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_c_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog: us-east4-c"
@@ -519,6 +543,7 @@ jobs:
   datadog_manifests_us_east1_b:
     name: "Datadog Manifests: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [datadog_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east1-b"
@@ -538,6 +563,7 @@ jobs:
   datadog_manifests_us_east1_c:
     name: "Datadog Manifests: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [datadog_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east1-c"
@@ -557,6 +583,7 @@ jobs:
   datadog_manifests_us_east1_d:
     name: "Datadog Manifests: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [datadog_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east1-d"
@@ -576,6 +603,7 @@ jobs:
   datadog_manifests_us_east4_a:
     name: "Datadog Manifests: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [datadog_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east4-a"
@@ -595,6 +623,7 @@ jobs:
   datadog_manifests_us_east4_b:
     name: "Datadog Manifests: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [datadog_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east4-b"
@@ -614,6 +643,7 @@ jobs:
   datadog_manifests_us_east4_c:
     name: "Datadog Manifests: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [datadog_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Datadog Manifests: us-east4-c"
@@ -634,7 +664,7 @@ jobs:
     name: "Istio Manifests: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main] # Deploy us-east1-b first — authentik runs data migrations that require one instance to complete before the next
+    needs: [authentik_us_east1_b, istio_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-b"
@@ -651,7 +681,7 @@ jobs:
     name: "Istio Manifests: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [authentik_us_east1_c, main]
+    needs: [authentik_us_east1_c, istio_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-c"
@@ -668,7 +698,7 @@ jobs:
     name: "Istio Manifests: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [authentik_us_east1_d, main]
+    needs: [authentik_us_east1_d, istio_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east1-d"
@@ -685,7 +715,7 @@ jobs:
     name: "Istio Manifests: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [authentik_us_east4_a, main]
+    needs: [authentik_us_east4_a, istio_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-a"
@@ -702,7 +732,7 @@ jobs:
     name: "Istio Manifests: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [authentik_us_east4_b, main]
+    needs: [authentik_us_east4_b, istio_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-b"
@@ -719,7 +749,7 @@ jobs:
     name: "Istio Manifests: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [authentik_us_east4_c, main]
+    needs: [authentik_us_east4_c, istio_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Manifests: us-east4-c"
@@ -757,7 +787,7 @@ jobs:
     name: "Istio Test: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east1_c, main]
+    needs: [istio_manifests_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east1-c"
@@ -778,7 +808,7 @@ jobs:
     name: "Istio Test: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east1_d, main]
+    needs: [istio_manifests_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east1-d"
@@ -820,7 +850,7 @@ jobs:
     name: "Istio Test: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east4_b, main]
+    needs: [istio_manifests_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east4-b"
@@ -841,7 +871,7 @@ jobs:
     name: "Istio Test: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_us_east4_c, main]
+    needs: [istio_manifests_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio Test: us-east4-c"
@@ -862,7 +892,7 @@ jobs:
     name: "Authentik: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main]
+    needs: [istio_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Authentik: us-east1-b"
@@ -879,7 +909,7 @@ jobs:
     name: "Authentik Config"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [istio_manifests_us_east1_b, istio_manifests_us_east1_c, istio_manifests_us_east1_d, istio_manifests_us_east4_a, istio_manifests_us_east4_b, istio_manifests_us_east4_c, main]
+    needs: [authentik_us_east1_b, authentik_us_east1_c, authentik_us_east1_d, authentik_us_east4_a, authentik_us_east4_b, authentik_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Authentik Config"
@@ -898,6 +928,7 @@ jobs:
   istio_us_east1_b:
     name: "Istio: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_istio_csr_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east1-b"
@@ -914,7 +945,7 @@ jobs:
     name: "Authentik: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main] # Deploy us-east1-b first — authentik runs data migrations that require one instance to complete before the next
+    needs: [authentik_us_east1_b, istio_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Authentik: us-east1-c"
@@ -930,6 +961,7 @@ jobs:
   istio_us_east1_c:
     name: "Istio: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_istio_csr_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east1-c"
@@ -946,7 +978,7 @@ jobs:
     name: "Authentik: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main] # Deploy us-east1-b first — authentik runs data migrations that require one instance to complete before the next
+    needs: [authentik_us_east1_b, istio_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Authentik: us-east1-d"
@@ -962,6 +994,7 @@ jobs:
   istio_us_east1_d:
     name: "Istio: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_istio_csr_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east1-d"
@@ -978,7 +1011,7 @@ jobs:
     name: "Authentik: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main] # Deploy us-east1-b first — authentik runs data migrations that require one instance to complete before the next
+    needs: [authentik_us_east1_b, istio_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Authentik: us-east4-a"
@@ -994,6 +1027,7 @@ jobs:
   istio_us_east4_a:
     name: "Istio: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_istio_csr_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east4-a"
@@ -1010,7 +1044,7 @@ jobs:
     name: "Authentik: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main] # Deploy us-east1-b first — authentik runs data migrations that require one instance to complete before the next
+    needs: [authentik_us_east1_b, istio_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Authentik: us-east4-b"
@@ -1026,6 +1060,7 @@ jobs:
   istio_us_east4_b:
     name: "Istio: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_istio_csr_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east4-b"
@@ -1042,7 +1077,7 @@ jobs:
     name: "Authentik: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main] # Deploy us-east1-b first — authentik runs data migrations that require one instance to complete before the next
+    needs: [authentik_us_east1_b, istio_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Authentik: us-east4-c"
@@ -1058,6 +1093,7 @@ jobs:
   istio_us_east4_c:
     name: "Istio: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_istio_csr_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production Istio: us-east4-c"
@@ -1073,6 +1109,7 @@ jobs:
   opa_gatekeeper_us_east1_b:
     name: "OPA Gatekeeper: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-b"
@@ -1088,6 +1125,7 @@ jobs:
   opa_gatekeeper_templates_us_east1_b:
     name: "OPA Gatekeeper Templates: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east1-b"
@@ -1103,6 +1141,7 @@ jobs:
   opa_gatekeeper_constraints_us_east1_b:
     name: "OPA Gatekeeper Constraints: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_templates_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east1-b"
@@ -1118,6 +1157,7 @@ jobs:
   opa_gatekeeper_us_east1_c:
     name: "OPA Gatekeeper: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-c"
@@ -1133,6 +1173,7 @@ jobs:
   opa_gatekeeper_templates_us_east1_c:
     name: "OPA Gatekeeper Templates: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east1-c"
@@ -1148,6 +1189,7 @@ jobs:
   opa_gatekeeper_constraints_us_east1_c:
     name: "OPA Gatekeeper Constraints: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_templates_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east1-c"
@@ -1163,6 +1205,7 @@ jobs:
   opa_gatekeeper_us_east1_d:
     name: "OPA Gatekeeper: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-d"
@@ -1178,6 +1221,7 @@ jobs:
   opa_gatekeeper_templates_us_east1_d:
     name: "OPA Gatekeeper Templates: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east1-d"
@@ -1193,6 +1237,7 @@ jobs:
   opa_gatekeeper_constraints_us_east1_d:
     name: "OPA Gatekeeper Constraints: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_templates_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east1-d"
@@ -1208,6 +1253,7 @@ jobs:
   opa_gatekeeper_us_east4_a:
     name: "OPA Gatekeeper: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-a"
@@ -1223,6 +1269,7 @@ jobs:
   opa_gatekeeper_templates_us_east4_a:
     name: "OPA Gatekeeper Templates: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east4-a"
@@ -1238,6 +1285,7 @@ jobs:
   opa_gatekeeper_constraints_us_east4_a:
     name: "OPA Gatekeeper Constraints: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_templates_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east4-a"
@@ -1253,6 +1301,7 @@ jobs:
   opa_gatekeeper_us_east4_b:
     name: "OPA Gatekeeper: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-b"
@@ -1268,6 +1317,7 @@ jobs:
   opa_gatekeeper_templates_us_east4_b:
     name: "OPA Gatekeeper Templates: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east4-b"
@@ -1283,6 +1333,7 @@ jobs:
   opa_gatekeeper_constraints_us_east4_b:
     name: "OPA Gatekeeper Constraints: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_templates_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east4-b"
@@ -1298,6 +1349,7 @@ jobs:
   opa_gatekeeper_us_east4_c:
     name: "OPA Gatekeeper: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [cert_manager_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-c"
@@ -1313,6 +1365,7 @@ jobs:
   opa_gatekeeper_templates_us_east4_c:
     name: "OPA Gatekeeper Templates: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east4-c"
@@ -1328,6 +1381,7 @@ jobs:
   opa_gatekeeper_constraints_us_east4_c:
     name: "OPA Gatekeeper Constraints: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [opa_gatekeeper_templates_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east4-c"

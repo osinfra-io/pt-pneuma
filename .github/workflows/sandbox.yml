@@ -40,7 +40,7 @@ jobs:
     name: "Regional: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: main
+    needs: [main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox: us-east1-b"
@@ -56,7 +56,7 @@ jobs:
     name: "Regional: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: main
+    needs: [main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox: us-east4-a"
@@ -258,7 +258,7 @@ jobs:
     name: "Istio Manifests: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main]  # Authentik zones deploy in parallel
+    needs: [authentik_us_east1_b, istio_us_east1_b, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Istio Manifests: us-east1-b"
@@ -275,7 +275,7 @@ jobs:
     name: "Istio Manifests: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [authentik_us_east4_a, main]
+    needs: [authentik_us_east4_a, istio_us_east4_a, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Istio Manifests: us-east4-a"
@@ -334,7 +334,7 @@ jobs:
     name: "Authentik: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main]
+    needs: [istio_us_east1_b, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Authentik: us-east1-b"
@@ -389,7 +389,7 @@ jobs:
     name: "Authentik: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [main] # Deploy us-east1-b first — authentik runs data migrations that require one instance to complete before the next
+    needs: [authentik_us_east1_b, istio_us_east4_a, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Authentik: us-east4-a"
