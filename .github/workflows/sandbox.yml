@@ -351,7 +351,7 @@ jobs:
     name: "Authentik Config"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [authentik_us_east1_b, authentik_us_east4_a, main]
+    needs: [istio_manifests_us_east1_b, istio_manifests_us_east4_a, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Authentik Config"
