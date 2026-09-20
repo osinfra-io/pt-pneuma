@@ -189,7 +189,7 @@ jobs:
 
   datadog_us_east1_b:
     name: "Datadog: us-east1-b"
-    needs: [datadog_manifests_us_east1_b, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -210,7 +210,7 @@ jobs:
 
   datadog_us_east4_a:
     name: "Datadog: us-east4-a"
-    needs: [datadog_manifests_us_east4_a, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -248,7 +248,7 @@ jobs:
 
   authentik_us_east1_b:
     name: "Authentik: us-east1-b"
-    needs: [istio_manifests_us_east1_b, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -282,7 +282,7 @@ jobs:
 
   authentik_us_east4_a:
     name: "Authentik: us-east4-a"
-    needs: [istio_manifests_us_east4_a, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -335,7 +335,7 @@ jobs:
 
   istio_us_east1_b:
     name: "Istio: us-east1-b"
-    needs: [authentik_us_east1_b, istio_manifests_us_east1_b, read_clusters]
+    needs: [authentik_us_east1_b, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -352,7 +352,7 @@ jobs:
 
   istio_us_east4_a:
     name: "Istio: us-east4-a"
-    needs: [authentik_us_east4_a, istio_manifests_us_east4_a, read_clusters]
+    needs: [authentik_us_east4_a, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -477,7 +477,7 @@ jobs:
 
   us_east1_b_onboarding:
     name: "Onboarding: us-east1-b"
-    needs: [cert_manager_us_east1_b, datadog_us_east1_b, read_clusters]
+    needs: [cert_manager_us_east1_b, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -494,7 +494,7 @@ jobs:
 
   us_east4_a_onboarding:
     name: "Onboarding: us-east4-a"
-    needs: [cert_manager_us_east4_a, datadog_us_east4_a, read_clusters]
+    needs: [cert_manager_us_east4_a, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
