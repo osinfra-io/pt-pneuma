@@ -31,7 +31,9 @@ Links to documentation and other resources required to develop and iterate in th
 
 ## 🔄 Deployment Dependency Graph
 
-Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain. Authentik is deployed per zone (the primary us-east1-b zone first, then the rest), while a single global **Authentik Config** job runs last, once every zone's Istio manifests are in place.
+Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain. Authentik is deployed per zone (the primary us-east1-b zone first, then the rest), while a single global **Authentik Config** job runs after every zone's Authentik deployment.
+
+The primary Authentik deployment is also a prerequisite for every other Authentik zone so database migrations complete before additional instances start.
 
 ```mermaid
 flowchart LR
@@ -66,7 +68,8 @@ flowchart LR
     z2_cert_manager --> z2_cert_manager_istio_csr["cert-manager Istio CSR: us-east4-a"]:::certmanager
     z2_cert_manager --> z2_opa_gatekeeper["OPA Gatekeeper: us-east4-a"]:::opa
     z2_cert_manager_istio_csr --> z2_istio["Istio: us-east4-a"]:::istio
-    z2_istio --> z2_authentik["Authentik: us-east4-a"]:::authentik
+    z1_authentik --> z2_authentik["Authentik: us-east4-a"]:::authentik
+    z2_istio --> z2_authentik
     z2_istio --> z2_istio_manifests["Istio Manifests: us-east4-a"]:::istio
     z2_authentik --> z2_istio_manifests
     z2_istio_manifests --> z2_istio_test["Istio Test: us-east4-a"]:::istio
@@ -74,6 +77,6 @@ flowchart LR
     z2_opa_gatekeeper --> z2_opa_templates["OPA Gatekeeper Templates: us-east4-a"]:::opa
     z2_opa_templates --> z2_opa_constraints["OPA Gatekeeper Constraints: us-east4-a"]:::opa
 
-    z1_authentik --> authentik_config["Authentik Config (global)"]:::authentik
-    z2_authentik --> authentik_config
+    z1_istio_manifests --> authentik_config["Authentik Config (global)"]:::authentik
+    z2_istio_manifests --> authentik_config
 ```

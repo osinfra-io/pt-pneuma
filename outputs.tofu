@@ -31,6 +31,11 @@ output "authentik_database_user" {
   value       = google_sql_user.authentik.name
 }
 
+output "authentik_kubernetes_namespace" {
+  description = "Logos-managed Kubernetes namespace where Authentik is deployed"
+  value       = local.authentik_kubernetes_namespace
+}
+
 output "authentik_secret_env" {
   description = "Shared Authentik environment secret values (secret key, DB and bootstrap credentials) generated once and consumed by every regional authentik workspace"
   sensitive   = true

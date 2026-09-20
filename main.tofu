@@ -57,14 +57,16 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=41cc456ac8a990e587763ab5a0a67597258ff96c" # v0.5.8
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=84380324c6fe3739e640d7cf800c1c52245d4f1e" # v0.8.0
 
   for_each = local.teams_with_clusters
 
-  gateway_dns               = each.key == module.core_helpers.team ? local.gateway_dns_for_pneuma : {}
-  gke_fleet_host_project_id = each.key == module.core_helpers.team ? "" : local.team_project_ids[module.core_helpers.team]
-  labels                    = module.core_helpers.labels
-  project                   = local.team_project_ids[each.key]
+  cloud_armor_allow_rules    = each.key == module.core_helpers.team ? local.authentik_cloud_armor_allow_rules : {}
+  cloud_armor_waf_exclusions = each.key == module.core_helpers.team ? local.authentik_cloud_armor_waf_exclusions : []
+  gateway_dns                = each.key == module.core_helpers.team ? local.gateway_dns_for_pneuma : {}
+  gke_fleet_host_project_id  = each.key == module.core_helpers.team ? "" : local.team_project_ids[module.core_helpers.team]
+  labels                     = module.core_helpers.labels
+  project                    = local.team_project_ids[each.key]
 }
 
 # Google Project IAM Member Resource

@@ -116,7 +116,7 @@ locals {
   # (its remote state is empty on first apply). Once authentik-config is applied, its authoritative
   # outputs take precedence via try(). The embedded outpost is served by the authentik-server
   # Service, so a gateway always calls its region-local authentik-server for forward-auth.
-  authentik_outpost_namespace    = "authentik"
+  authentik_outpost_namespace    = local.main.authentik_kubernetes_namespace
   authentik_outpost_path_prefix  = "/outpost.goauthentik.io/auth/envoy"
   authentik_outpost_service_name = "authentik-server"
   authentik_outpost_service_port = 80

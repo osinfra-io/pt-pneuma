@@ -7,6 +7,33 @@ locals {
   # so all stateless regional server/worker instances form one identity provider (not per-zone IdPs).
   authentik_base_url = "https://${local.authentik_hostname}"
 
+  # Authentik's token-authenticated management API receives generated JSON and uses PUT/DELETE,
+  # which trigger false positives in Cloud Armor's protocol and method enforcement rules. There is
+  # no scoped WAF exclusion for HTTP method/protocol enforcement, so this remains a full allow rule.
+  authentik_cloud_armor_allow_rules = {
+    authentik_api = {
+      description = "Allow token-authenticated Authentik API requests"
+      expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && request.path.startsWith('/api/v3/') && has(request.headers['authorization']) && request.headers['authorization'].startsWith('Bearer ')"
+      priority    = 9000
+    }
+  }
+
+  # The Google OAuth flow's "scope" query parameter (e.g. "userinfo.profile") is false-positive
+  # matched by the preconfigured LFI WAF rule (owasp-crs-v030301-id930120-lfi). Authentik re-wraps
+  # the original query string (including "scope") inside its own "query" parameter at every step of
+  # the flow (browser callback -> /if/flow/<slug>/ -> /api/v3/flows/executor/<slug>/), including
+  # built-in system flows (e.g. default-source-authentication for returning users) whose slugs are
+  # not defined by this repo. Excluding just the "scope" and "query" parameter values from the LFI
+  # rule's inspection (rather than allowing the whole request past every preconfigured WAF rule)
+  # fixes the false positive while still running SQLi/XSS/RCE/etc. checks on this traffic.
+  authentik_cloud_armor_waf_exclusions = [
+    {
+      request_query_param_names = ["scope", "query"]
+      target_rule_ids           = ["owasp-crs-v030301-id930120-lfi"]
+      target_rule_set           = "lfi-v33-stable"
+    }
+  ]
+
   # The Cloud SQL instance is platform-managed by pt-corpus (see cloud_sql in the pt-pneuma Logos
   # tfvars, keyed "authentik"). Discover it in the pneuma project via the google_sql_database_instances
   # data source (cross-repo state access is not permitted) and read its generated name (which corpus
@@ -43,10 +70,10 @@ locals {
 
   authentik_public_dns_zone_name = module.core_helpers.env == "prod" ? "osinfra-io" : "${module.core_helpers.env}-osinfra-io"
 
-  # Namespace and chart-created Kubernetes service account for Authentik. The regional authentik
-  # workspace deploys into this namespace; the goauthentik chart names its ServiceAccount after the
-  # release ("authentik"). Both are needed here to bind Workload Identity for the Cloud SQL Auth Proxy.
-  authentik_kubernetes_namespace = "authentik"
+  # Namespace provisioned through the standard Logos-driven onboarding flow and the chart-created
+  # Kubernetes service account for Authentik. Both are needed here to bind Workload Identity for the
+  # Cloud SQL Auth Proxy.
+  authentik_kubernetes_namespace = "${module.core_helpers.team}-authentik"
 
   authentik_kubernetes_service_account = "authentik"
 
