@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-opa-gatekeeper
 
 module "kubernetes_opa_gatekeeper_templates" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-opa-gatekeeper//regional/templates?ref=aedff60d2e1c5a2aacf17e64548f91dc8009ab7e" # v0.4.5
+  source = "github.com/osinfra-io/pt-arche-kubernetes-opa-gatekeeper//regional/templates?ref=7b24587f8856a6aa0bb9a563a383deefaaf71445" # v0.4.7
 
   for_each = local.gke_clusters
 
