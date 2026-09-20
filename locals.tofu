@@ -8,35 +8,30 @@ locals {
   authentik_base_url = "https://${local.authentik_hostname}"
 
   # Authentik's token-authenticated management API receives generated JSON and uses PUT/DELETE,
-  # which trigger false positives in Cloud Armor's protocol and method enforcement rules.
+  # which trigger false positives in Cloud Armor's protocol and method enforcement rules. There is
+  # no scoped WAF exclusion for HTTP method/protocol enforcement, so this remains a full allow rule.
   authentik_cloud_armor_allow_rules = {
     authentik_api = {
       description = "Allow token-authenticated Authentik API requests"
       expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && request.path.startsWith('/api/v3/') && has(request.headers['authorization']) && request.headers['authorization'].startsWith('Bearer ')"
       priority    = 9000
     }
-
-    # The Google OAuth flow's "scope" query parameter (e.g. "userinfo.profile") is false-positive
-    # matched by the preconfigured LFI WAF rule (owasp-crs-v030301-id930120-lfi). Authentik forwards
-    # Google's original query parameters (iss, code, scope) across every step of the flow, including
-    # built-in system flows (e.g. default-source-authentication for returning users) whose slugs are
-    # not defined by this repo, so path matching is scoped to Authentik's generic flow/API prefixes
-    # (/if/flow/, /api/v3/flows/executor/, the callback) rather than a specific flow slug, and is
-    # further scoped to Google OAuth traffic only via the "accounts.google.com" query substring,
-    # which stays literal at every encoding depth Authentik re-wraps the query string to.
-
-    authentik_google_oauth_flow = {
-      description = "Allow any Authentik flow step carrying Google OAuth params to bypass preconfigured WAF false positives"
-      expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && (request.path == '/source/oauth/callback/google/' || request.path.startsWith('/if/flow/') || request.path.startsWith('/api/v3/flows/executor/')) && request.query.contains('accounts.google.com')"
-      priority    = 9010
-    }
   }
 
-  authentik_google_oauth_redirect_uris = module.core_helpers.env == "sb" ? [
-    "${local.authentik_base_url}/source/oauth/callback/google/",
-    "http://localhost:9000/source/oauth/callback/google/",
-    ] : [
-    "${local.authentik_base_url}/source/oauth/callback/google/",
+  # The Google OAuth flow's "scope" query parameter (e.g. "userinfo.profile") is false-positive
+  # matched by the preconfigured LFI WAF rule (owasp-crs-v030301-id930120-lfi). Authentik re-wraps
+  # the original query string (including "scope") inside its own "query" parameter at every step of
+  # the flow (browser callback -> /if/flow/<slug>/ -> /api/v3/flows/executor/<slug>/), including
+  # built-in system flows (e.g. default-source-authentication for returning users) whose slugs are
+  # not defined by this repo. Excluding just the "scope" and "query" parameter values from the LFI
+  # rule's inspection (rather than allowing the whole request past every preconfigured WAF rule)
+  # fixes the false positive while still running SQLi/XSS/RCE/etc. checks on this traffic.
+  authentik_cloud_armor_waf_exclusions = [
+    {
+      request_query_param_names = ["scope", "query"]
+      target_rule_ids           = ["owasp-crs-v030301-id930120-lfi"]
+      target_rule_set           = "lfi-v33-stable"
+    }
   ]
 
   # The Cloud SQL instance is platform-managed by pt-corpus (see cloud_sql in the pt-pneuma Logos
