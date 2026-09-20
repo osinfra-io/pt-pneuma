@@ -4,6 +4,8 @@
 module "authentik_config" {
   source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=76e4fba9538c0c1da9f9615e4408abcf328259a8" # v0.1.5
 
+  depends_on = [terraform_data.browser_group_policy_validation]
+
   authentik_url                         = local.authentik_url
   browser_group_policy_bindings         = local.browser_group_policy_bindings
   default_authentication_source_uuids   = local.default_authentication_source_uuids
@@ -71,4 +73,16 @@ resource "authentik_policy_binding" "sandbox_authentication_stage_policies" {
   order          = 10
   policy         = data.authentik_policy_expression.sandbox_authentication_stage_policies[each.key].id
   target         = authentik_flow_stage_binding.sandbox_authentication_stages[each.key].id
+}
+
+# Terraform Data Resource
+# https://search.opentofu.org/provider/hashicorp/terraform/latest/docs/resources/data
+
+resource "terraform_data" "browser_group_policy_validation" {
+  lifecycle {
+    precondition {
+      condition     = length(local.browser_group_policy_conflicting_hosts) == 0
+      error_message = "Browser routes sharing an Authentik host must declare identical required_groups and required_roles. Conflicting hosts: ${join(", ", local.browser_group_policy_conflicting_hosts)}."
+    }
+  }
 }

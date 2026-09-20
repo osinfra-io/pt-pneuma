@@ -19,6 +19,14 @@ locals {
     }
   }
 
+  browser_group_policy_conflicting_hosts = [
+    for host in sort(distinct([for item in local.browser_group_policy_items : item.host])) : host
+    if length(distinct([
+      for item in local.browser_group_policy_items : item.requirements
+      if item.host == host
+    ])) > 1
+  ]
+
   browser_group_policy_items = flatten([
     for cluster_name, cluster_config in var.clusters : flatten([
       for ns_name, ns in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) : [
@@ -32,6 +40,10 @@ locals {
               try(policy.required_roles, []),
             ))
             host = host
+            requirements = jsonencode({
+              required_groups = sort(try(policy.required_groups, []))
+              required_roles  = sort(try(policy.required_roles, []))
+            })
           }
           if try(policy.mode, "browser") == "browser" && length(concat(
             try(policy.required_groups, []),
