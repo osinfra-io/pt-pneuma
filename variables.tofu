@@ -1,6 +1,11 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
+variable "active_zones" {
+  description = "The GKE zones active in this environment"
+  type        = set(string)
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

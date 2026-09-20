@@ -20,12 +20,12 @@ module "kubernetes_authentik" {
   external_database_user           = local.main.authentik_database_user
   google_service_account_email     = local.main.authentik_cloud_sql_service_account_email
   namespace                        = local.authentik_namespace
-  server_replicas                  = local.authentik_server_replicas
-  server_resources_requests_cpu    = local.authentik_server_resources_requests_cpu
-  server_resources_requests_memory = local.authentik_server_resources_requests_memory
+  server_replicas                  = var.authentik_server_replicas
+  server_resources_requests_cpu    = var.authentik_server_resources_requests_cpu
+  server_resources_requests_memory = var.authentik_server_resources_requests_memory
   worker_replicas                  = local.authentik_worker_replicas
-  worker_resources_requests_cpu    = local.authentik_worker_resources_requests_cpu
-  worker_resources_requests_memory = local.authentik_worker_resources_requests_memory
+  worker_resources_requests_cpu    = var.authentik_worker_resources_requests_cpu
+  worker_resources_requests_memory = var.authentik_worker_resources_requests_memory
 }
 
 # Kubernetes Manifest Resource

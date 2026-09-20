@@ -1,6 +1,31 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
+variable "authentik_server_replicas" {
+  description = "The number of replicas for the Authentik server"
+  type        = number
+}
+
+variable "authentik_server_resources_requests_cpu" {
+  description = "The Authentik server CPU resource request"
+  type        = string
+}
+
+variable "authentik_server_resources_requests_memory" {
+  description = "The Authentik server memory resource request"
+  type        = string
+}
+
+variable "authentik_worker_resources_requests_cpu" {
+  description = "The Authentik worker CPU resource request"
+  type        = string
+}
+
+variable "authentik_worker_resources_requests_memory" {
+  description = "The Authentik worker memory resource request"
+  type        = string
+}
+
 variable "clusters" {
   default     = {}
   description = "GKE clusters (all teams, all zones) from the main workspace, keyed by cluster name. Passed by the deployment workflow as TF_VAR_clusters from the main workspace's clusters output; filtered to this zone for the Kubernetes and Helm providers."

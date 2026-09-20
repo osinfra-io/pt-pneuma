@@ -2,11 +2,9 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  datadog_mci_synthetic_url          = module.core_helpers.environment == "production" ? "https://gcp.osinfra.io/${local.datadog_synthetic_service}/metadata/cluster-name" : "https://${module.core_helpers.env}.gcp.osinfra.io/${local.datadog_synthetic_service}/metadata/cluster-name"
-  datadog_synthetic_message_critical = module.core_helpers.environment == "production" ? "@hangouts-Platform-CriticalHighPriority" : ""
-  datadog_synthetic_message_medium   = module.core_helpers.environment == "production" ? "@hangouts-Platform-MediumLowInfoPriority" : ""
-  datadog_synthetic_name             = "Istio Test"
-  datadog_synthetic_service          = "istio-test"
+  datadog_mci_synthetic_url = "https://${var.datadog_synthetic_dns_domain}/${local.datadog_synthetic_service}/metadata/cluster-name"
+  datadog_synthetic_name    = "Istio Test"
+  datadog_synthetic_service = "istio-test"
 
   datadog_synthetic_tests = module.core_helpers.region == "us-east1" || module.core_helpers.zone == "b" ? {
     "mci" = {
@@ -23,7 +21,7 @@ locals {
         "aws:us-west-2"
       ]
 
-      message          = local.datadog_synthetic_message_critical
+      message          = var.datadog_synthetic_message_critical
       message_priority = "1"
       name             = "MCI ${local.datadog_synthetic_name}"
       region           = "global"
@@ -43,7 +41,7 @@ locals {
         "aws:us-west-2"
       ]
 
-      message          = local.datadog_synthetic_message_medium
+      message          = var.datadog_synthetic_message_medium
       message_priority = "3"
       name             = "MCI ${local.datadog_synthetic_name}"
       region           = module.core_helpers.region
@@ -65,7 +63,7 @@ locals {
         "aws:us-west-2"
       ]
 
-      message          = local.datadog_synthetic_message_medium
+      message          = var.datadog_synthetic_message_medium
       message_priority = "3"
       name             = "MCI ${local.datadog_synthetic_name}"
       region           = module.core_helpers.region
@@ -87,7 +85,7 @@ locals {
         "aws:us-west-2"
       ]
 
-      message          = local.datadog_synthetic_message_medium
+      message          = var.datadog_synthetic_message_medium
       message_priority = "3"
       name             = "Ingress ${local.datadog_synthetic_name}"
       region           = module.core_helpers.region
@@ -98,7 +96,7 @@ locals {
 
       service = local.datadog_synthetic_service
       status  = "paused"
-      url     = module.core_helpers.environment == "production" ? "https://us-east1.gcp.osinfra.io/${local.datadog_synthetic_service}" : "https://us-east1.${module.core_helpers.env}.gcp.osinfra.io/${local.datadog_synthetic_service}"
+      url     = "https://us-east1.${var.datadog_synthetic_dns_domain}/${local.datadog_synthetic_service}"
     }
 
     "us-east4" = {
@@ -109,7 +107,7 @@ locals {
         "aws:us-west-2"
       ]
 
-      message          = local.datadog_synthetic_message_medium
+      message          = var.datadog_synthetic_message_medium
       message_priority = "3"
       name             = "Ingress ${local.datadog_synthetic_name}"
       region           = module.core_helpers.region
@@ -120,7 +118,7 @@ locals {
 
       service = local.datadog_synthetic_service
       status  = "paused"
-      url     = module.core_helpers.environment == "production" ? "https://us-east4.gcp.osinfra.io/${local.datadog_synthetic_service}" : "https://us-east4.${module.core_helpers.env}.gcp.osinfra.io/${local.datadog_synthetic_service}"
+      url     = "https://us-east4.${var.datadog_synthetic_dns_domain}/${local.datadog_synthetic_service}"
     }
   } : {}
 

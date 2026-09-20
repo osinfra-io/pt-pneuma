@@ -20,7 +20,7 @@ module "authentik_config" {
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/resources/brand
 
 resource "authentik_brand" "sandbox" {
-  for_each = local.sandbox_authentication_enabled ? toset(["sandbox"]) : toset([])
+  for_each = var.sandbox_authentication_enabled ? toset(["sandbox"]) : toset([])
 
   attributes          = local.sandbox_brand_attributes
   branding_custom_css = local.sandbox_brand_custom_css
@@ -36,7 +36,7 @@ resource "authentik_brand" "sandbox" {
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/resources/flow
 
 resource "authentik_flow" "sandbox_authentication" {
-  for_each = local.sandbox_authentication_enabled ? toset(["sandbox"]) : toset([])
+  for_each = var.sandbox_authentication_enabled ? toset(["sandbox"]) : toset([])
 
   authentication     = "none"
   compatibility_mode = false
@@ -52,7 +52,7 @@ resource "authentik_flow" "sandbox_authentication" {
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/resources/flow_stage_binding
 
 resource "authentik_flow_stage_binding" "sandbox_authentication_stages" {
-  for_each = local.sandbox_authentication_enabled ? local.sandbox_authentication_stages : {}
+  for_each = var.sandbox_authentication_enabled ? local.sandbox_authentication_stages : {}
 
   evaluate_on_plan     = false
   order                = each.value.order
@@ -65,7 +65,7 @@ resource "authentik_flow_stage_binding" "sandbox_authentication_stages" {
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/resources/policy_binding
 
 resource "authentik_policy_binding" "sandbox_authentication_stage_policies" {
-  for_each = local.sandbox_authentication_enabled ? local.sandbox_authentication_stage_policies : {}
+  for_each = var.sandbox_authentication_enabled ? local.sandbox_authentication_stage_policies : {}
 
   failure_result = true
   order          = 10

@@ -92,16 +92,6 @@ locals {
     AUTHENTIK_SECRET_KEY           = random_password.authentik_secret_key.result
   }
 
-  # Active zones per environment — controls which GKE clusters are included in outputs
-  # Sandbox and non-production use 2 zones (1 per region) for multi-cluster testing
-  # Production uses all 6 zones (3 per region) for full HA
-
-  active_zones = {
-    non-production = toset(["us-east1-b", "us-east4-a"])
-    production     = toset(["us-east1-b", "us-east1-c", "us-east1-d", "us-east4-a", "us-east4-b", "us-east4-c"])
-    sandbox        = toset(["us-east1-b", "us-east4-a"])
-  }
-
   # DNS subdomain per team (e.g., "pneuma"), sourced from team config in pt-logos.
   # Falls back to the team key with its topology prefix stripped (e.g. "pt-pneuma" → "pneuma").
   dns_subdomains = {
@@ -166,7 +156,7 @@ locals {
         project_id = local.team_project_ids[team_key]
         team_key   = team_key
       })
-      if contains(local.active_zones[module.core_helpers.environment], location)
+      if contains(var.active_zones, location)
     }
   ]...)
 
