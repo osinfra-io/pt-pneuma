@@ -189,7 +189,7 @@ jobs:
 
   datadog_us_east1_b:
     name: "Datadog: us-east1-b"
-    needs: [datadog_manifests_us_east1_b, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -210,7 +210,7 @@ jobs:
 
   datadog_us_east4_a:
     name: "Datadog: us-east4-a"
-    needs: [datadog_manifests_us_east4_a, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -231,7 +231,7 @@ jobs:
 
   istio_manifests_us_east1_b:
     name: "Istio Manifests: us-east1-b"
-    needs: [authentik_config, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -246,26 +246,9 @@ jobs:
       working_directory: regional/istio/manifests
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  authentik_config:
-    name: "Authentik Config"
-    needs: read_clusters
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Sandbox Authentik Config"
-      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -destroy
-      opentofu_state_bucket: pt-pneuma-state-sb
-      opentofu_var_json: "{\"clusters\": ${{ needs.read_clusters.outputs.passthrough || '{}' }}}"
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: authentik-config-sandbox
-      working_directory: regional/authentik-config
-      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-
   authentik_us_east1_b:
     name: "Authentik: us-east1-b"
-    needs: [istio_manifests_us_east1_b, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -282,7 +265,7 @@ jobs:
 
   istio_manifests_us_east4_a:
     name: "Istio Manifests: us-east4-a"
-    needs: [authentik_config, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -299,7 +282,7 @@ jobs:
 
   authentik_us_east4_a:
     name: "Authentik: us-east4-a"
-    needs: [istio_manifests_us_east4_a, read_clusters]
+    needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -352,7 +335,7 @@ jobs:
 
   istio_us_east1_b:
     name: "Istio: us-east1-b"
-    needs: [authentik_us_east1_b, istio_manifests_us_east1_b, read_clusters]
+    needs: [authentik_us_east1_b, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -369,7 +352,7 @@ jobs:
 
   istio_us_east4_a:
     name: "Istio: us-east4-a"
-    needs: [authentik_us_east4_a, istio_manifests_us_east4_a, read_clusters]
+    needs: [authentik_us_east4_a, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -494,7 +477,7 @@ jobs:
 
   us_east1_b_onboarding:
     name: "Onboarding: us-east1-b"
-    needs: [cert_manager_us_east1_b, datadog_us_east1_b, read_clusters]
+    needs: [cert_manager_us_east1_b, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
@@ -511,7 +494,7 @@ jobs:
 
   us_east4_a_onboarding:
     name: "Onboarding: us-east4-a"
-    needs: [cert_manager_us_east4_a, datadog_us_east4_a, read_clusters]
+    needs: [cert_manager_us_east4_a, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
       checkout_ref: ${{ github.ref }}
