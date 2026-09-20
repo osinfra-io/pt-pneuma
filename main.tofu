@@ -69,36 +69,6 @@ module "kubernetes_istio" {
   project                    = local.team_project_ids[each.key]
 }
 
-# Google IAM OAuth Client Resource
-# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/iam_oauth_client
-
-# Disabled ahead of removal: Google requires an OAuth client credential to be disabled before it can
-# be deleted, so this and the credential below are disabled here first, then removed in a follow-up
-# apply once the disable takes effect. See pt-pneuma#193 review comments for why they're being removed.
-resource "google_iam_oauth_client" "authentik_google_oauth" {
-  allowed_grant_types   = ["AUTHORIZATION_CODE_GRANT"]
-  allowed_redirect_uris = local.authentik_google_oauth_redirect_uris
-  allowed_scopes        = ["openid", "email", "profile"]
-  client_type           = "CONFIDENTIAL_CLIENT"
-  description           = "OAuth client for Authentik Google login"
-  disabled              = true
-  display_name          = "Authentik Google OAuth"
-  location              = "global"
-  oauth_client_id       = "authentik-google-oauth"
-  project               = local.team_project_ids[module.core_helpers.team]
-}
-
-# Google IAM OAuth Client Credential Resource
-# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/iam_oauth_client_credential
-
-resource "google_iam_oauth_client_credential" "authentik_google_oauth" {
-  disabled                   = true
-  location                   = google_iam_oauth_client.authentik_google_oauth.location
-  oauth_client_credential_id = "authentik-google-oauth"
-  oauthclient                = google_iam_oauth_client.authentik_google_oauth.oauth_client_id
-  project                    = local.team_project_ids[module.core_helpers.team]
-}
-
 # Google Project IAM Member Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/project_iam_member
 

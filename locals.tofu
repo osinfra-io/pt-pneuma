@@ -34,15 +34,6 @@ locals {
     }
   ]
 
-  # Temporary: only needed while google_iam_oauth_client.authentik_google_oauth (being disabled
-  # ahead of removal, see pt-pneuma#193) still references it. Remove alongside that resource.
-  authentik_google_oauth_redirect_uris = module.core_helpers.env == "sb" ? [
-    "${local.authentik_base_url}/source/oauth/callback/google/",
-    "http://localhost:9000/source/oauth/callback/google/",
-    ] : [
-    "${local.authentik_base_url}/source/oauth/callback/google/",
-  ]
-
   # The Cloud SQL instance is platform-managed by pt-corpus (see cloud_sql in the pt-pneuma Logos
   # tfvars, keyed "authentik"). Discover it in the pneuma project via the google_sql_database_instances
   # data source (cross-repo state access is not permitted) and read its generated name (which corpus
