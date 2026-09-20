@@ -24,6 +24,11 @@ variable "google_oauth_client_secret" {
   type        = string
 }
 
+variable "sandbox_authentication_enabled" {
+  description = "Enable the sandbox-specific Authentik authentication flow and brand"
+  type        = bool
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

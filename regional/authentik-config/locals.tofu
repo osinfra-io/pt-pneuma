@@ -94,8 +94,6 @@ locals {
     }
   ]
 
-  sandbox_authentication_enabled = module.core_helpers.env == "sb"
-
   sandbox_authentication_stages = {
     identification = {
       name  = "default-authentication-identification"

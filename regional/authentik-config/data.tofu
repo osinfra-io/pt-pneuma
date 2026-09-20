@@ -24,7 +24,7 @@ data "authentik_outpost" "embedded" {
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/data-sources/policy_expression
 
 data "authentik_policy_expression" "sandbox_authentication_stage_policies" {
-  for_each = local.sandbox_authentication_enabled ? local.sandbox_authentication_stage_policies : {}
+  for_each = var.sandbox_authentication_enabled ? local.sandbox_authentication_stage_policies : {}
 
   name = each.value.policy_name
 }
@@ -39,7 +39,7 @@ data "authentik_stage" "default_authentication_identification" {
 }
 
 data "authentik_stage" "sandbox_authentication_stages" {
-  for_each = local.sandbox_authentication_enabled ? local.sandbox_authentication_stages : {}
+  for_each = var.sandbox_authentication_enabled ? local.sandbox_authentication_stages : {}
 
   name = each.value.name
 }
