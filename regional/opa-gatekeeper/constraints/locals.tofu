@@ -11,43 +11,6 @@ locals {
     "serviceAccount:${local.gateway_auth_guardrail_platform_github_service_account_email}",
   ])
 
-  gateway_auth_guardrail_constraint_manifest = {
-    apiVersion = "constraints.gatekeeper.sh/v1beta1"
-    kind       = "K8sProtectGatewayAuth"
-
-    metadata = {
-      name = "protect-gateway-auth"
-    }
-
-    spec = {
-      enforcementAction = "deny"
-
-      match = {
-        kinds = concat(
-          [
-            {
-              apiGroups = [""]
-              kinds     = ["Namespace", "Secret"]
-            },
-          ],
-          [
-            for protected_kind in local.gateway_auth_guardrail_protected_kinds : {
-              apiGroups = [protected_kind.apiGroup]
-              kinds     = [protected_kind.kind]
-            }
-          ],
-        )
-      }
-
-      parameters = {
-        allowedGroups       = local.gateway_auth_guardrail_allowed_groups
-        allowedUsers        = local.gateway_auth_guardrail_allowed_users
-        protectedKinds      = local.gateway_auth_guardrail_protected_kinds
-        protectedNamespaces = local.gateway_auth_guardrail_protected_namespaces
-      }
-    }
-  }
-
   gateway_auth_guardrail_platform_github_service_account_email = "pt-pneuma-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
 
   gateway_auth_guardrail_protected_kinds = [
