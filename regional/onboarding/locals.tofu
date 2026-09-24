@@ -23,13 +23,17 @@ locals {
   # namespace, so Istio multi-primary discovery merges remote endpoints automatically. Prefixing
   # uniformly (with no platform-team exception) lets pneuma dogfood the model exactly like a
   # member team.
+  #
+  # istio_injection is translated from Logos's mesh_enabled bool (see pt-logos#228) into the
+  # enabled/disabled string still expected by pt-arche-google-kubernetes-engine's onboarding
+  # module, whose own field name and type are unrelated to the ambient mesh migration.
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {
       for namespace_name, namespace in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) :
       "${cluster_config.team_key}-${namespace_name}" => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
-        istio_injection        = namespace.istio_injection
+        istio_injection        = namespace.mesh_enabled ? "enabled" : "disabled"
       }
     }
   }

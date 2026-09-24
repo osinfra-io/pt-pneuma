@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=39eaa9e877542a18bf1d6e70b9f35f5ae592008d" # v0.8.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=56788521237742d1f6e9e9a19f33d20ccbdee499" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
 
   for_each = local.gke_clusters
 
@@ -283,7 +283,7 @@ resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
 
   metadata {
     labels = {
-      "istio-injection" = "enabled"
+      "istio.io/dataplane-mode" = "ambient"
     }
 
     name = each.key

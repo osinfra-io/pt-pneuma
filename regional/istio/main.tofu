@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=39eaa9e877542a18bf1d6e70b9f35f5ae592008d" # v0.8.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=56788521237742d1f6e9e9a19f33d20ccbdee499" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
 
   for_each = local.gke_clusters
 
@@ -30,10 +30,6 @@ module "kubernetes_istio" {
   pilot_memory_limits                         = var.kubernetes_istio_pilot_memory_limits
   pilot_memory_requests                       = var.kubernetes_istio_pilot_memory_requests
   project                                     = each.value.project_id
-  proxy_cpu_limits                            = var.kubernetes_istio_proxy_cpu_limits
-  proxy_cpu_requests                          = var.kubernetes_istio_proxy_cpu_requests
-  proxy_memory_limits                         = var.kubernetes_istio_proxy_memory_limits
-  proxy_memory_requests                       = var.kubernetes_istio_proxy_memory_requests
   tls_self_signed_cert_cert_manager_root_cert = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert
   tls_self_signed_cert_cert_manager_root_key  = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key
 }
@@ -104,7 +100,6 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
         labels = {
           "admission.datadoghq.com/enabled" = "true"
           app                               = "datadog-aap-extproc"
-          "sidecar.istio.io/inject"         = "false"
           "tags.datadoghq.com/env"          = module.core_helpers.environment
           "tags.datadoghq.com/service"      = "istio-gateway"
         }
@@ -191,26 +186,6 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
         }
       }
     }
-  }
-}
-
-# Kubernetes Labels Resource
-# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/labels
-
-resource "kubernetes_labels" "default_namespace_istio_injection" {
-  for_each = local.gke_clusters
-
-  provider = kubernetes.by_cluster[each.key]
-
-  api_version = "v1"
-  kind        = "Namespace"
-
-  labels = {
-    "istio-injection" = "disabled"
-  }
-
-  metadata {
-    name = "default"
   }
 }
 

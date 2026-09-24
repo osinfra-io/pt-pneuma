@@ -45,7 +45,7 @@ resource "tls_self_signed_cert" "cert_manager_ca" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager
 
 module "kubernetes_cert_manager" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=f8da266ff952ef0b4045e1f8272cfc46f4b19850" # v0.3.8
+  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=c391006f8df18d6e4e2dc24499062f510619b07e" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-cert-manager#79 (istio-csr-ambient-ztunnel-trust); re-pin to tagged release once merged
 
   for_each = local.teams_with_clusters
 
@@ -57,7 +57,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=39eaa9e877542a18bf1d6e70b9f35f5ae592008d" # v0.8.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=56788521237742d1f6e9e9a19f33d20ccbdee499" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
 
   for_each = local.teams_with_clusters
 
