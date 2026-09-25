@@ -212,6 +212,10 @@ resource "kubernetes_deployment_v1" "istio_test" {
 # Kubernetes Manifest Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
 
+# ztunnel (no waypoint deployed) enforces only L4 attributes; the HTTP methods/paths block
+# below was previously being silently dropped by ztunnel with no L4 fallback left to match,
+# which denied all traffic. Restrict on source principal instead, matching the L4-only pattern
+# already used by regional/authentik/main.tofu's authentik_allow_gateway policy.
 resource "kubernetes_manifest" "istio_test" {
   for_each = local.gke_clusters
 
@@ -233,26 +237,7 @@ resource "kubernetes_manifest" "istio_test" {
           from = [
             {
               source = {
-                namespaces = ["istio-ingress"]
-                # principals = ["cluster.local/ns/istio-ingress/sa/gateway-istio"]
-              }
-            }
-          ]
-
-          to = [
-            {
-              operation = {
-                methods = ["GET"]
-
-                # The authorization policy below uses the ALLOW-with-positive-matching pattern to allow requests to specific paths.
-
-                paths = [
-                  "/istio-test/auth",
-                  "/istio-test/health",
-                  "/istio-test/metadata/cluster-location",
-                  "/istio-test/metadata/cluster-name",
-                  "/istio-test/metadata/instance-zone"
-                ]
+                principals = ["cluster.local/ns/istio-ingress/sa/gateway-istio"]
               }
             }
           ]
