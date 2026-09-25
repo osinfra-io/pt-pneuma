@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=5a205db6afed8b348b237b3f73f27f8e2fc2c4ab" # Temporary pre-release pin (PR #182) — re-pin to a tagged release once merged
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=2791f635a9e191e2c441f8d7944fad7681fb0885" # Temporary pre-release pin (PR #182) — re-pin to a tagged release once merged
 
   for_each = local.teams_with_clusters
 
