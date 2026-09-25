@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine_onboarding" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=31fc65732ccd00e5a386f94af28ee4b4075a3579" # Temporary pre-release pin (PR #182) — re-pin to a tagged release once merged
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional/onboarding?ref=5a205db6afed8b348b237b3f73f27f8e2fc2c4ab" # Temporary pre-release pin (PR #182) — re-pin to a tagged release once merged
 
   for_each = local.gke_clusters
 

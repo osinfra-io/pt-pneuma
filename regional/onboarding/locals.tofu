@@ -25,8 +25,9 @@ locals {
   # member team.
   #
   # mesh_enabled is forwarded as-is from Logos team data: the onboarding module applies the
-  # istio.io/dataplane-mode=ambient label when true, while always keeping the legacy
-  # istio-injection sidecar label "disabled" for team namespaces (see
+  # istio.io/dataplane-mode=ambient label when true. Team namespaces never get the legacy
+  # istio-injection sidecar label at all — Istio's injection webhook is opt-in, so omitting the
+  # label already guarantees no sidecar in this ambient-only mesh (see
   # osinfra-io/pt-arche-google-kubernetes-engine#182).
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
