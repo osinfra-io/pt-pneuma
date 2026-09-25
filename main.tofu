@@ -57,7 +57,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=698dd833e493a4163fb35ac27d46db81605acdb5" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=dda4bbfde27db602985c04aea63574309113d958" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
 
   for_each = local.teams_with_clusters
 

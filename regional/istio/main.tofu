@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=698dd833e493a4163fb35ac27d46db81605acdb5" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=dda4bbfde27db602985c04aea63574309113d958" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
 
   for_each = local.gke_clusters
 
@@ -23,6 +23,9 @@ module "kubernetes_istio" {
   gateway_memory_requests    = var.kubernetes_istio_gateway_memory_requests
   labels                     = module.core_helpers.labels
 
+  mesh_config_extension_providers = local.istio_mesh_config_extension_providers[each.key]
+  mesh_config_service_settings    = local.istio_mesh_config_service_settings[each.key]
+
   multi_cluster_service_clusters = local.multi_cluster_service_clusters[each.key]
 
   pilot_cpu_limits                            = var.kubernetes_istio_pilot_cpu_limits
@@ -32,30 +35,6 @@ module "kubernetes_istio" {
   project                                     = each.value.project_id
   tls_self_signed_cert_cert_manager_root_cert = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert
   tls_self_signed_cert_cert_manager_root_key  = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key
-}
-
-# Kubernetes Config Map Data Resource
-# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/config_map_v1_data
-
-resource "kubernetes_config_map_v1_data" "istio_mesh_config" {
-  depends_on = [
-    module.kubernetes_istio
-  ]
-
-  for_each = local.gateway_clusters
-
-  provider = kubernetes.by_cluster[each.key]
-
-  data = {
-    mesh = local.istio_mesh_configs[each.key]
-  }
-
-  force = true
-
-  metadata {
-    name      = "istio"
-    namespace = "istio-system"
-  }
 }
 
 # Kubernetes Deployment Resource
