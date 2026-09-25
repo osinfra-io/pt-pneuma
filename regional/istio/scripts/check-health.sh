@@ -247,25 +247,37 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
   fi
 
   # ztunnel and istio-cni DaemonSets — every node-level ambient dataplane pod should be ready.
-  ztunnel_ready=$(kubectl get daemonset ztunnel istio-cni-node \
+  # A failed kubectl query (e.g. a missing DaemonSet) must be treated as unhealthy rather than
+  # silently accepted, and both DaemonSets must each report exactly one valid ready/desired pair.
+  ztunnel_all_ready=true
+  if ! ztunnel_ready=$(kubectl get daemonset ztunnel istio-cni-node \
     --context="${CTX}" \
     --namespace=istio-system \
-    --output jsonpath='{range .items[*]}{.status.numberReady}/{.status.desiredNumberScheduled} {end}' 2>&1) || true
-  ztunnel_ready=${ztunnel_ready:-"0/0 0/0"}
+    --output jsonpath='{range .items[*]}{.status.numberReady}/{.status.desiredNumberScheduled} {end}' 2>/dev/null); then
+    ztunnel_ready="query failed"
+    ztunnel_all_ready=false
+  else
+    pair_count=0
+    for pair in ${ztunnel_ready}; do
+      pair_count=$((pair_count + 1))
+      if [[ ! "${pair}" =~ ^[0-9]+/[0-9]+$ ]]; then
+        ztunnel_all_ready=false
+        continue
+      fi
+      ready="${pair%%/*}"
+      desired="${pair##*/}"
+      [[ "${ready}" != "${desired}" || "${desired}" == "0" ]] && ztunnel_all_ready=false
+    done
+    [[ ${pair_count} -ne 2 ]] && ztunnel_all_ready=false
+    ztunnel_ready=${ztunnel_ready:-"0/0 0/0"}
+  fi
   ZTUNNEL_READY["${NAME}"]="${ztunnel_ready}"
-
-  # A DaemonSet is healthy when every reported ready count equals its desired count.
-  ztunnel_all_ready=true
-  for pair in ${ztunnel_ready}; do
-    ready="${pair%%/*}"
-    desired="${pair##*/}"
-    [[ "${ready}" != "${desired}" || "${desired}" == "0" ]] && ztunnel_all_ready=false
-  done
 
   if [[ "${ztunnel_all_ready}" == "true" ]]; then
     echo -e "\n${GREEN}✓ ztunnel/istio-cni: ${ztunnel_ready}${RESET}"
   else
     echo -e "\n${YELLOW}⚠ ztunnel/istio-cni: ${ztunnel_ready}${RESET}"
+    WARNING_COUNT["${NAME}"]=$((WARNING_COUNT["${NAME}"] + 1))
   fi
 
   # Remote clusters — count unique cluster names (not per-istiod lines).
