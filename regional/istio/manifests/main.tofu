@@ -300,6 +300,12 @@ resource "kubernetes_service_v1" "istio_test_gateway_stub" {
   provider   = kubernetes.by_cluster[local.gateway_cluster]
 
   metadata {
+    # Istio only consults the local cluster's service scope: without this label the unlabeled stub
+    # makes the service local-scoped and remote endpoints are never merged.
+    labels = {
+      "istio.io/global" = "true"
+    }
+
     name      = each.value.service
     namespace = each.value.namespace
   }
