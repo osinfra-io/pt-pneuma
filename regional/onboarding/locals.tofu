@@ -24,21 +24,17 @@ locals {
   # uniformly (with no platform-team exception) lets pneuma dogfood the model exactly like a
   # member team.
   #
-  # The pinned pt-arche-google-kubernetes-engine onboarding module only supports the legacy
-  # "istio-injection" sidecar label — it has no ambient-mode label of its own yet. Mapping
-  # mesh_enabled to "enabled" would turn on sidecar injection (which Istio prioritizes over
-  # ambient when both are present), defeating the ambient-only objective, so we always pass
-  # "disabled" here regardless of mesh_enabled. True ambient enrollment (the
-  # istio.io/dataplane-mode=ambient label) requires adding that label to the onboarding
-  # module itself, which is out of scope for this change — tracked as a follow-up against
-  # pt-arche-google-kubernetes-engine.
+  # mesh_enabled is forwarded as-is from Logos team data: the onboarding module applies the
+  # istio.io/dataplane-mode=ambient label when true, while always keeping the legacy
+  # istio-injection sidecar label "disabled" for team namespaces (see
+  # osinfra-io/pt-arche-google-kubernetes-engine#182).
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {
       for namespace_name, namespace in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) :
       "${cluster_config.team_key}-${namespace_name}" => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
-        istio_injection        = "disabled"
+        mesh_enabled           = namespace.mesh_enabled
       }
     }
   }
