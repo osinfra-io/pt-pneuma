@@ -5,18 +5,10 @@ provider "registry.opentofu.org/datadog/datadog" {
   version = "4.22.0"
   hashes = [
     "h1:851Vqa87dHTzqveY3BhtatfWRkpdzXl+QuPnQhezY1w=",
-    "h1:CVJCmdCcRQMAcyEQVZqDoyZTvcK6DwklxJJ/bySd+LE=",
-    "h1:DlJH6+AHfv5YP9JIj560i/lKil0cw7HwTPrxWToeE9o=",
     "h1:NbfFMiLmW6BnINgIMi7ECUjFjsC8KAxSh0SjSBeUO6I=",
-    "h1:NnswdHrQsU1DIKriIsKRoy6s/FSXn+/4PFur++xGuTw=",
     "h1:ODUZGlOubOQ/YqVjPFFF46uNTjbkgmHhSIJptearlbw=",
     "h1:Ra9x9kA9AEnKZo2ga0zCi/yDNLXFJpB2+eyhnJR4m1Q=",
-    "h1:W3+stsdw+NulnRhoLm0Gr3TuTz0RsN+Qlbkr7klcPME=",
-    "h1:aS3iXB0tbex48Ie9XC7aYW9SSyz7C6etq+jzBUUcjAg=",
     "h1:iyp7TojfEVk3HYNfY4JJdXYDmRNnpor3ZryR8f0+xG0=",
-    "h1:knKt86WJjcWyX4xF/DFcfC7sf+wPOvqOaBicPZMKhRA=",
-    "h1:psBo8XSYuGNIpfWTFk9CyqFxY0YsEHYwFvbqrUVG2pI=",
-    "h1:q38cg53vknxHprMFYdtynGNStZ/1dWQGU714onzYWS8=",
     "zh:066edac51f9ab8d49db05189d7a9fea9735144aabb4e4621a688f2ea096b4d53",
     "zh:06e61241471df1fe4709a14365ab7e1a2fb5bb647cabc02dff3d28ac937f4f4b",
     "zh:2196b5b697f2a1a8fe4be05aafdf94cb2e6f52b3252bb7432193943e26193505",
@@ -30,7 +22,6 @@ provider "registry.opentofu.org/datadog/datadog" {
     "zh:db7e10f05e6cad5e3de05a2c3781d2c1b7fb0e871bc6269ac9bb5fa553b23860",
     "zh:f174af470cbf5719e3abfa26726d79e99cbecc08b8e18d885b6e2c23adafeec2",
     "zh:f1b1c083b38d8dd4d4cec3b3286d737701a1b24134300fa50f905fa9172af16c",
-    "zh:f809ab383cca0a5f83072981c64208cbd7fa67e986a86ee02dd2c82333221e32",
   ]
 }
 
