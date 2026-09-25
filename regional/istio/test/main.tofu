@@ -264,6 +264,13 @@ resource "kubernetes_service_v1" "istio_test" {
   metadata {
     name      = "istio-test"
     namespace = local.namespace[each.key]
+
+    # istio.io/global marks the Service as reachable from other clusters over the ambient
+    # east-west gateway (see osinfra-io/pt-arche-kubernetes-istio). Applies to every team's
+    # cluster generically via the for_each above, so new teams get this automatically.
+    labels = {
+      "istio.io/global" = "true"
+    }
   }
 
   spec {
@@ -289,6 +296,10 @@ resource "kubernetes_service_v1" "istio_test_regional" {
   metadata {
     name      = "istio-test-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
     namespace = local.namespace[each.key]
+
+    labels = {
+      "istio.io/global" = "true"
+    }
   }
 
   spec {
