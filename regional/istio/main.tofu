@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=9a250c5264fee333e36e880e7f8e9afaa03bc271" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=49c0a8f2f16dbf10b1a389b4666bdd8102f17ab8" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
 
   for_each = local.gke_clusters
 
