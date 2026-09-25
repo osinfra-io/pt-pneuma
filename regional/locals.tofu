@@ -4,12 +4,14 @@
 locals {
   # GKE clusters for this specific region-zone — includes all teams deploying to this zone
   # For the fleet host cluster, enrich with gke_hub_memberships; member clusters get an empty map
-  # enable_gateway_api is true only for the pneuma gateway cluster, which hosts the Gateway API
-  # Gateway / HTTPRoute resources; member clusters do not need the Gateway API CRDs
+  # enable_gateway_api is true for every cluster: the pneuma gateway cluster hosts the ingress
+  # Gateway/HTTPRoute resources, and every ambient cluster (all teams) now hosts its own
+  # east-west Gateway (osinfra-io/pt-arche-kubernetes-istio#114), which also requires the
+  # Gateway API CRDs.
   gke_clusters = {
     for cluster_name, cluster_config in local.main.gke_clusters :
     cluster_name => merge(cluster_config, {
-      enable_gateway_api  = cluster_config.team_key == module.core_helpers.team
+      enable_gateway_api  = true
       gke_hub_memberships = lookup(cluster_config, "enable_gke_hub_host", false) ? local.gke_hub_memberships : {}
     })
     if endswith(cluster_name, "-${module.core_helpers.region}-${module.core_helpers.zone}")
