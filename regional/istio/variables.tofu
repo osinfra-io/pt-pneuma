@@ -11,9 +11,21 @@ variable "clusters" {
   }))
 }
 
+variable "kubernetes_istio_cni_cpu_limits" {
+  default     = null
+  description = "The CPU limit for the Istio CNI node agent, unset by default to match the upstream chart which ships requests only"
+  type        = string
+}
+
 variable "kubernetes_istio_cni_cpu_requests" {
   default     = "100m"
   description = "The CPU request for the Istio CNI node agent"
+  type        = string
+}
+
+variable "kubernetes_istio_cni_memory_limits" {
+  default     = null
+  description = "The memory limit for the Istio CNI node agent, unset by default to match the upstream chart which ships requests only"
   type        = string
 }
 

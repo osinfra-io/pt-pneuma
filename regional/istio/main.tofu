@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=ba5ac611fb568268d400aa11741d8d62923cff43" # TEMP: PR #115 branch tip, re-pin after merge + tag
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=da8f3011c273006c9b5753cf7bd425873af9e4f7" # TEMP: PR #115 branch tip, re-pin after merge + tag
 
   for_each = local.gke_clusters
 
@@ -14,7 +14,9 @@ module "kubernetes_istio" {
 
   artifact_registry                           = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
   cluster_prefix                              = each.value.team_key
+  cni_cpu_limits                              = var.kubernetes_istio_cni_cpu_limits
   cni_cpu_requests                            = var.kubernetes_istio_cni_cpu_requests
+  cni_memory_limits                           = var.kubernetes_istio_cni_memory_limits
   cni_memory_requests                         = var.kubernetes_istio_cni_memory_requests
   east_west_gateway_cpu_limits                = var.kubernetes_istio_east_west_gateway_cpu_limits
   east_west_gateway_cpu_requests              = var.kubernetes_istio_east_west_gateway_cpu_requests
