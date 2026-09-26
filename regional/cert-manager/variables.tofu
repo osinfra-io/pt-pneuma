@@ -11,6 +11,120 @@ variable "clusters" {
   }))
 }
 
+variable "kubernetes_cert_manager_cainjector_replicas" {
+  default     = 1
+  description = "The number of cert-manager cainjector replicas to run"
+  type        = number
+}
+
+variable "kubernetes_cert_manager_cainjector_resources_limits_cpu" {
+  default     = "20m"
+  description = "The CPU limit for the cainjector resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_cainjector_resources_limits_memory" {
+  default     = "64Mi"
+  description = "The memory limit for the cainjector resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_cainjector_resources_requests_cpu" {
+  default     = "10m"
+  description = "The CPU request for the cainjector resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_cainjector_resources_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the cainjector resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_replicas" {
+  default     = 1
+  description = "The number of cert-manager controller replicas to run"
+  type        = number
+}
+
+variable "kubernetes_cert_manager_resources_limits_cpu" {
+  default     = "20m"
+  description = "The CPU limit for the resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_resources_limits_memory" {
+  default     = "64Mi"
+  description = "The memory limit for the resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_resources_requests_cpu" {
+  default     = "10m"
+  description = "The CPU request for the resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_resources_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_startupapicheck_resources_limits_cpu" {
+  default     = "20m"
+  description = "The CPU limit for the startupapicheck resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_startupapicheck_resources_limits_memory" {
+  default     = "64Mi"
+  description = "The memory limit for the startupapicheck resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_startupapicheck_resources_requests_cpu" {
+  default     = "10m"
+  description = "The CPU request for the startupapicheck resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_startupapicheck_resources_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the startupapicheck resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_webhook_replicas" {
+  default     = 1
+  description = "The number of cert-manager webhook replicas to run"
+  type        = number
+}
+
+variable "kubernetes_cert_manager_webhook_resources_limits_cpu" {
+  default     = "20m"
+  description = "The CPU limit for the webhook resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_webhook_resources_limits_memory" {
+  default     = "64Mi"
+  description = "The memory limit for the webhook resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_webhook_resources_requests_cpu" {
+  default     = "10m"
+  description = "The CPU request for the webhook resources"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_webhook_resources_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the webhook resources"
+  type        = string
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

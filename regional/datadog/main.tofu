@@ -11,8 +11,11 @@ module "kubernetes_datadog_operator" {
     kubernetes = kubernetes.by_cluster[each.key]
   }
 
-  api_key        = var.datadog_api_key
-  app_key        = var.datadog_app_key
-  cluster_prefix = each.value.team_key
-  requests_cpu   = var.kubernetes_datadog_operator_cpu_requests
+  api_key         = var.datadog_api_key
+  app_key         = var.datadog_app_key
+  cluster_prefix  = each.value.team_key
+  limits_cpu      = var.kubernetes_datadog_operator_limits_cpu
+  limits_memory   = var.kubernetes_datadog_operator_limits_memory
+  requests_cpu    = var.kubernetes_datadog_operator_requests_cpu
+  requests_memory = var.kubernetes_datadog_operator_requests_memory
 }

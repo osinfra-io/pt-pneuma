@@ -12,7 +12,10 @@ module "kubernetes_cert_manager_istio_csr" {
   }
 
   cluster_prefix                              = each.value.team_key
-  resources_requests_cpu                      = var.kubernetes_cert_manager_istio_csr_cpu_requests
+  resources_limits_cpu                        = var.kubernetes_cert_manager_istio_csr_resources_limits_cpu
+  resources_limits_memory                     = var.kubernetes_cert_manager_istio_csr_resources_limits_memory
+  resources_requests_cpu                      = var.kubernetes_cert_manager_istio_csr_resources_requests_cpu
+  resources_requests_memory                   = var.kubernetes_cert_manager_istio_csr_resources_requests_memory
   tls_self_signed_cert_cert_manager_root_cert = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert
   tls_self_signed_cert_cert_manager_root_key  = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key
 }

@@ -23,14 +23,27 @@ variable "datadog_app_key" {
   type        = string
 }
 
-# The module default (100m) is 25x observed usage: the operator only reconciles DatadogAgent
-# resources and measures 4m CPU. That reservation is what pushed our single-node clusters over
-# their allocatable CPU and left the operator pod Pending. The module's limit (200m) is
-# unchanged, so reconcile bursts are still absorbed.
+variable "kubernetes_datadog_operator_limits_cpu" {
+  default     = "200m"
+  description = "The CPU limit for the Datadog operator"
+  type        = string
+}
 
-variable "kubernetes_datadog_operator_cpu_requests" {
-  default     = "25m"
+variable "kubernetes_datadog_operator_limits_memory" {
+  default     = "64Mi"
+  description = "The memory limit for the Datadog operator"
+  type        = string
+}
+
+variable "kubernetes_datadog_operator_requests_cpu" {
+  default     = "100m"
   description = "The CPU request for the Datadog operator"
+  type        = string
+}
+
+variable "kubernetes_datadog_operator_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the Datadog operator"
   type        = string
 }
 

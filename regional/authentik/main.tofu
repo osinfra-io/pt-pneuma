@@ -21,9 +21,11 @@ module "kubernetes_authentik" {
   google_service_account_email     = local.main.authentik_cloud_sql_service_account_email
   namespace                        = local.authentik_namespace
   server_replicas                  = var.authentik_server_replicas
+  server_resources_limits_memory   = var.authentik_server_resources_limits_memory
   server_resources_requests_cpu    = var.authentik_server_resources_requests_cpu
   server_resources_requests_memory = var.authentik_server_resources_requests_memory
-  worker_replicas                  = local.authentik_worker_replicas
+  worker_replicas                  = var.authentik_worker_replicas
+  worker_resources_limits_memory   = var.authentik_worker_resources_limits_memory
   worker_resources_requests_cpu    = var.authentik_worker_resources_requests_cpu
   worker_resources_requests_memory = var.authentik_worker_resources_requests_memory
 }

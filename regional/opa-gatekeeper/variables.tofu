@@ -11,22 +11,58 @@ variable "clusters" {
   }))
 }
 
-# The audit controller measures a steady 40m CPU and 96Mi memory, which is exactly its module
-# default CPU limit (40m) and 75% of its memory limit (128Mi) - it is throttled continuously
-# and has little memory headroom. Limits do not consume scheduling budget, so both are raised.
-# Audit requests stay at the module defaults: the controller overruns them, but our nodes run
-# at roughly 46% CPU so there is no contention.
-
-variable "kubernetes_opa_gatekeeper_audit_cpu_limits" {
-  default     = "150m"
-  description = "The CPU limit for the Gatekeeper audit controller"
+variable "kubernetes_opa_gatekeeper_audit_resources_limits_cpu" {
+  default     = "40m"
+  description = "The CPU limit for the audit container"
   type        = string
 }
 
-variable "kubernetes_opa_gatekeeper_audit_memory_limits" {
-  default     = "256Mi"
-  description = "The memory limit for the Gatekeeper audit controller"
+variable "kubernetes_opa_gatekeeper_audit_resources_limits_memory" {
+  default     = "128Mi"
+  description = "The memory limit for the audit container"
   type        = string
+}
+
+variable "kubernetes_opa_gatekeeper_audit_resources_requests_cpu" {
+  default     = "10m"
+  description = "The CPU request for the audit container"
+  type        = string
+}
+
+variable "kubernetes_opa_gatekeeper_audit_resources_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the audit container"
+  type        = string
+}
+
+variable "kubernetes_opa_gatekeeper_controller_manager_resources_limits_cpu" {
+  default     = "100m"
+  description = "The CPU limit for the controller manager container"
+  type        = string
+}
+
+variable "kubernetes_opa_gatekeeper_controller_manager_resources_limits_memory" {
+  default     = "256Mi"
+  description = "The memory limit for the controller manager container"
+  type        = string
+}
+
+variable "kubernetes_opa_gatekeeper_controller_manager_resources_requests_cpu" {
+  default     = "10m"
+  description = "The CPU request for the controller manager container"
+  type        = string
+}
+
+variable "kubernetes_opa_gatekeeper_controller_manager_resources_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the controller manager container"
+  type        = string
+}
+
+variable "kubernetes_opa_gatekeeper_replicas" {
+  default     = 1
+  description = "The number of Gatekeeper controller manager replicas to run"
+  type        = number
 }
 
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.

@@ -11,14 +11,27 @@ variable "clusters" {
   }))
 }
 
-# The module default (25m) is an order of magnitude above observed usage: istio-csr signs
-# workload certificates on demand and measures 3m CPU. This request reclaims that headroom on
-# our single-node clusters. The module's limit (50m) is unchanged, so signing bursts are still
-# absorbed.
+variable "kubernetes_cert_manager_istio_csr_resources_limits_cpu" {
+  default     = "50m"
+  description = "The CPU limit for the Istio CSR container"
+  type        = string
+}
 
-variable "kubernetes_cert_manager_istio_csr_cpu_requests" {
-  default     = "10m"
-  description = "The CPU request for cert-manager istio-csr"
+variable "kubernetes_cert_manager_istio_csr_resources_limits_memory" {
+  default     = "64Mi"
+  description = "The memory limit for the Istio CSR container"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_istio_csr_resources_requests_cpu" {
+  default     = "25m"
+  description = "The CPU request for the Istio CSR container"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_istio_csr_resources_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the Istio CSR container"
   type        = string
 }
 
