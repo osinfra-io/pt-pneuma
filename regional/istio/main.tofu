@@ -35,6 +35,8 @@ module "kubernetes_istio" {
   project                                     = each.value.project_id
   tls_self_signed_cert_cert_manager_root_cert = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_cert
   tls_self_signed_cert_cert_manager_root_key  = local.main.kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key
+  ztunnel_cpu_requests                        = var.kubernetes_istio_ztunnel_cpu_requests
+  ztunnel_memory_requests                     = var.kubernetes_istio_ztunnel_memory_requests
 }
 
 # Kubernetes Deployment Resource

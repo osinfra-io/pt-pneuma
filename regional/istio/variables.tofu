@@ -59,6 +59,24 @@ variable "kubernetes_istio_pilot_memory_requests" {
   type        = string
 }
 
+# The ztunnel chart defaults (250m CPU / 256Mi memory) are sized for production node proxies
+# carrying real workload traffic. On our single-node clusters that reservation crowds the node
+# out: measured ztunnel usage is 3m CPU / 6Mi memory. These requests keep a wide margin over
+# observed usage while leaving room for the rest of the platform; the module's limits (500m /
+# 512Mi) are unchanged, so ztunnel can still burst under load.
+
+variable "kubernetes_istio_ztunnel_cpu_requests" {
+  default     = "100m"
+  description = "The CPU request for ztunnel"
+  type        = string
+}
+
+variable "kubernetes_istio_ztunnel_memory_requests" {
+  default     = "128Mi"
+  description = "The memory request for ztunnel"
+  type        = string
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 
