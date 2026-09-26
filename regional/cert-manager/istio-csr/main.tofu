@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager
 
 module "kubernetes_cert_manager_istio_csr" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional/istio-csr?ref=c391006f8df18d6e4e2dc24499062f510619b07e" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-cert-manager#79 (istio-csr-ambient-ztunnel-trust); re-pin to tagged release once merged
+  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional/istio-csr?ref=50122dfd99038d0c4e02e48fd175d62f8c6aae6e" # v0.4.0
 
   for_each = local.gke_clusters
 
