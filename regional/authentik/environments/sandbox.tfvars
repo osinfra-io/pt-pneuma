@@ -7,6 +7,5 @@ authentik_server_replicas                  = 1
 authentik_server_resources_requests_cpu    = "250m"
 authentik_server_resources_requests_memory = "768Mi"
 authentik_worker_replicas                  = 1
-authentik_worker_probe_timeout_seconds     = 10
 authentik_worker_resources_requests_cpu    = "250m"
 authentik_worker_resources_requests_memory = "384Mi"

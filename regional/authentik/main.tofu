@@ -30,7 +30,6 @@ module "kubernetes_authentik" {
   server_resources_requests_cpu             = var.authentik_server_resources_requests_cpu
   server_resources_requests_memory          = var.authentik_server_resources_requests_memory
   worker_replicas                           = var.authentik_worker_replicas
-  worker_probe_timeout_seconds              = var.authentik_worker_probe_timeout_seconds
   worker_resources_limits_cpu               = var.authentik_worker_resources_limits_cpu
   worker_resources_limits_memory            = var.authentik_worker_resources_limits_memory
   worker_resources_requests_cpu             = var.authentik_worker_resources_requests_cpu
