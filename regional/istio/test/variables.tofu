@@ -50,6 +50,30 @@ variable "istio_test_version" {
   type        = string
 }
 
+variable "kubernetes_istio_test_resources_limits_cpu" {
+  default     = "20m"
+  description = "The CPU limit for the Istio test workload"
+  type        = string
+}
+
+variable "kubernetes_istio_test_resources_limits_memory" {
+  default     = "64Mi"
+  description = "The memory limit for the Istio test workload"
+  type        = string
+}
+
+variable "kubernetes_istio_test_resources_requests_cpu" {
+  default     = "10m"
+  description = "The CPU request for the Istio test workload"
+  type        = string
+}
+
+variable "kubernetes_istio_test_resources_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the Istio test workload"
+  type        = string
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

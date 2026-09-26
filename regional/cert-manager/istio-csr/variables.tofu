@@ -12,13 +12,13 @@ variable "clusters" {
 }
 
 variable "kubernetes_cert_manager_istio_csr_resources_limits_cpu" {
-  default     = "50m"
+  default     = "100m"
   description = "The CPU limit for the Istio CSR container"
   type        = string
 }
 
 variable "kubernetes_cert_manager_istio_csr_resources_limits_memory" {
-  default     = "64Mi"
+  default     = "128Mi"
   description = "The memory limit for the Istio CSR container"
   type        = string
 }
@@ -30,7 +30,7 @@ variable "kubernetes_cert_manager_istio_csr_resources_requests_cpu" {
 }
 
 variable "kubernetes_cert_manager_istio_csr_resources_requests_memory" {
-  default     = "32Mi"
+  default     = "64Mi"
   description = "The memory request for the Istio CSR container"
   type        = string
 }

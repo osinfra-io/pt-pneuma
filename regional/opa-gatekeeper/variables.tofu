@@ -12,13 +12,13 @@ variable "clusters" {
 }
 
 variable "kubernetes_opa_gatekeeper_audit_resources_limits_cpu" {
-  default     = "40m"
+  default     = "150m"
   description = "The CPU limit for the audit container"
   type        = string
 }
 
 variable "kubernetes_opa_gatekeeper_audit_resources_limits_memory" {
-  default     = "128Mi"
+  default     = "256Mi"
   description = "The memory limit for the audit container"
   type        = string
 }

@@ -1,13 +1,12 @@
-# The server's memory request was 2.4x below its actual 623Mi footprint and the worker's 2.1x
-# below its 275Mi, which made both the first candidates for eviction under node memory pressure.
-# Node memory requests sit at roughly half of allocatable, so raising them is cheap. CPU runs
-# well under its request on the server, so that is reclaimed.
+# Seven-day sandbox observations show the server peaking around 500m CPU / 716Mi memory and the
+# worker averaging 171-231m CPU / 286Mi memory, with CPU bursts near one core. The e2-standard-4
+# nodes have enough scheduling capacity to reserve their steady usage while leaving CPU unlimited
+# for authentication and background-task bursts.
 
 authentik_server_replicas                  = 1
-authentik_server_resources_requests_cpu    = "50m"
-authentik_server_resources_requests_memory = "640Mi"
+authentik_server_resources_requests_cpu    = "250m"
+authentik_server_resources_requests_memory = "768Mi"
 authentik_worker_replicas                  = 1
-# Worker probes run `ak healthcheck` with a 3s timeout. Raising its CPU share from 50m to 100m
-# avoids probe timeouts on the saturated sandbox nodes; memory request reflects ~300Mi measured use.
-authentik_worker_resources_requests_cpu    = "100m"
-authentik_worker_resources_requests_memory = "320Mi"
+authentik_worker_probe_timeout_seconds     = 10
+authentik_worker_resources_requests_cpu    = "250m"
+authentik_worker_resources_requests_memory = "384Mi"

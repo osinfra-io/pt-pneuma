@@ -11,6 +11,30 @@ variable "clusters" {
   }))
 }
 
+variable "kubernetes_datadog_aap_extproc_resources_limits_cpu" {
+  default     = "100m"
+  description = "The CPU limit for the Datadog App and API Protection external processor"
+  type        = string
+}
+
+variable "kubernetes_datadog_aap_extproc_resources_limits_memory" {
+  default     = "256Mi"
+  description = "The memory limit for the Datadog App and API Protection external processor"
+  type        = string
+}
+
+variable "kubernetes_datadog_aap_extproc_resources_requests_cpu" {
+  default     = "50m"
+  description = "The CPU request for the Datadog App and API Protection external processor"
+  type        = string
+}
+
+variable "kubernetes_datadog_aap_extproc_resources_requests_memory" {
+  default     = "128Mi"
+  description = "The memory request for the Datadog App and API Protection external processor"
+  type        = string
+}
+
 variable "kubernetes_istio_cni_cpu_limits" {
   default     = null
   description = "The CPU limit for the Istio CNI node agent, unset by default to match the upstream chart which ships requests only"

@@ -18,25 +18,25 @@ variable "kubernetes_cert_manager_cainjector_replicas" {
 }
 
 variable "kubernetes_cert_manager_cainjector_resources_limits_cpu" {
-  default     = "20m"
+  default     = "100m"
   description = "The CPU limit for the cainjector resources"
   type        = string
 }
 
 variable "kubernetes_cert_manager_cainjector_resources_limits_memory" {
-  default     = "64Mi"
+  default     = "128Mi"
   description = "The memory limit for the cainjector resources"
   type        = string
 }
 
 variable "kubernetes_cert_manager_cainjector_resources_requests_cpu" {
-  default     = "10m"
+  default     = "25m"
   description = "The CPU request for the cainjector resources"
   type        = string
 }
 
 variable "kubernetes_cert_manager_cainjector_resources_requests_memory" {
-  default     = "32Mi"
+  default     = "64Mi"
   description = "The memory request for the cainjector resources"
   type        = string
 }
@@ -48,31 +48,31 @@ variable "kubernetes_cert_manager_replicas" {
 }
 
 variable "kubernetes_cert_manager_resources_limits_cpu" {
-  default     = "20m"
+  default     = "250m"
   description = "The CPU limit for the resources"
   type        = string
 }
 
 variable "kubernetes_cert_manager_resources_limits_memory" {
-  default     = "64Mi"
+  default     = "128Mi"
   description = "The memory limit for the resources"
   type        = string
 }
 
 variable "kubernetes_cert_manager_resources_requests_cpu" {
-  default     = "10m"
+  default     = "50m"
   description = "The CPU request for the resources"
   type        = string
 }
 
 variable "kubernetes_cert_manager_resources_requests_memory" {
-  default     = "32Mi"
+  default     = "64Mi"
   description = "The memory request for the resources"
   type        = string
 }
 
 variable "kubernetes_cert_manager_startupapicheck_resources_limits_cpu" {
-  default     = "20m"
+  default     = "100m"
   description = "The CPU limit for the startupapicheck resources"
   type        = string
 }
@@ -102,7 +102,7 @@ variable "kubernetes_cert_manager_webhook_replicas" {
 }
 
 variable "kubernetes_cert_manager_webhook_resources_limits_cpu" {
-  default     = "20m"
+  default     = "100m"
   description = "The CPU limit for the webhook resources"
   type        = string
 }

@@ -1,32 +1,33 @@
-# The cluster agent measures 192Mi against the module's 256Mi default limit, which left too little
-# headroom and produced repeated OOMKills (exit 137) on both single-node sandbox clusters. Memory
-# is incompressible, so the restart loop is the only possible outcome rather than degraded service.
+# The cluster agent uses 35-40m CPU / 190-194Mi memory in steady state and peaks around 221m /
+# 251Mi. Requests cover normal operation; limits retain headroom for collection bursts.
 
-kubernetes_datadog_operator_cluster_agent_limits_memory = "384Mi"
+kubernetes_datadog_operator_cluster_agent_limits_cpu      = "500m"
+kubernetes_datadog_operator_cluster_agent_limits_memory   = "384Mi"
+kubernetes_datadog_operator_cluster_agent_requests_cpu    = "100m"
+kubernetes_datadog_operator_cluster_agent_requests_memory = "256Mi"
 
-# The Node Agent CR's previous `containers.all` resource override was ignored because the Operator
-# expects overrides keyed by actual container name. The agent used 175m CPU / 203Mi memory and
-# system-probe used 171m / 565Mi; both were timing out their probes under node contention.
-# Requests grant CPU shares while the limits leave headroom above observed usage.
+# The node agent uses 167-177m CPU / 192-194Mi memory and system-probe uses 103-131m / 514-538Mi.
+# Their seven-day CPU peaks were 858m and 697m; one-core limits preserve burst capacity while
+# requests reserve their steady shares.
 
 kubernetes_datadog_operator_node_agent_container_resources = {
   agent = {
     limits = {
-      cpu    = "500m"
-      memory = "512Mi"
+      cpu    = "1"
+      memory = "384Mi"
     }
     requests = {
-      cpu    = "100m"
+      cpu    = "250m"
       memory = "256Mi"
     }
   }
   "system-probe" = {
     limits = {
-      cpu    = "500m"
+      cpu    = "1"
       memory = "768Mi"
     }
     requests = {
-      cpu    = "100m"
+      cpu    = "200m"
       memory = "640Mi"
     }
   }

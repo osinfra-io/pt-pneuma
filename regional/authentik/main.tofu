@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "kubernetes_authentik" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=ebed04e35c8cba683810eec3073c415af41ff558" # TEMP: PR #16 branch tip, re-pin after merge + tag
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=b1e8fcc8274b92b82e14c99afe9b0bccd7f35486" # TEMP: PR #16 branch tip, re-pin after merge + tag
 
   depends_on = [
     kubernetes_secret_v1.authentik,
@@ -30,6 +30,7 @@ module "kubernetes_authentik" {
   server_resources_requests_cpu             = var.authentik_server_resources_requests_cpu
   server_resources_requests_memory          = var.authentik_server_resources_requests_memory
   worker_replicas                           = var.authentik_worker_replicas
+  worker_probe_timeout_seconds              = var.authentik_worker_probe_timeout_seconds
   worker_resources_limits_cpu               = var.authentik_worker_resources_limits_cpu
   worker_resources_limits_memory            = var.authentik_worker_resources_limits_memory
   worker_resources_requests_cpu             = var.authentik_worker_resources_requests_cpu

@@ -163,13 +163,13 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
 
           resources {
             limits = {
-              cpu    = "100m"
-              memory = "256Mi"
+              cpu    = var.kubernetes_datadog_aap_extproc_resources_limits_cpu
+              memory = var.kubernetes_datadog_aap_extproc_resources_limits_memory
             }
 
             requests = {
-              cpu    = "50m"
-              memory = "128Mi"
+              cpu    = var.kubernetes_datadog_aap_extproc_resources_requests_cpu
+              memory = var.kubernetes_datadog_aap_extproc_resources_requests_memory
             }
           }
 
