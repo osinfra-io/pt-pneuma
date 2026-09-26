@@ -1,3 +1,4 @@
+https://authentik.osinfra.io
 https://kryptos.osinfra.io
 https://pneuma.osinfra.io
 https://us-east1-b.kryptos.osinfra.io

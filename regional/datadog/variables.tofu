@@ -23,6 +23,30 @@ variable "datadog_app_key" {
   type        = string
 }
 
+variable "kubernetes_datadog_operator_limits_cpu" {
+  default     = "200m"
+  description = "The CPU limit for the Datadog operator"
+  type        = string
+}
+
+variable "kubernetes_datadog_operator_limits_memory" {
+  default     = "64Mi"
+  description = "The memory limit for the Datadog operator"
+  type        = string
+}
+
+variable "kubernetes_datadog_operator_requests_cpu" {
+  default     = "100m"
+  description = "The CPU request for the Datadog operator"
+  type        = string
+}
+
+variable "kubernetes_datadog_operator_requests_memory" {
+  default     = "32Mi"
+  description = "The memory request for the Datadog operator"
+  type        = string
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

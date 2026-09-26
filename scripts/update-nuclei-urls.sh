@@ -70,6 +70,14 @@ generate_urls() {
   local -a ACTIVE=("$@")
   local -a URLS=()
 
+  # Authentik is a single platform-wide IdP shared by every team, so it is published at the
+  # environment-level public zone rather than under any team's subdomain and has no zonal hosts.
+  if [[ "${ENV}" == "prod" ]]; then
+    URLS+=("https://authentik.osinfra.io")
+  else
+    URLS+=("https://authentik.${ENV}.osinfra.io")
+  fi
+
   for ENTRY in "${TEAM_ENTRIES[@]}"; do
     read -ra PARTS <<< "${ENTRY}"
     local SUBDOMAIN="${PARTS[0]}"

@@ -182,13 +182,13 @@ resource "kubernetes_deployment_v1" "istio_test" {
 
           resources {
             limits = {
-              cpu    = "20m"
-              memory = "64Mi"
+              cpu    = var.kubernetes_istio_test_resources_limits_cpu
+              memory = var.kubernetes_istio_test_resources_limits_memory
             }
 
             requests = {
-              cpu    = "10m"
-              memory = "32Mi"
+              cpu    = var.kubernetes_istio_test_resources_requests_cpu
+              memory = var.kubernetes_istio_test_resources_requests_memory
             }
           }
         }

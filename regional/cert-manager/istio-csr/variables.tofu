@@ -11,6 +11,30 @@ variable "clusters" {
   }))
 }
 
+variable "kubernetes_cert_manager_istio_csr_resources_limits_cpu" {
+  default     = "100m"
+  description = "The CPU limit for the Istio CSR container"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_istio_csr_resources_limits_memory" {
+  default     = "128Mi"
+  description = "The memory limit for the Istio CSR container"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_istio_csr_resources_requests_cpu" {
+  default     = "25m"
+  description = "The CPU request for the Istio CSR container"
+  type        = string
+}
+
+variable "kubernetes_cert_manager_istio_csr_resources_requests_memory" {
+  default     = "64Mi"
+  description = "The memory request for the Istio CSR container"
+  type        = string
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 
