@@ -33,67 +33,60 @@ locals {
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
-  istio_mesh_configs = {
-    for cluster_name in keys(local.gateway_clusters) :
-    cluster_name => yamlencode({
-      accessLogFile = "/dev/stdout"
+  # Authentik forward-auth ext_authz provider, rendered into istiod's meshConfig on gateway
+  # clusters only.
+  istio_mesh_config_extension_providers = {
+    for cluster_name in keys(local.gke_clusters) :
+    cluster_name => contains(keys(local.gateway_clusters), cluster_name) ? [
+      {
+        envoyExtAuthzHttp = {
+          failOpen = false
 
-      defaultConfig = {
-        proxyMetadata = {
-          ECC_CURVE               = "P256"
-          ECC_SIGNATURE_ALGORITHM = "ECDSA"
-          ISTIO_META_DNS_CAPTURE  = "true"
-        }
-      }
-
-      extensionProviders = [
-        {
-          envoyExtAuthzHttp = {
-            failOpen = false
-
-            headersToDownstreamOnAllow = [
-              "cookie",
-            ]
-
-            headersToDownstreamOnDeny = [
-              "content-type",
-              "set-cookie",
-            ]
-
-            headersToUpstreamOnAllow = [
-              "set-cookie",
-              "x-authentik-*",
-            ]
-
-            includeRequestHeadersInCheck = [
-              "cookie",
-            ]
-
-            pathPrefix = local.authentik_outpost_path_prefix
-            port       = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
-            service    = "${try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)}.${local.authentik_resolved_outpost_namespace}.svc.cluster.local"
-          }
-
-          name = local.authentik_extension_provider_name
-        }
-      ]
-
-      # Keep the Authentik service cluster-local so a gateway in one region never depends
-      # synchronously on an authentik-server in another region. Cross-region failover is handled
-      # by the external load balancer, not by the mesh.
-      # https://istio.io/latest/docs/ops/configuration/traffic-management/multicluster
-      serviceSettings = [
-        {
-          hosts = [
-            "*.${local.authentik_resolved_outpost_namespace}.svc.cluster.local",
+          headersToDownstreamOnAllow = [
+            "cookie",
           ]
 
-          settings = {
-            clusterLocal = true
-          }
+          headersToDownstreamOnDeny = [
+            "content-type",
+            "set-cookie",
+          ]
+
+          headersToUpstreamOnAllow = [
+            "set-cookie",
+            "x-authentik-*",
+          ]
+
+          includeRequestHeadersInCheck = [
+            "cookie",
+          ]
+
+          pathPrefix = local.authentik_outpost_path_prefix
+          port       = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
+          service    = "${try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)}.${local.authentik_resolved_outpost_namespace}.svc.cluster.local"
         }
-      ]
-    })
+
+        name = local.authentik_extension_provider_name
+      }
+    ] : []
+  }
+
+  # Keep the Authentik service cluster-local so a gateway in one region never depends
+  # synchronously on an authentik-server in another region. Cross-region failover is handled
+  # by the external load balancer, not by the mesh.
+  # https://istio.io/latest/docs/ops/configuration/traffic-management/multicluster
+  istio_mesh_config_service_settings = {
+    for cluster_name in keys(local.gke_clusters) :
+    cluster_name => contains(keys(local.gateway_clusters), cluster_name) ? [
+      {
+        hosts = [
+          "*.${local.authentik_resolved_outpost_namespace}.svc.cluster.local",
+        ]
+
+        settings = {
+          clusterLocal = true
+        }
+      }
+    ] : []
   }
 
   # Multi-cluster service links per cluster — the set of the owning team's clusters

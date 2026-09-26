@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=39eaa9e877542a18bf1d6e70b9f35f5ae592008d" # v0.8.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=9824ffff70bce8a5067416f16d69074aac816172" # v0.9.0
 
   for_each = local.gke_clusters
 
@@ -283,7 +283,7 @@ resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
 
   metadata {
     labels = {
-      "istio-injection" = "enabled"
+      "istio.io/dataplane-mode" = "ambient"
     }
 
     name = each.key
@@ -300,6 +300,12 @@ resource "kubernetes_service_v1" "istio_test_gateway_stub" {
   provider   = kubernetes.by_cluster[local.gateway_cluster]
 
   metadata {
+    # Istio uses the local cluster's service scope, so the stub must be global too or remote
+    # endpoints are never merged.
+    labels = {
+      "istio.io/global" = "true"
+    }
+
     name      = each.value.service
     namespace = each.value.namespace
   }

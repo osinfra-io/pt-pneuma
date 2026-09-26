@@ -73,7 +73,7 @@ After the script completes, confirm the mesh is healthy:
 
 This runs three checks per cluster across all discovered clusters:
 - `istioctl analyze` — configuration warnings or errors
-- `istioctl proxy-status` — all proxies should be `SYNCED`
+- ztunnel and istio-cni DaemonSet readiness — all pods should be `Ready`
 - `istioctl remote-clusters` — all peer clusters should show `synced`
 
 ## Troubleshooting
@@ -84,7 +84,12 @@ This runs three checks per cluster across all discovered clusters:
 
 **`istioctl` version mismatch** — Run `istioctl version --context=<context>` to check the deployed version and install a matching binary.
 
-**Proxies not synced after applying secrets** — Restart Istiod to force a re-sync:
+**ztunnel or istio-cni DaemonSet pods not ready after applying secrets** — Inspect the affected DaemonSet pods and logs first to identify the fault (Istio recommends starting with the CNI DaemonSet logs):
+```bash
+kubectl get pods -n istio-system -l k8s-app=istio-cni-node --context=<context>
+kubectl logs -n istio-system -l k8s-app=istio-cni-node --context=<context>
+```
+If the pods are healthy but still not synced, restart istiod to force a re-sync:
 ```bash
 kubectl rollout restart deployment/istiod -n istio-system --context=<context>
 ```

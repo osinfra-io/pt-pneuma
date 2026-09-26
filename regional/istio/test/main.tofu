@@ -212,6 +212,7 @@ resource "kubernetes_deployment_v1" "istio_test" {
 # Kubernetes Manifest Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
 
+# ztunnel enforces only L4 attributes (no waypoints), so the policy matches on source principal.
 resource "kubernetes_manifest" "istio_test" {
   for_each = local.gke_clusters
 
@@ -233,26 +234,7 @@ resource "kubernetes_manifest" "istio_test" {
           from = [
             {
               source = {
-                namespaces = ["istio-ingress"]
-                # principals = ["cluster.local/ns/istio-ingress/sa/gateway-istio"]
-              }
-            }
-          ]
-
-          to = [
-            {
-              operation = {
-                methods = ["GET"]
-
-                # The authorization policy below uses the ALLOW-with-positive-matching pattern to allow requests to specific paths.
-
-                paths = [
-                  "/istio-test/auth",
-                  "/istio-test/health",
-                  "/istio-test/metadata/cluster-location",
-                  "/istio-test/metadata/cluster-name",
-                  "/istio-test/metadata/instance-zone"
-                ]
+                principals = ["cluster.local/ns/istio-ingress/sa/gateway-istio"]
               }
             }
           ]
@@ -279,6 +261,11 @@ resource "kubernetes_service_v1" "istio_test" {
   metadata {
     name      = "istio-test"
     namespace = local.namespace[each.key]
+
+    # Reachable from other clusters over the ambient east-west gateways.
+    labels = {
+      "istio.io/global" = "true"
+    }
   }
 
   spec {
@@ -304,6 +291,10 @@ resource "kubernetes_service_v1" "istio_test_regional" {
   metadata {
     name      = "istio-test-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
     namespace = local.namespace[each.key]
+
+    labels = {
+      "istio.io/global" = "true"
+    }
   }
 
   spec {

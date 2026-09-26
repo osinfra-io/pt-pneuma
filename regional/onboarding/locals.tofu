@@ -29,7 +29,7 @@ locals {
       for namespace_name, namespace in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) :
       "${cluster_config.team_key}-${namespace_name}" => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
-        istio_injection        = namespace.istio_injection
+        mesh_enabled           = namespace.mesh_enabled
       }
     }
   }

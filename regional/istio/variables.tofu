@@ -59,30 +59,6 @@ variable "kubernetes_istio_pilot_memory_requests" {
   type        = string
 }
 
-variable "kubernetes_istio_proxy_cpu_limits" {
-  default     = "25m"
-  description = "The CPU limit for the Istio proxy"
-  type        = string
-}
-
-variable "kubernetes_istio_proxy_cpu_requests" {
-  default     = "10m"
-  description = "The CPU request for the Istio proxy"
-  type        = string
-}
-
-variable "kubernetes_istio_proxy_memory_limits" {
-  default     = "64Mi"
-  description = "The memory limit for the Istio proxy"
-  type        = string
-}
-
-variable "kubernetes_istio_proxy_memory_requests" {
-  default     = "32Mi"
-  description = "The memory request for the Istio proxy"
-  type        = string
-}
-
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

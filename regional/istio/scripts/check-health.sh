@@ -144,7 +144,7 @@ done
 declare -A ERROR_COUNT
 declare -A WARNING_COUNT
 declare -A INFO_COUNT
-declare -A PROXY_SYNCED
+declare -A ZTUNNEL_READY
 declare -A REMOTE_SYNCED
 
 # Run health checks on each cluster.
@@ -166,7 +166,7 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
     -o jsonpath='{.items[*].metadata.name}' 2>&1) || {
     echo -e "${RED}✗ Unable to connect to cluster${RESET}"
     ERROR_COUNT["${NAME}"]=1
-    PROXY_SYNCED["${NAME}"]=0
+    ZTUNNEL_READY["${NAME}"]=0
     REMOTE_SYNCED["${NAME}"]=0
     echo
     continue
@@ -246,16 +246,38 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
     echo -e "${GREEN}✓ No issues found${RESET}"
   fi
 
-  # Proxy status — just show count.
-  proxy_output=$(istioctl proxy-status --context="${CTX}" 2>&1 || true)
-  synced_count=$(echo "${proxy_output}" | grep -c "CDS,LDS,EDS,RDS" || true)
-  synced_count=${synced_count:-0}
-  PROXY_SYNCED["${NAME}"]="${synced_count}"
-
-  if [[ ${synced_count} -gt 0 ]]; then
-    echo -e "\n${GREEN}✓ Proxies: ${synced_count} synced${RESET}"
+  # ztunnel and istio-cni DaemonSets — every node-level ambient dataplane pod should be ready.
+  # A failed kubectl query (e.g. a missing DaemonSet) must be treated as unhealthy rather than
+  # silently accepted, and both DaemonSets must each report exactly one valid ready/desired pair.
+  ztunnel_all_ready=true
+  if ! ztunnel_ready=$(kubectl get daemonset ztunnel istio-cni-node \
+    --context="${CTX}" \
+    --namespace=istio-system \
+    --output jsonpath='{range .items[*]}{.status.numberReady}/{.status.desiredNumberScheduled} {end}' 2>/dev/null); then
+    ztunnel_ready="query failed"
+    ztunnel_all_ready=false
   else
-    echo -e "\n${YELLOW}⚠ Proxies: ${synced_count} synced${RESET}"
+    pair_count=0
+    for pair in ${ztunnel_ready}; do
+      pair_count=$((pair_count + 1))
+      if [[ ! "${pair}" =~ ^[0-9]+/[0-9]+$ ]]; then
+        ztunnel_all_ready=false
+        continue
+      fi
+      ready="${pair%%/*}"
+      desired="${pair##*/}"
+      [[ "${ready}" != "${desired}" || "${desired}" == "0" ]] && ztunnel_all_ready=false
+    done
+    [[ ${pair_count} -ne 2 ]] && ztunnel_all_ready=false
+    ztunnel_ready=${ztunnel_ready:-"0/0 0/0"}
+  fi
+  ZTUNNEL_READY["${NAME}"]="${ztunnel_ready}"
+
+  if [[ "${ztunnel_all_ready}" == "true" ]]; then
+    echo -e "\n${GREEN}✓ ztunnel/istio-cni: ${ztunnel_ready}${RESET}"
+  else
+    echo -e "\n${YELLOW}⚠ ztunnel/istio-cni: ${ztunnel_ready}${RESET}"
+    WARNING_COUNT["${NAME}"]=$((WARNING_COUNT["${NAME}"] + 1))
   fi
 
   # Remote clusters — count unique cluster names (not per-istiod lines).
@@ -280,14 +302,14 @@ total_errors=0
 total_warnings=0
 total_infos=0
 
-printf "%-30s %8s %8s %8s %10s %8s\n" "Cluster" "Errors" "Warnings" "Info" "Sidecars" "Peers"
-printf "%-30s %8s %8s %8s %10s %8s\n" "-------" "------" "--------" "----" "--------" "-----"
+printf "%-30s %8s %8s %8s %14s %8s\n" "Cluster" "Errors" "Warnings" "Info" "Ztunnel" "Peers"
+printf "%-30s %8s %8s %8s %14s %8s\n" "-------" "------" "--------" "----" "-------" "-----"
 
 for NAME in "${CLUSTER_NAMES[@]}"; do
   e=${ERROR_COUNT["${NAME}"]}
   w=${WARNING_COUNT["${NAME}"]}
   i=${INFO_COUNT["${NAME}"]}
-  p=${PROXY_SYNCED["${NAME}"]}
+  z=${ZTUNNEL_READY["${NAME}"]:-"0/0 0/0"}
   r=${REMOTE_SYNCED["${NAME}"]}
 
   total_errors=$((total_errors + e))
@@ -303,11 +325,11 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
     status_color="${GREEN}"
   fi
 
-  printf "${status_color}%-30s %8d %8d %8d %10d %8d${RESET}\n" "${NAME}" "${e}" "${w}" "${i}" "${p}" "${r}"
+  printf "${status_color}%-30s %8d %8d %8d %14s %8d${RESET}\n" "${NAME}" "${e}" "${w}" "${i}" "${z}" "${r}"
 done
 
 echo
-echo -e "${GRAY}Sidecars = Envoy proxies synced with Istiod | Peers = remote clusters in mesh${RESET}"
+echo -e "${GRAY}Ztunnel = ztunnel/istio-cni DaemonSet ready/desired per node | Peers = remote clusters in mesh${RESET}"
 
 echo
 if [[ ${total_errors} -gt 0 ]]; then
