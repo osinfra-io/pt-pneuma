@@ -2,7 +2,7 @@ apiVersion: v3
 kind: system
 metadata:
   name: pt-pneuma
-  displayName: Pneuma
+  displayName: pneuma
   description: >-
     The breathing, dynamic layer of the platform where structure comes alive.
     Animates Corpus projects into workload environments: GKE clusters across
