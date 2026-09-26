@@ -11,6 +11,17 @@ variable "clusters" {
   }))
 }
 
+# The module default (25m) is an order of magnitude above observed usage: istio-csr signs
+# workload certificates on demand and measures 3m CPU. This request reclaims that headroom on
+# our single-node clusters. The module's limit (50m) is unchanged, so signing bursts are still
+# absorbed.
+
+variable "kubernetes_cert_manager_istio_csr_cpu_requests" {
+  default     = "10m"
+  description = "The CPU request for cert-manager istio-csr"
+  type        = string
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

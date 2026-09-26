@@ -14,4 +14,5 @@ module "kubernetes_datadog_operator" {
   api_key        = var.datadog_api_key
   app_key        = var.datadog_app_key
   cluster_prefix = each.value.team_key
+  requests_cpu   = var.kubernetes_datadog_operator_cpu_requests
 }

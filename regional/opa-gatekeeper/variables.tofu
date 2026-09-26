@@ -11,6 +11,24 @@ variable "clusters" {
   }))
 }
 
+# The audit controller measures a steady 40m CPU and 96Mi memory, which is exactly its module
+# default CPU limit (40m) and 75% of its memory limit (128Mi) - it is throttled continuously
+# and has little memory headroom. Limits do not consume scheduling budget, so both are raised.
+# Audit requests stay at the module defaults: the controller overruns them, but our nodes run
+# at roughly 46% CPU so there is no contention.
+
+variable "kubernetes_opa_gatekeeper_audit_cpu_limits" {
+  default     = "150m"
+  description = "The CPU limit for the Gatekeeper audit controller"
+  type        = string
+}
+
+variable "kubernetes_opa_gatekeeper_audit_memory_limits" {
+  default     = "256Mi"
+  description = "The memory limit for the Gatekeeper audit controller"
+  type        = string
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

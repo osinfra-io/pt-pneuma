@@ -23,6 +23,17 @@ variable "datadog_app_key" {
   type        = string
 }
 
+# The module default (100m) is 25x observed usage: the operator only reconciles DatadogAgent
+# resources and measures 4m CPU. That reservation is what pushed our single-node clusters over
+# their allocatable CPU and left the operator pod Pending. The module's limit (200m) is
+# unchanged, so reconcile bursts are still absorbed.
+
+variable "kubernetes_datadog_operator_cpu_requests" {
+  default     = "25m"
+  description = "The CPU request for the Datadog operator"
+  type        = string
+}
+
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
 # They are defined in the GitHub Actions called workflows and should NOT be set in the OpenTofu configuration.
 

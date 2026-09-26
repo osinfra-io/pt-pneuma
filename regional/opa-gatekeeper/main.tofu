@@ -11,5 +11,7 @@ module "kubernetes_opa_gatekeeper" {
     kubernetes = kubernetes.by_cluster[each.key]
   }
 
-  artifact_registry = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
+  artifact_registry             = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
+  audit_resources_limits_cpu    = var.kubernetes_opa_gatekeeper_audit_cpu_limits
+  audit_resources_limits_memory = var.kubernetes_opa_gatekeeper_audit_memory_limits
 }
