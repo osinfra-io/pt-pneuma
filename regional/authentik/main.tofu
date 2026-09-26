@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "kubernetes_authentik" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=c90f69f29c1c07ebe66e48f0703526571344259d" # TEMP: PR #16 branch tip, re-pin after merge + tag
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=af6e9e6371f216aa61fd710e3f0af6eed5657fcd" # v0.1.8
 
   depends_on = [
     kubernetes_secret_v1.authentik,
