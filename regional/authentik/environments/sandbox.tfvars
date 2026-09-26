@@ -7,5 +7,7 @@ authentik_server_replicas                  = 1
 authentik_server_resources_requests_cpu    = "50m"
 authentik_server_resources_requests_memory = "640Mi"
 authentik_worker_replicas                  = 1
-authentik_worker_resources_requests_cpu    = "50m"
-authentik_worker_resources_requests_memory = "288Mi"
+# Worker probes run `ak healthcheck` with a 3s timeout. Raising its CPU share from 50m to 100m
+# avoids probe timeouts on the saturated sandbox nodes; memory request reflects ~300Mi measured use.
+authentik_worker_resources_requests_cpu    = "100m"
+authentik_worker_resources_requests_memory = "320Mi"

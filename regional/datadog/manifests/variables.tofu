@@ -47,28 +47,13 @@ variable "kubernetes_datadog_operator_cluster_agent_requests_memory" {
   type        = string
 }
 
-variable "kubernetes_datadog_operator_node_agent_limits_cpu" {
-  default     = "200m"
-  description = "CPU limits for the Datadog Node Agent"
-  type        = string
-}
-
-variable "kubernetes_datadog_operator_node_agent_limits_memory" {
-  default     = "256Mi"
-  description = "Memory limits for the Datadog Node Agent"
-  type        = string
-}
-
-variable "kubernetes_datadog_operator_node_agent_requests_cpu" {
-  default     = "100m"
-  description = "CPU requests for the Datadog Node Agent"
-  type        = string
-}
-
-variable "kubernetes_datadog_operator_node_agent_requests_memory" {
-  default     = "128Mi"
-  description = "Memory requests for the Datadog Node Agent"
-  type        = string
+variable "kubernetes_datadog_operator_node_agent_container_resources" {
+  default     = {}
+  description = "Optional resource requests and limits for specific Datadog Node Agent containers, keyed by container name"
+  type = map(object({
+    limits   = map(string)
+    requests = map(string)
+  }))
 }
 
 # These three state_* variables are required for early variable evaluation for backend and provider configuration.
