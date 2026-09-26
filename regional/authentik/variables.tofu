@@ -1,9 +1,39 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
+variable "authentik_cloud_sql_proxy_resources_limits_cpu" {
+  default     = null
+  description = "The CPU limit for the Cloud SQL Auth Proxy sidecar, unset by default so the proxy is never throttled while brokering database connections"
+  type        = string
+}
+
+variable "authentik_cloud_sql_proxy_resources_limits_memory" {
+  default     = "128Mi"
+  description = "The memory limit for the Cloud SQL Auth Proxy sidecar"
+  type        = string
+}
+
+variable "authentik_cloud_sql_proxy_resources_requests_cpu" {
+  default     = "50m"
+  description = "The CPU request for the Cloud SQL Auth Proxy sidecar"
+  type        = string
+}
+
+variable "authentik_cloud_sql_proxy_resources_requests_memory" {
+  default     = "64Mi"
+  description = "The memory request for the Cloud SQL Auth Proxy sidecar"
+  type        = string
+}
+
 variable "authentik_server_replicas" {
   description = "The number of replicas for the Authentik server"
   type        = number
+}
+
+variable "authentik_server_resources_limits_cpu" {
+  default     = null
+  description = "The CPU limit for the Authentik server, unset by default so request handling is never throttled"
+  type        = string
 }
 
 variable "authentik_server_resources_limits_memory" {
@@ -26,6 +56,12 @@ variable "authentik_worker_replicas" {
   default     = 1
   description = "The number of Authentik worker replicas to run"
   type        = number
+}
+
+variable "authentik_worker_resources_limits_cpu" {
+  default     = null
+  description = "The CPU limit for the Authentik worker, unset by default so background task processing is never throttled"
+  type        = string
 }
 
 variable "authentik_worker_resources_limits_memory" {
