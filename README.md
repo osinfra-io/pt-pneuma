@@ -2,13 +2,17 @@
 
 [![Dependabot](https://img.shields.io/github/actions/workflow/status/osinfra-io/pt-pneuma/dependabot.yml?style=for-the-badge&logo=github&color=2088FF&label=Dependabot)](https://github.com/osinfra-io/pt-pneuma/actions/workflows/dependabot.yml) [![Datadog Security Enabled](https://img.shields.io/badge/Datadog%20Security-Enabled-632CA6?style=for-the-badge&logo=datadog)](https://app.datadoghq.com/security/code-security/repositories?repository_id=pt-pneuma)
 
-## 📄 Repository Description
+## Purpose
 
-This repository contains the Infrastructure as Code (IaC) that shapes the Pneuma domain — the breathing, dynamic layer of the platform where structure comes alive. In the wider hierarchy of the Platform Team, Pneuma serves as the stratum where Corpus projects and networking become animated workload environments capable of receiving and running application teams.
+Pneuma provides the managed Kubernetes runtime built on Corpus projects and networking. It provisions GKE clusters and the shared cluster services required for workloads: namespace onboarding, cert-manager, Istio ambient mesh and gateways, Authentik gateway authentication, Datadog, and OPA Gatekeeper.
 
-Here, Kubernetes clusters are called into being across multiple zones; certificate management, service mesh, and policy enforcement are woven into each cluster; and Datadog observability extends its reach into the runtime so the platform can perceive and regulate itself at the application layer.
+## Consumer contract
 
-The Pneuma layer is where infrastructure breathes — where the static order established by Logos and the tangible form given by Corpus are joined by living workloads, dynamic routing, and continuous delivery. It is the atmosphere within which application teams move, build, and ship.
+| Consumers provide | Pneuma provides |
+| --- | --- |
+| Team/project identity, workload namespace needs, image location, routes, authentication requirements, certificates, and observability options | Managed clusters, namespace access, workload identity integration, ingress and mesh connectivity, gateway authentication, certificates, telemetry, and policy enforcement |
+
+Application teams own their workloads and manifests. Corpus owns projects and networking; Pneuma owns clusters and cluster-level add-ons; Kryptos owns OpenBao and secrets policy.
 
 ### 🛠️ Tools
 
