@@ -33,9 +33,12 @@ spec:
     - service:datadog-operator
     - service:gatekeeper-audit
     - service:gatekeeper-controller-manager
+    - service:istio-cni
     - service:istio-control-plane
+    - service:istio-eastwestgateway
     - service:istio-gateway
     - service:istio-test
+    - service:istio-ztunnel
 datadog:
   codeLocations:
     - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
@@ -297,6 +300,84 @@ metadata:
     - name: Istio architecture
       type: doc
       url: "https://istio.io/latest/docs/ops/deployment/architecture/"
+    - name: pt-arche-kubernetes-istio
+      type: repo
+      provider: Github
+      url: "https://github.com/osinfra-io/pt-arche-kubernetes-istio"
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: infrastructure
+datadog:
+  codeLocations:
+    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+      paths:
+        - regional/istio/**
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: istio-cni
+  description: >-
+    Node agent that configures traffic redirection for ambient mesh workloads,
+    enrolling pods into the mesh without an init container or sidecar.
+  links:
+    - name: Istio CNI documentation
+      type: doc
+      url: "https://istio.io/latest/docs/setup/additional-setup/cni/"
+    - name: pt-arche-kubernetes-istio
+      type: repo
+      provider: Github
+      url: "https://github.com/osinfra-io/pt-arche-kubernetes-istio"
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: infrastructure
+datadog:
+  codeLocations:
+    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+      paths:
+        - regional/istio/**
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: istio-eastwestgateway
+  description: >-
+    Istio east-west gateway that carries HBONE traffic between clusters in the
+    multi-network ambient mesh, terminating cross-cluster mTLS on port 15008.
+  links:
+    - name: Ambient multicluster documentation
+      type: doc
+      url: "https://istio.io/latest/docs/ambient/install/multicluster/"
+    - name: pt-arche-kubernetes-istio
+      type: repo
+      provider: Github
+      url: "https://github.com/osinfra-io/pt-arche-kubernetes-istio"
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: infrastructure
+datadog:
+  codeLocations:
+    - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+      paths:
+        - regional/istio/**
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: istio-ztunnel
+  description: >-
+    Node level zero trust tunnel that provides the ambient mesh layer four data
+    plane, handling mTLS and traffic telemetry for enrolled workloads.
+  links:
+    - name: Ambient data plane documentation
+      type: doc
+      url: "https://istio.io/latest/docs/ambient/architecture/data-plane/"
     - name: pt-arche-kubernetes-istio
       type: repo
       provider: Github
