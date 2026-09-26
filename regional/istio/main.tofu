@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=da8f3011c273006c9b5753cf7bd425873af9e4f7" # TEMP: PR #115 branch tip, re-pin after merge + tag
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=a96bb8936f6959646208255c5467e9f8ac4107d5" # TEMP: PR #115 branch tip, re-pin after merge + tag
 
   for_each = local.gke_clusters
 
