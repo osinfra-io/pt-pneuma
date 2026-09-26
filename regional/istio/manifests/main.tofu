@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=dda4bbfde27db602985c04aea63574309113d958" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=b9237060b5b2207ef63ad73e70c4b6e810ecf874" # TEMP: pre-release pin to osinfra-io/pt-arche-kubernetes-istio#114 (ambient-mesh-support); re-pin to tagged release once merged
 
   for_each = local.gke_clusters
 
@@ -300,8 +300,8 @@ resource "kubernetes_service_v1" "istio_test_gateway_stub" {
   provider   = kubernetes.by_cluster[local.gateway_cluster]
 
   metadata {
-    # Istio only consults the local cluster's service scope: without this label the unlabeled stub
-    # makes the service local-scoped and remote endpoints are never merged.
+    # Istio uses the local cluster's service scope, so the stub must be global too or remote
+    # endpoints are never merged.
     labels = {
       "istio.io/global" = "true"
     }

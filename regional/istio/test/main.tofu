@@ -212,10 +212,7 @@ resource "kubernetes_deployment_v1" "istio_test" {
 # Kubernetes Manifest Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
 
-# ztunnel (no waypoint deployed) enforces only L4 attributes; the HTTP methods/paths block
-# below was previously being silently dropped by ztunnel with no L4 fallback left to match,
-# which denied all traffic. Restrict on source principal instead, matching the L4-only pattern
-# already used by regional/authentik/main.tofu's authentik_allow_gateway policy.
+# ztunnel enforces only L4 attributes (no waypoints), so the policy matches on source principal.
 resource "kubernetes_manifest" "istio_test" {
   for_each = local.gke_clusters
 
@@ -265,9 +262,7 @@ resource "kubernetes_service_v1" "istio_test" {
     name      = "istio-test"
     namespace = local.namespace[each.key]
 
-    # istio.io/global marks the Service as reachable from other clusters over the ambient
-    # east-west gateway (see osinfra-io/pt-arche-kubernetes-istio). Applies to every team's
-    # cluster generically via the for_each above, so new teams get this automatically.
+    # Reachable from other clusters over the ambient east-west gateways.
     labels = {
       "istio.io/global" = "true"
     }

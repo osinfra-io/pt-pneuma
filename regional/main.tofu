@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine_regional" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=5a205db6afed8b348b237b3f73f27f8e2fc2c4ab" # Temporary pre-release pin (PR #182) — re-pin to a tagged release once merged
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine//regional?ref=4e57dd1e9bde0e7a32e80c848e378eb12fb74b34" # Temporary pre-release pin (PR #182) — re-pin to a tagged release once merged
 
   for_each = local.gke_clusters
 

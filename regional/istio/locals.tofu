@@ -33,10 +33,8 @@ locals {
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
-  # Authentik forward-auth ext_authz provider, rendered into istiod's Helm-managed meshConfig
-  # on gateway clusters only (empty elsewhere). Rendering through the module keeps the istio
-  # ConfigMap fully owned by Helm — patching the mesh key out-of-band would silently drop every
-  # other rendered setting (e.g. the ambient serviceScopeConfigs rule).
+  # Authentik forward-auth ext_authz provider, rendered into istiod's meshConfig on gateway
+  # clusters only.
   istio_mesh_config_extension_providers = {
     for cluster_name in keys(local.gke_clusters) :
     cluster_name => contains(keys(local.gateway_clusters), cluster_name) ? [
