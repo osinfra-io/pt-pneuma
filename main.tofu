@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-google-kubernetes-engine
 
 module "google_kubernetes_engine" {
-  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=6ef17e0c4a5539daf835b5f793d296687544903e" # v0.5.0
+  source = "github.com/osinfra-io/pt-arche-google-kubernetes-engine?ref=609a5efa99c952d10d391fa8a70798fa04b54e2d" # v1.0.0
 
   for_each = local.teams_with_clusters
 
@@ -45,7 +45,7 @@ resource "tls_self_signed_cert" "cert_manager_ca" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager
 
 module "kubernetes_cert_manager" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=50122dfd99038d0c4e02e48fd175d62f8c6aae6e" # v0.4.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=48bc660a4802c8c86ecb89ba0ebc3f7769445530" # v0.4.1
 
   for_each = local.teams_with_clusters
 
@@ -57,7 +57,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=4ead2ea16096eb2cb8bf894ed4db084686ae595f" # v0.9.1
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=fd7ff93a153af0f6ae59a9847c31beac8ad096d9" # v0.9.2
 
   for_each = local.teams_with_clusters
 
