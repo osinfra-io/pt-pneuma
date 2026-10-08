@@ -69,28 +69,9 @@ locals {
     ]
   )...)
 
-  gateway_auth_callback_paths = [
-    "/outpost.goauthentik.io",
-    "/outpost.goauthentik.io/*",
-  ]
-
-  gateway_auth_default_exempt_paths = concat(
-    local.gateway_auth_health_paths,
-    local.gateway_auth_callback_paths,
-  )
-
   gateway_auth_gateway_selector = {
     "gateway.networking.k8s.io/gateway-name" = "gateway"
   }
-
-  gateway_auth_health_paths = [
-    "/health",
-    "/healthz",
-    "/live",
-    "/livez",
-    "/ready",
-    "/readyz",
-  ]
 
   # Route auth policy modes that generate an enforced AuthorizationPolicy. "public" is intentionally
   # excluded upstream; any other value would silently produce no policy (fail-open) and is rejected
@@ -128,27 +109,23 @@ locals {
     )
   }
 
+  gateway_auth_browser_policy_inputs = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => {
+      for item in local.gateway_auth_route_policy_items :
+      "${cluster_name}-${item.key}" => item
+    }
+  }
+
   gateway_auth_policies = {
     for cluster_name in keys(local.gateway_clusters) :
     cluster_name => {
       for item in local.gateway_auth_route_policy_items :
-      "${cluster_name}-${item.key}" => merge(item, {
-        cluster_name                     = cluster_name
-        custom_authorization_policy_name = "gateway-auth-${substr(sha1("${cluster_name}-${item.key}-custom"), 0, 8)}"
-        deny_authorization_policy_name   = "gateway-auth-${substr(sha1("${cluster_name}-${item.key}-deny"), 0, 8)}"
-        exempt_paths = distinct(concat(
-          local.gateway_auth_default_exempt_paths,
-          item.path == "/" ? [] : [
-            for path in local.gateway_auth_default_exempt_paths :
-            "${trimsuffix(item.path, "/")}${path}"
-          ],
-          item.public_paths,
-        ))
-        paths = item.path == "/" ? ["/*"] : [
-          trimsuffix(item.path, "/"),
-          "${trimsuffix(item.path, "/")}/*",
-        ]
-      })
+      "${cluster_name}-${item.key}" => merge(
+        item,
+        module.gateway_auth[cluster_name].resolved_policies["${cluster_name}-${item.key}"],
+        { cluster_name = cluster_name },
+      )
     }
   }
 
@@ -315,49 +292,11 @@ locals {
     ])
   ])
 
-  # CUSTOM ext_authz policy for browser routes only. It sends the request to the embedded
-  # outpost for forward-auth, which establishes the Authentik session (authentication). Per-route
-  # required_groups authorization is enforced by Authentik application policy bindings, which
-  # require one application/provider per protected host; until those exist a browser route is
-  # authenticated-only. api-jwt routes skip this and use the native claim DENY policy above.
-  gateway_auth_custom_authorization_policy_manifests = {
-    for key, policy in local.gateway_auth_authorization_policies :
-    key => {
-      apiVersion = "security.istio.io/v1"
-      kind       = "AuthorizationPolicy"
-      metadata = {
-        name      = policy.custom_authorization_policy_name
-        namespace = "istio-ingress"
-      }
-      spec = {
-        action = "CUSTOM"
-        provider = {
-          name = local.authentik_extension_provider_name
-        }
-        rules = [
-          {
-            to = [
-              {
-                operation = {
-                  hosts    = [policy.host]
-                  notPaths = policy.exempt_paths
-                  paths    = policy.paths
-                }
-              }
-            ]
-          }
-        ]
-        targetRefs = [
-          {
-            group = "gateway.networking.k8s.io"
-            kind  = "Gateway"
-            name  = "gateway"
-          }
-        ]
-      }
-    }
-    if policy.mode == "browser"
-  }
+  # Browser CUSTOM rendering is shared; native API-JWT DENY remains above.
+  gateway_auth_custom_authorization_policy_manifests = merge(concat(
+    [{}],
+    [for renderer in values(module.gateway_auth) : renderer.custom_authorization_policy_manifests],
+  )...)
 
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
@@ -426,24 +365,9 @@ locals {
     }
   }
 
-  # Every browser-authenticated host needs to send the embedded outpost callback path directly
-  # to Authentik. The callback is exempt from the CUSTOM authorization policy because it completes
-  # that policy's OAuth exchange; without this route it falls through to the application backend.
   authentik_callback_routes = {
-    for cluster_name in keys(local.gateway_clusters) :
-    cluster_name => {
-      for host in distinct([
-        for item in local.gateway_auth_route_policy_items : item.host
-        if item.mode == "browser"
-      ]) :
-      "authentik-callback-${substr(sha1(host), 0, 8)}" => {
-        backend_namespace = local.authentik_namespace
-        backend_port      = 80
-        backend_service   = "authentik-server"
-        host              = host
-        path              = "/outpost.goauthentik.io"
-      }
-    }
+    for cluster_name, renderer in module.gateway_auth :
+    cluster_name => renderer.callback_routes
   }
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").

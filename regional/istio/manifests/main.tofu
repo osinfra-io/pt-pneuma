@@ -1,3 +1,16 @@
+# Gateway Auth Rendering Module (osinfra.io)
+# https://github.com/osinfra-io/pt-pneuma
+
+module "gateway_auth" {
+  source = "../gateway-auth"
+
+  for_each = local.gateway_clusters
+
+  extension_provider_name = local.authentik_extension_provider_name
+  outpost_namespace       = local.authentik_namespace
+  policies                = local.gateway_auth_browser_policy_inputs[each.key]
+}
+
 # Kubernetes Istio Module (osinfra.io)
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
@@ -152,70 +165,7 @@ resource "kubernetes_manifest" "gateway_authentik_inbound_header_strip_filter" {
 
   provider = kubernetes.by_cluster[each.key]
 
-  manifest = {
-    apiVersion = "networking.istio.io/v1alpha3"
-    kind       = "EnvoyFilter"
-    metadata = {
-      annotations = {
-        # IST0133: EnvoyFilters are inherently low-level; this warning is expected.
-        "galley.istio.io/analyze-suppress" = "IST0133"
-      }
-      name      = "gateway-authentik-inbound-header-strip"
-      namespace = "istio-ingress"
-    }
-    spec = {
-      # Run before ext_authz so client-supplied x-authentik-* headers are removed prior to the
-      # forward-auth decision. The embedded outpost re-adds trusted x-authentik-* headers on
-      # allow, which are forwarded upstream via headersToUpstreamOnAllow. This prevents a client
-      # from spoofing identity headers to a backend that trusts the gateway.
-      priority = 5
-
-      configPatches = [
-        {
-          applyTo = "HTTP_FILTER"
-          match = {
-            context = "GATEWAY"
-            listener = {
-              filterChain = {
-                filter = {
-                  name = "envoy.filters.network.http_connection_manager"
-                  subFilter = {
-                    name = "envoy.filters.http.ext_authz"
-                  }
-                }
-              }
-            }
-          }
-          patch = {
-            operation = "INSERT_BEFORE"
-            value = {
-              name = "envoy.filters.http.lua"
-              typed_config = {
-                "@type"    = "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
-                inlineCode = <<-EOT
-                  function envoy_on_request(handle)
-                    local remove = {}
-                    for key, value in pairs(handle:headers()) do
-                      if string.sub(string.lower(key), 1, 12) == "x-authentik-" then
-                        remove[#remove + 1] = key
-                      end
-                    end
-                    for _, key in ipairs(remove) do
-                      handle:headers():remove(key)
-                    end
-                  end
-                EOT
-              }
-            }
-          }
-        }
-      ]
-
-      workloadSelector = {
-        labels = local.gateway_auth_gateway_selector
-      }
-    }
-  }
+  manifest = module.gateway_auth[each.key].inbound_header_strip_filter_manifest
 }
 
 resource "kubernetes_manifest" "gateway_authentik_jwt_bypass_filter" {

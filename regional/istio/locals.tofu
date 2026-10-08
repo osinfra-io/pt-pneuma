@@ -33,40 +33,11 @@ locals {
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
-  # Authentik forward-auth ext_authz provider, rendered into istiod's meshConfig on gateway
-  # clusters only.
+  # Canonical forward-auth rendering shared with the local fixture.
   istio_mesh_config_extension_providers = {
     for cluster_name in keys(local.gke_clusters) :
     cluster_name => contains(keys(local.gateway_clusters), cluster_name) ? [
-      {
-        envoyExtAuthzHttp = {
-          failOpen = false
-
-          headersToDownstreamOnAllow = [
-            "cookie",
-          ]
-
-          headersToDownstreamOnDeny = [
-            "content-type",
-            "set-cookie",
-          ]
-
-          headersToUpstreamOnAllow = [
-            "set-cookie",
-            "x-authentik-*",
-          ]
-
-          includeRequestHeadersInCheck = [
-            "cookie",
-          ]
-
-          pathPrefix = local.authentik_outpost_path_prefix
-          port       = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
-          service    = "${try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)}.${local.authentik_resolved_outpost_namespace}.svc.cluster.local"
-        }
-
-        name = local.authentik_extension_provider_name
-      }
+      module.gateway_auth[cluster_name].extension_provider,
     ] : []
   }
 
@@ -118,6 +89,9 @@ locals {
   # host always target the same namespace; a mismatch would let the gateway route forward-auth to
   # another region's authentik-server.
   authentik_resolved_outpost_namespace = try(data.terraform_remote_state.authentik_config.outputs.outpost_namespace, local.authentik_outpost_namespace)
+
+  authentik_resolved_outpost_service_name = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)
+  authentik_resolved_outpost_service_port = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
   regions = {
