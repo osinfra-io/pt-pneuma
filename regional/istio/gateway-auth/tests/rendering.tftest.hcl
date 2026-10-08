@@ -167,4 +167,73 @@ run "empty_policies" {
     condition     = length(output.custom_authorization_policy_manifests) == 0 && length(output.callback_routes) == 0
     error_message = "No routes should create no policies or callbacks."
   }
+
+}
+
+run "protected_prefix_exemption_fails_closed" {
+  command = plan
+
+  variables {
+    policies = {
+      invalid = {
+        host         = "pneuma.localhost"
+        path         = "/api"
+        public_paths = ["/api*"]
+      }
+    }
+
+  }
+
+  expect_failures = [var.policies]
+}
+
+run "protected_exact_exemption_fails_closed" {
+  command = plan
+
+  variables {
+    policies = {
+      invalid = {
+        host         = "pneuma.localhost"
+        path         = "/api/"
+        public_paths = ["/api"]
+      }
+    }
+  }
+
+  expect_failures = [var.policies]
+}
+
+run "ancestor_prefix_exemption_fails_closed" {
+  command = plan
+
+  variables {
+    policies = {
+      invalid = {
+        host         = "pneuma.localhost"
+        path         = "/api/private"
+        public_paths = ["/api/*"]
+      }
+    }
+  }
+
+  expect_failures = [var.policies]
+}
+
+run "narrow_public_prefix_remains_allowed" {
+  command = plan
+
+  variables {
+    policies = {
+      valid = {
+        host         = "pneuma.localhost"
+        path         = "/api"
+        public_paths = ["/api/public/*"]
+      }
+    }
+  }
+
+  assert {
+    condition     = contains(output.resolved_policies["valid"].exempt_paths, "/api/public/*")
+    error_message = "Narrow public subpaths must remain supported."
+  }
 }

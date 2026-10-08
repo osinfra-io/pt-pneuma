@@ -85,4 +85,15 @@ variable "policies" {
     condition     = alltrue([for policy in values(var.policies) : length(policy.host) > 0 && startswith(policy.path, "/")])
     error_message = "Each route policy must have a nonempty host and a path beginning with /."
   }
+
+  validation {
+    condition = alltrue(flatten([
+      for policy in values(var.policies) : [
+        for path in policy.public_paths :
+        path != trimsuffix(policy.path, "/") &&
+        !(endswith(path, "*") && startswith(trimsuffix(policy.path, "/"), trimsuffix(path, "*")))
+      ] if policy.mode == "browser"
+    ]))
+    error_message = "Browser public paths must not match the protected route root, including prefix wildcard matches."
+  }
 }

@@ -84,8 +84,11 @@ run "production_parity" {
       length(manifest.spec.rules) == 4 &&
       manifest.spec.rules[0].from[0].source.notRequestPrincipals[0] == "*" &&
       manifest.spec.rules[1].when[0].key == "request.auth.audiences" &&
+      jsonencode(manifest.spec.rules[1].when[0]) == jsonencode({ key = "request.auth.audiences", notValues = ["test-api"] }) &&
       manifest.spec.rules[2].when[0].key == "request.auth.claims[groups]" &&
-      manifest.spec.rules[3].when[0].key == "request.auth.claims[roles]"
+      jsonencode(manifest.spec.rules[2].when[0]) == jsonencode({ key = "request.auth.claims[groups]", notValues = ["api-users"] }) &&
+      manifest.spec.rules[3].when[0].key == "request.auth.claims[roles]" &&
+      jsonencode(manifest.spec.rules[3].when[0]) == jsonencode({ key = "request.auth.claims[roles]", notValues = ["reader"] })
     ])
     error_message = "Production API JWT resources must retain principal/audience/group/role enforcement."
   }
