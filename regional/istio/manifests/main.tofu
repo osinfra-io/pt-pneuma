@@ -27,6 +27,7 @@ module "kubernetes_istio_manifests" {
 
   depends_on = [
     kubernetes_namespace_v1.istio_test_gateway_stub,
+    kubernetes_service_v1.agentgateway_admin,
     kubernetes_service_v1.istio_test_gateway_stub,
   ]
 
@@ -43,6 +44,22 @@ module "kubernetes_istio_manifests" {
 
 # Kubernetes Manifest Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
+
+resource "kubernetes_manifest" "agentgateway_admin_allow" {
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = local.agentgateway_admin_allow_manifest
+}
+
+resource "kubernetes_manifest" "agentgateway_admin_authorization" {
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = local.agentgateway_admin_deny_manifest
+}
 
 resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
   for_each = local.gateway_clusters
@@ -263,6 +280,37 @@ resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
 
 # Kubernetes Service Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/service_v1
+
+resource "kubernetes_service_v1" "agentgateway_admin" {
+  depends_on = [
+    kubernetes_manifest.agentgateway_admin_allow,
+    kubernetes_manifest.agentgateway_admin_authorization,
+    kubernetes_manifest.gateway_auth_custom_authorization_policy,
+    kubernetes_manifest.gateway_authentik_application_access_filter,
+  ]
+
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  metadata {
+    name      = "agentgateway-proxy-admin"
+    namespace = local.agentgateway_namespace
+  }
+
+  spec {
+    port {
+      name        = "http-admin"
+      port        = 15000
+      target_port = 15000
+    }
+
+    selector = {
+      "gateway.networking.k8s.io/gateway-name" = "agentgateway-proxy"
+    }
+    type = "ClusterIP"
+  }
+}
 
 resource "kubernetes_service_v1" "istio_test_gateway_stub" {
   for_each = local.gateway_stub_services

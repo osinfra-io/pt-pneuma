@@ -2,12 +2,65 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  agentgateway_admin_allow_manifest = merge(local.agentgateway_admin_deny_manifest, {
+    metadata = {
+      name      = "agentgateway-admin-ingress"
+      namespace = local.agentgateway_namespace
+    }
+    spec = merge(local.agentgateway_admin_deny_manifest.spec, {
+      action = "ALLOW"
+      rules = [{
+        from = [{
+          source = {
+            principals = ["cluster.local/ns/istio-ingress/sa/gateway-istio"]
+          }
+        }]
+        to = [{
+          operation = {
+            ports = ["15000"]
+          }
+        }]
+      }]
+    })
+  })
+
+  agentgateway_admin_deny_manifest = {
+    apiVersion = "security.istio.io/v1"
+    kind       = "AuthorizationPolicy"
+    metadata = {
+      name      = "agentgateway-admin"
+      namespace = local.agentgateway_namespace
+    }
+    spec = {
+      action = "DENY"
+      rules = [{
+        from = [{
+          source = {
+            notPrincipals = ["cluster.local/ns/istio-ingress/sa/gateway-istio"]
+          }
+        }]
+        to = [{
+          operation = {
+            ports = ["15000"]
+          }
+        }]
+      }]
+      selector = {
+        matchLabels = {
+          "gateway.networking.k8s.io/gateway-name" = "agentgateway-proxy"
+        }
+      }
+    }
+  }
+
   agentgateway_clusters = {
     for name, cluster in local.gateway_clusters : name => cluster
     if module.core_helpers.environment == "sandbox"
   }
 
   agentgateway_hostname = "agentgateway.${local.authentik_public_dns_domain}"
+
+  agentgateway_namespace = "${module.core_helpers.team}-agentgateway"
 
   agentgateway_policy_inputs = {
     for name in keys(local.agentgateway_clusters) : name => {
@@ -23,7 +76,7 @@ locals {
   agentgateway_routes = {
     for name in keys(local.agentgateway_clusters) : name => {
       agentgateway-admin = {
-        backend_namespace = "${module.core_helpers.team}-agentgateway"
+        backend_namespace = local.agentgateway_namespace
         backend_port      = 15000
         backend_service   = "agentgateway-proxy-admin"
         host              = local.agentgateway_hostname

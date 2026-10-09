@@ -26,15 +26,6 @@ run "owning_team_and_zone_only" {
     error_message = "Sandbox agentgateway must deploy only to the owning team's cluster in this workspace's zone."
   }
 
-  assert {
-    condition     = output.admin_allow.spec.action == "ALLOW" && output.admin_allow.spec.rules[0].from[0].source.principals == ["cluster.local/ns/istio-ingress/sa/gateway-istio"] && output.admin_allow.spec.rules[0].to[0].operation.ports == ["15000"]
-    error_message = "Only the authenticated ingress gateway may reach the admin port through mesh default-deny."
-  }
-
-  assert {
-    condition     = output.admin_deny.spec.action == "DENY" && output.admin_deny.spec.rules[0].from[0].source.notPrincipals == ["cluster.local/ns/istio-ingress/sa/gateway-istio"] && output.admin_deny.spec.rules[0].to[0].operation.ports == ["15000"]
-    error_message = "Other in-mesh workloads must not bypass browser authentication by reaching the admin port directly."
-  }
 }
 
 run "nonproduction_not_enabled" {

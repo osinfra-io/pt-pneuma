@@ -102,6 +102,16 @@ run "production_parity" {
 run "managed_cloud_adapter" {
   command = plan
 
+  assert {
+    condition     = module.legacy_manifests.admin_allow.spec.action == "ALLOW" && module.legacy_manifests.admin_allow.spec.rules[0].from[0].source.principals == ["cluster.local/ns/istio-ingress/sa/gateway-istio"] && module.legacy_manifests.admin_allow.spec.rules[0].to[0].operation.ports == ["15000"] && module.legacy_manifests.admin_allow.metadata.namespace == "pt-pneuma-agentgateway"
+    error_message = "Only the authenticated ingress gateway may reach the admin port through mesh default-deny."
+  }
+
+  assert {
+    condition     = module.legacy_manifests.admin_deny.spec.action == "DENY" && module.legacy_manifests.admin_deny.spec.rules[0].from[0].source.notPrincipals == ["cluster.local/ns/istio-ingress/sa/gateway-istio"] && module.legacy_manifests.admin_deny.spec.rules[0].to[0].operation.ports == ["15000"]
+    error_message = "Other in-mesh workloads must not bypass browser authentication by reaching the admin port directly."
+  }
+
   override_module {
     target = module.legacy_manifests.module.core_helpers
     outputs = {

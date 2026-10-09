@@ -50,3 +50,13 @@ output "platform_routes" {
   description = "Dedicated platform hostname routes."
   value       = local.routes
 }
+
+output "admin_allow" {
+  description = "Cloud admin ingress exception."
+  value       = local.agentgateway_admin_allow_manifest
+}
+
+output "admin_deny" {
+  description = "Cloud admin bypass denial."
+  value       = local.agentgateway_admin_deny_manifest
+}

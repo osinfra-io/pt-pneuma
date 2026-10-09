@@ -19,13 +19,3 @@ output "namespace" {
   description = "Owning team's namespace."
   value       = local.namespace
 }
-
-output "admin_allow" {
-  description = "Cloud admin ingress exception."
-  value       = local.admin_allow_manifest
-}
-
-output "admin_deny" {
-  description = "Cloud admin bypass denial."
-  value       = local.admin_authorization_manifest
-}
