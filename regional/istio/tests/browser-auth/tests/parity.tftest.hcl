@@ -161,8 +161,13 @@ run "managed_cloud_adapter" {
   }
 
   assert {
-    condition     = module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"].agentgateway_admin.host == "agentgateway.sb.osinfra.io" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"].agentgateway_admin.path == "/" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"].agentgateway_admin.backend_port == 15000
+    condition     = module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin"].host == "agentgateway.sb.osinfra.io" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin"].path == "/" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin"].backend_port == 15000
     error_message = "The admin surface must use the dedicated platform host, not a stream-team hostname."
+  }
+
+  assert {
+    condition     = alltrue([for routes in values(module.legacy_manifests.platform_routes) : alltrue([for name in keys(routes) : length(name) <= 253 && can(regex("^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$", name))])])
+    error_message = "Route keys become Kubernetes metadata names and must be valid lowercase DNS names."
   }
 
   assert {

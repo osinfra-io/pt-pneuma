@@ -22,7 +22,7 @@ locals {
 
   agentgateway_routes = {
     for name in keys(local.agentgateway_clusters) : name => {
-      agentgateway_admin = {
+      agentgateway-admin = {
         backend_namespace = "${module.core_helpers.team}-agentgateway"
         backend_port      = 15000
         backend_service   = "agentgateway-proxy-admin"
