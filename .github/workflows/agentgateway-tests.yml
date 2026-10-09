@@ -1,0 +1,23 @@
+name: Agentgateway Contracts
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - regional/agentgateway/**
+      - .github/workflows/agentgateway-tests.yml
+      - shared/helpers.tofu
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    name: Cluster selection and unpublished admin policy
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/test.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    with:
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      working_directory: regional/agentgateway/tests/fixtures/selection

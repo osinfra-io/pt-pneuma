@@ -20,6 +20,47 @@ permissions:
   id-token: write
 
 jobs:
+  agentgateway:
+    name: "Agentgateway: ${{ matrix.zone }}"
+    if: vars.AGENTGATEWAY_NONPROD_ENABLED == 'true'
+    needs: [istio_manifests_us_east1_b, istio_manifests_us_east4_a, main]
+    strategy:
+      fail-fast: false
+      matrix:
+        zone: [us-east1-b, us-east4-a]
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Non-Production Agentgateway: ${{ matrix.zone }}"
+      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-nonprod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: ${{ matrix.zone }}-agentgateway-non-production
+      working_directory: regional/agentgateway
+      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_manifests:
+    name: "Agentgateway Manifests: ${{ matrix.zone }}"
+    needs: [agentgateway, main]
+    strategy:
+      fail-fast: false
+      matrix:
+        zone: [us-east1-b, us-east4-a]
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Non-Production Agentgateway: ${{ matrix.zone }}"
+      service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-nonprod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: ${{ matrix.zone }}-agentgateway-manifests-non-production
+      working_directory: regional/agentgateway/manifests
+      workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   main:
     name: "Main"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5

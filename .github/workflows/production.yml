@@ -24,6 +24,47 @@ permissions:
   id-token: write
 
 jobs:
+  agentgateway:
+    name: "Agentgateway: ${{ matrix.zone }}"
+    if: vars.AGENTGATEWAY_PROD_ENABLED == 'true'
+    needs: [istio_manifests_us_east1_b, istio_manifests_us_east1_c, istio_manifests_us_east1_d, istio_manifests_us_east4_a, istio_manifests_us_east4_b, istio_manifests_us_east4_c, main]
+    strategy:
+      fail-fast: false
+      matrix:
+        zone: [us-east1-b, us-east1-c, us-east1-d, us-east4-a, us-east4-b, us-east4-c]
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production Agentgateway: ${{ matrix.zone }}"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: ${{ matrix.zone }}-agentgateway-production
+      working_directory: regional/agentgateway
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_manifests:
+    name: "Agentgateway Manifests: ${{ matrix.zone }}"
+    needs: [agentgateway, main]
+    strategy:
+      fail-fast: false
+      matrix:
+        zone: [us-east1-b, us-east1-c, us-east1-d, us-east4-a, us-east4-b, us-east4-c]
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production Agentgateway: ${{ matrix.zone }}"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: ${{ matrix.zone }}-agentgateway-manifests-production
+      working_directory: regional/agentgateway/manifests
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   main:
     name: "Main"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
