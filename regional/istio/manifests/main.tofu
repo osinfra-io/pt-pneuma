@@ -23,7 +23,7 @@ module "team_access" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=fd7ff93a153af0f6ae59a9847c31beac8ad096d9" # v0.9.2
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=127a5f69eed936a06e9faaa826834c5ff0daff9c" # unreleased authentik-application-access test pin
 
   for_each = local.gke_clusters
 

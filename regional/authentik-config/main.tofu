@@ -16,10 +16,11 @@ module "authentication" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=94d1961ee3942085b684557c7555ccd27e31eff2" # v0.2.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=58e70d246454ae012f4c4877c303d6860e5c1de7" # unreleased authentik-application-access test pin
 
   depends_on = [terraform_data.browser_group_policy_validation]
 
+  application_groups                    = module.team_access.application_groups
   authentik_url                         = local.authentik_url
   browser_group_policy_bindings         = local.browser_group_policy_bindings
   default_authentication_source_uuids   = local.default_authentication_source_uuids
@@ -30,6 +31,16 @@ module "authentik_config" {
   manage_default_authentication_stage   = local.manage_default_authentication_stage
   namespace                             = local.namespace
   redirect_uris                         = local.redirect_uris
+}
+
+# Team Application Access Module (osinfra.io)
+# https://github.com/osinfra-io/pt-pneuma
+
+module "team_access" {
+  source = "./team-access"
+
+  environment = module.core_helpers.environment
+  teams       = module.core_helpers.teams
 }
 
 # Terraform Data Resource

@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "kubernetes_authentik" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=94d1961ee3942085b684557c7555ccd27e31eff2" # v0.2.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=58e70d246454ae012f4c4877c303d6860e5c1de7" # unreleased authentik-application-access test pin
 
   depends_on = [
     kubernetes_secret_v1.authentik,
