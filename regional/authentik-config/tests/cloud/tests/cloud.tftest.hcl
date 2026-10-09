@@ -105,3 +105,42 @@ run "cloud_production_custom_authentication_disabled" {
     error_message = "Production host discovery and identification-stage management must remain unchanged."
   }
 }
+
+run "cloud_managed_application_groups" {
+  command = apply
+
+  override_module {
+    target = module.core_helpers
+    outputs = {
+      env         = "sb"
+      environment = "sandbox"
+      repository  = "pt-pneuma"
+      team        = "pt-pneuma"
+      teams = {
+        pt-pneuma = {
+          dns_subdomain = "pneuma"
+          authentik_groups = {
+            agentgateway-admins = {
+              description = "UI access"
+              name        = "pt-pneuma: agentgateway Admins"
+              members = {
+                sandbox    = ["sandbox@example.com"]
+                production = ["production@example.com"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  assert {
+    condition     = module.team_access.application_groups["pt-pneuma/agentgateway-admins"].members == tolist(["sandbox@example.com"])
+    error_message = "The cloud Authentik consumer must select only the current environment's declared members."
+  }
+
+  assert {
+    condition     = module.authentik_config.application_groups["pt-pneuma/agentgateway-admins"].name == "pt-pneuma: agentgateway Admins" && !module.authentik_config.application_groups["pt-pneuma/agentgateway-admins"].is_superuser
+    error_message = "The pinned module must create the owning team's named application group without Authentik superuser privileges."
+  }
+}
