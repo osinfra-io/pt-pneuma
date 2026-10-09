@@ -220,7 +220,7 @@ locals {
                   function envoy_on_request(handle)
                     local remove = {}
                     for key, value in pairs(handle:headers()) do
-                      if string.sub(string.lower(key), 1, 12) == "x-authentik-" then
+                      if string.sub(string.lower(key), 1, 12) == "x-authentik-" and string.lower(key) ~= "x-authentik-csrf" then
                         remove[#remove + 1] = key
                       end
                     end
