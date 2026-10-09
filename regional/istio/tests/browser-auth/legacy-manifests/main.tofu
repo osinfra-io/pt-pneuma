@@ -45,3 +45,8 @@ output "application_access_filters" {
   description = "Production cluster-keyed post-auth guard manifests."
   value       = local.gateway_auth_application_access_filter_manifests
 }
+
+output "platform_routes" {
+  description = "Dedicated platform hostname routes."
+  value       = local.routes
+}

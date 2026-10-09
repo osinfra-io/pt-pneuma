@@ -49,6 +49,11 @@ module "team_access" {
 resource "terraform_data" "browser_group_policy_validation" {
   lifecycle {
     precondition {
+      condition     = module.core_helpers.environment != "sandbox" || contains(keys(module.team_access.application_group_members), "${module.core_helpers.team}: agentgateway Admins")
+      error_message = "Deploy the Logos agentgateway application-group declaration before enabling its sandbox Authentik provider."
+    }
+
+    precondition {
       condition     = length(local.browser_group_policy_conflicting_hosts) == 0
       error_message = "Browser routes sharing an Authentik host must declare identical required_groups and required_roles. Conflicting hosts: ${join(", ", local.browser_group_policy_conflicting_hosts)}."
     }

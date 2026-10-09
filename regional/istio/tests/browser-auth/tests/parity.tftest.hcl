@@ -159,4 +159,19 @@ run "managed_cloud_adapter" {
     condition     = module.legacy_manifests.application_access_filters["pt-pneuma-us-east1-b/application_access"].manifest.spec.configPatches[0].patch.operation == "INSERT_AFTER"
     error_message = "Cloud managed-access enforcement must run after successful forward-auth."
   }
+
+  assert {
+    condition     = module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"].agentgateway_admin.host == "agentgateway.sb.osinfra.io" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"].agentgateway_admin.path == "/" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"].agentgateway_admin.backend_port == 15000
+    error_message = "The admin surface must use the dedicated platform host, not a stream-team hostname."
+  }
+
+  assert {
+    condition     = module.legacy_manifests.callback_routes["pt-pneuma-us-east1-b"]["authentik-callback-${substr(sha1("agentgateway.sb.osinfra.io"), 0, 8)}"].host == "agentgateway.sb.osinfra.io"
+    error_message = "The dedicated host must have its own outpost callback route."
+  }
+
+  assert {
+    condition     = module.legacy_manifests.gateway_auth_authorization_policies["pt-pneuma-us-east1-b-agentgateway-admin"].cluster_name == "pt-pneuma-us-east1-b" && module.legacy_manifests.custom_manifests["pt-pneuma-us-east1-b-agentgateway-admin"].spec.rules[0].to[0].operation.hosts == ["agentgateway.sb.osinfra.io"]
+    error_message = "Dedicated-host authorization resources must remain keyed to their own gateway cluster."
+  }
 }

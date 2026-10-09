@@ -160,4 +160,9 @@ run "cloud_managed_application_groups" {
     condition     = output.pending_application_members["pt-pneuma/agentgateway-admins"] == tolist(["sandbox@example.com"])
     error_message = "Unenrolled declared members must remain visible as pending rather than being silently reported as provisioned."
   }
+
+  assert {
+    condition     = module.authentik_config.browser_group_policy_bindings["https://agentgateway.sb.osinfra.io"].groups == tolist(["pt-pneuma: agentgateway Admins"]) && output.cloud_inputs.redirect_uris[1].matching_mode == "strict" && output.cloud_inputs.redirect_uris[1].url == "https://agentgateway.sb.osinfra.io/outpost.goauthentik.io/callback"
+    error_message = "The dedicated admin host must bind the managed group and its exact callback, without broadening existing team-host callback admission."
+  }
 }

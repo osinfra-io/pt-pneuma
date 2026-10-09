@@ -12,4 +12,56 @@ module "kubernetes_agentgateway_manifests" {
 
   labels    = module.core_helpers.labels
   namespace = local.namespace
+  proxy_env = local.proxy_env
+}
+
+# Kubernetes Manifest Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
+
+resource "kubernetes_manifest" "agentgateway_admin_allow" {
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = local.admin_allow_manifest
+}
+
+resource "kubernetes_manifest" "agentgateway_admin_authorization" {
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = local.admin_authorization_manifest
+}
+
+# Kubernetes Service Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/service_v1
+
+resource "kubernetes_service_v1" "agentgateway_admin" {
+  depends_on = [
+    kubernetes_manifest.agentgateway_admin_allow,
+    kubernetes_manifest.agentgateway_admin_authorization,
+  ]
+
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  metadata {
+    name      = "agentgateway-proxy-admin"
+    namespace = local.namespace
+  }
+
+  spec {
+    port {
+      name        = "http-admin"
+      port        = 15000
+      target_port = 15000
+    }
+
+    selector = {
+      "gateway.networking.k8s.io/gateway-name" = "agentgateway-proxy"
+    }
+    type = "ClusterIP"
+  }
 }

@@ -59,7 +59,7 @@ jobs:
     name: "agentgateway Manifests: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [agentgateway_us_east1_b, main]
+    needs: [agentgateway_us_east1_b, authentik_config, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Istio: us-east1-b"
@@ -76,7 +76,7 @@ jobs:
     name: "agentgateway Manifests: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
-    needs: [agentgateway_us_east4_a, main]
+    needs: [agentgateway_us_east4_a, authentik_config, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Istio: us-east4-a"

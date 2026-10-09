@@ -2,6 +2,11 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  agentgateway_gateway_dns = module.core_helpers.environment == "sandbox" ? {
+    for host, record in local.authentik_gateway_dns :
+    replace(host, "authentik.", "agentgateway.") => record
+  } : {}
+
   # Single logical Authentik service (pt-pneuma#142): one shared Cloud SQL primary, one secret
   # key and one issuer are created here in main and consumed by every regional authentik workspace,
   # so all stateless regional server/worker instances form one identity provider (not per-zone IdPs).
@@ -143,6 +148,7 @@ locals {
   gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(
     merge(values(local.gateway_dns_by_team)...),
     local.authentik_gateway_dns,
+    local.agentgateway_gateway_dns,
   ) : {}
 
 

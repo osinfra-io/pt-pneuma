@@ -2,6 +2,36 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  agentgateway_clusters = {
+    for name, cluster in local.gateway_clusters : name => cluster
+    if module.core_helpers.environment == "sandbox"
+  }
+
+  agentgateway_hostname = "agentgateway.${local.authentik_public_dns_domain}"
+
+  agentgateway_policy_inputs = {
+    for name in keys(local.agentgateway_clusters) : name => {
+      "${name}-agentgateway-admin" = {
+        host            = local.agentgateway_hostname
+        mode            = "browser"
+        path            = "/"
+        required_groups = ["${module.core_helpers.team}: agentgateway Admins"]
+      }
+    }
+  }
+
+  agentgateway_routes = {
+    for name in keys(local.agentgateway_clusters) : name => {
+      agentgateway_admin = {
+        backend_namespace = "${module.core_helpers.team}-agentgateway"
+        backend_port      = 15000
+        backend_service   = "agentgateway-proxy-admin"
+        host              = local.agentgateway_hostname
+        path              = "/"
+      }
+    }
+  }
+
   # DNS subdomain per cluster, extracted from the gateway DNS zone name
   # (e.g. "pneuma.sb.osinfra.io" → "pneuma", "kryptos.sb.osinfra.io" → "kryptos").
   dns_subdomain = {
@@ -121,19 +151,19 @@ locals {
 
   gateway_auth_browser_policy_inputs = {
     for cluster_name in keys(local.gateway_clusters) :
-    cluster_name => {
+    cluster_name => merge({
       for item in local.gateway_auth_route_policy_items :
       "${cluster_name}-${item.key}" => item
-    }
+    }, try(local.agentgateway_policy_inputs[cluster_name], {}))
   }
 
   gateway_auth_policies = {
     for cluster_name in keys(local.gateway_clusters) :
     cluster_name => {
-      for item in local.gateway_auth_route_policy_items :
-      "${cluster_name}-${item.key}" => merge(
+      for key, item in local.gateway_auth_browser_policy_inputs[cluster_name] :
+      key => merge(
         item,
-        module.gateway_auth[cluster_name].resolved_policies["${cluster_name}-${item.key}"],
+        module.gateway_auth[cluster_name].resolved_policies[key],
         { cluster_name = cluster_name },
       )
     }
@@ -399,6 +429,7 @@ locals {
         merge(local.global_routes[peer_name], local.zonal_routes[peer_name])
       ]...),
       try(local.authentik_routes[cluster_name], {}),
+      try(local.agentgateway_routes[cluster_name], {}),
       try(local.authentik_callback_routes[cluster_name], {}),
     ) : {}
   }

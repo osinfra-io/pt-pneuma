@@ -23,6 +23,12 @@ output "teams" {
   value = {
     pt-pneuma = {
       dns_subdomain = "pneuma"
+      authentik_groups = {
+        agentgateway-admins = {
+          description = "Admin access"
+          name        = "pt-pneuma: agentgateway Admins"
+        }
+      }
     }
   }
 }

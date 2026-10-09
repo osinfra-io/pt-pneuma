@@ -2,6 +2,8 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  agentgateway_hostname = "agentgateway.${module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"}"
+
   authentication_policy_ids = {
     for key, policy in data.authentik_policy_expression.sandbox_authentication_stage_policies : key => policy.id
   }
@@ -17,7 +19,7 @@ locals {
 
   authentik_url = local.main.authentik_base_url
 
-  browser_group_policy_bindings = {
+  browser_group_policy_bindings = merge({
     for host in distinct([for item in local.browser_group_policy_items : item.host]) : host => {
       groups = distinct(flatten([
         for item in local.browser_group_policy_items :
@@ -25,7 +27,12 @@ locals {
       ]))
       host = host
     }
-  }
+    }, module.core_helpers.environment == "sandbox" ? {
+    "https://${local.agentgateway_hostname}" = {
+      groups = ["${module.core_helpers.team}: agentgateway Admins"]
+      host   = "https://${local.agentgateway_hostname}"
+    }
+  } : {})
 
   browser_group_policy_conflicting_hosts = [
     for host in sort(distinct([for item in local.browser_group_policy_items : item.host])) : host
@@ -89,12 +96,15 @@ locals {
 
   # Authentik matches REGEX entries with Python re.fullmatch. The optional hostname prefix
   # accepts the apex and zonal subdomains, but never paths or attacker-controlled hostnames.
-  redirect_uris = [
+  redirect_uris = concat([
     {
       matching_mode = "regex"
       url           = "https://([a-z0-9-]+\\.)*${replace(local.dns_zone_name, ".", "\\.")}/outpost\\.goauthentik\\.io/callback.*"
     }
-  ]
+    ], module.core_helpers.environment == "sandbox" ? [{
+      matching_mode = "strict"
+      url           = "https://${local.agentgateway_hostname}/outpost.goauthentik.io/callback"
+  }] : [])
 
   sandbox_brand_domain = "authentik.sb.osinfra.io"
   sandbox_brand_title  = "osinfra.io | Sandbox"
