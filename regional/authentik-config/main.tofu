@@ -16,7 +16,7 @@ module "authentication" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=94d1961ee3942085b684557c7555ccd27e31eff2" # v0.2.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=e6902b17e32c49a0ed7dde6e516b60b2a8d2f4c8" # agentgateway-saml-admins testing
 
   depends_on = [terraform_data.browser_group_policy_validation]
 

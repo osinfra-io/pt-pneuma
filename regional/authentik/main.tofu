@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "kubernetes_authentik" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=94d1961ee3942085b684557c7555ccd27e31eff2" # v0.2.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=e6902b17e32c49a0ed7dde6e516b60b2a8d2f4c8" # agentgateway-saml-admins testing
 
   depends_on = [
     kubernetes_secret_v1.authentik,
