@@ -25,3 +25,9 @@ output "outpost_service_port" {
   description = "Service port of the managed proxy outpost for the Istio ext_authz ExtensionProvider"
   value       = module.authentik_config.outpost_service_port
 }
+
+output "pending_application_members" {
+  description = "Declared application members awaiting verified Google enrollment, keyed by stable team/group identifiers."
+  sensitive   = true
+  value       = module.authentik_config.pending_application_members
+}

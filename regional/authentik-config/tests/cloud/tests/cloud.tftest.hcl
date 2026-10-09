@@ -109,6 +109,18 @@ run "cloud_production_custom_authentication_disabled" {
 run "cloud_managed_application_groups" {
   command = apply
 
+  override_data {
+    target = module.authentik_config.data.authentik_users.google
+    values = {
+      users = []
+    }
+  }
+
+  variables {
+    google_oauth_client_id     = "mock-client"
+    google_oauth_client_secret = "mock-secret"
+  }
+
   override_module {
     target = module.core_helpers
     outputs = {
@@ -142,5 +154,10 @@ run "cloud_managed_application_groups" {
   assert {
     condition     = module.authentik_config.application_groups["pt-pneuma/agentgateway-admins"].name == "pt-pneuma: agentgateway Admins" && !module.authentik_config.application_groups["pt-pneuma/agentgateway-admins"].is_superuser
     error_message = "The pinned module must create the owning team's named application group without Authentik superuser privileges."
+  }
+
+  assert {
+    condition     = output.pending_application_members["pt-pneuma/agentgateway-admins"] == tolist(["sandbox@example.com"])
+    error_message = "Unenrolled declared members must remain visible as pending rather than being silently reported as provisioned."
   }
 }
