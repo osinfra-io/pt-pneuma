@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager
 
 module "kubernetes_cert_manager_istio_csr" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional/istio-csr?ref=50122dfd99038d0c4e02e48fd175d62f8c6aae6e" # v0.4.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager//regional/istio-csr?ref=48bc660a4802c8c86ecb89ba0ebc3f7769445530" # v0.4.1
 
   for_each = local.gke_clusters
 
