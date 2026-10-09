@@ -57,7 +57,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=498cc19e272902b3579eb24f7c51ae6fa254a44a" # unreleased authentik-application-access test pin
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=377832147efb535eee9072bf101d2186052e5bd2" # unreleased authentik-application-access test pin
 
   for_each = local.teams_with_clusters
 
