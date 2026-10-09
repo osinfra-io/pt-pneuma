@@ -52,6 +52,11 @@ run "production_parity" {
   command = plan
 
   assert {
+    condition     = length(module.legacy_manifests.application_access_filters) == 0
+    error_message = "Legacy browser routes must not acquire a managed-access guard or require new identity headers."
+  }
+
+  assert {
     condition     = length(module.legacy_manifests.custom_manifests) == 2 && jsonencode(module.shared.custom_authorization_policy_manifests) == jsonencode(module.legacy_manifests.custom_manifests)
     error_message = "Shared CUSTOM rendering must equal the real production global/zonal browser manifests."
   }
@@ -91,5 +96,67 @@ run "production_parity" {
       jsonencode(manifest.spec.rules[3].when[0]) == jsonencode({ key = "request.auth.claims[roles]", notValues = ["reader"] })
     ])
     error_message = "Production API JWT resources must retain principal/audience/group/role enforcement."
+  }
+}
+
+run "managed_cloud_adapter" {
+  command = plan
+
+  override_module {
+    target = module.legacy_manifests.module.core_helpers
+    outputs = {
+      env         = "sb"
+      environment = "sandbox"
+      team        = "pt-pneuma"
+      teams = {
+        pt-pneuma = {
+          dns_subdomain = "pneuma"
+          authentik_groups = {
+            agentgateway-admins = {
+              description = "UI access"
+              name        = "pt-pneuma: agentgateway Admins"
+              members = {
+                production = ["production@example.com"]
+                sandbox    = ["sandbox@example.com"]
+              }
+            }
+          }
+          platform_managed_project = {
+            kubernetes_engine_namespaces = {
+              agentgateway = {
+                routes = {
+                  ui = {
+                    path    = "/ui"
+                    port    = 15000
+                    service = "agentgateway-admin"
+                  }
+                }
+                route_auth_policies = {
+                  ui = {
+                    mode            = "browser"
+                    required_groups = ["pt-pneuma: agentgateway Admins"]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  assert {
+    condition     = module.legacy_manifests.application_group_members["pt-pneuma: agentgateway Admins"] == tolist(["sandbox@example.com"])
+    error_message = "The cloud gateway must consume the selected environment's core-helper memberships."
+  }
+
+  assert {
+    condition     = length(module.legacy_manifests.application_access_filters) == 1 && module.legacy_manifests.application_access_filters["pt-pneuma-us-east1-b/application_access"].cluster_name == "pt-pneuma-us-east1-b"
+    error_message = "Each gateway cluster must own its managed-access filter under a stable cluster key."
+  }
+
+  assert {
+    condition     = module.legacy_manifests.application_access_filters["pt-pneuma-us-east1-b/application_access"].manifest.spec.configPatches[0].patch.operation == "INSERT_AFTER"
+    error_message = "Cloud managed-access enforcement must run after successful forward-auth."
   }
 }

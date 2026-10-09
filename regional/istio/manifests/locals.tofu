@@ -59,6 +59,16 @@ locals {
   # Auth policies generated from the Logos route_auth_policies contract. The gateway
   # cluster enforces every team's external route because all ingress enters through
   # the platform gateway data plane.
+  gateway_auth_application_access_filter_manifests = merge({}, [
+    for cluster_name, renderer in module.gateway_auth : {
+      for key, manifest in renderer.browser_authorization_filter_manifests :
+      "${cluster_name}/${key}" => {
+        cluster_name = cluster_name
+        manifest     = manifest
+      }
+    }
+  ]...)
+
   gateway_auth_authorization_policies = merge(concat(
     [{}],
     [

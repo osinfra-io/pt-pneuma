@@ -3,6 +3,11 @@ output "env" {
   value       = "sb"
 }
 
+output "environment" {
+  description = "Fixture long environment name."
+  value       = "sandbox"
+}
+
 output "team" {
   description = "Fixture gateway team."
   value       = "pt-pneuma"

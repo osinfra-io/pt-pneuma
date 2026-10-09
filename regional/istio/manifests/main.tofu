@@ -6,9 +6,17 @@ module "gateway_auth" {
 
   for_each = local.gateway_clusters
 
-  extension_provider_name = local.authentik_extension_provider_name
-  outpost_namespace       = local.authentik_namespace
-  policies                = local.gateway_auth_browser_policy_inputs[each.key]
+  application_group_members = module.team_access.application_group_members
+  extension_provider_name   = local.authentik_extension_provider_name
+  outpost_namespace         = local.authentik_namespace
+  policies                  = local.gateway_auth_browser_policy_inputs[each.key]
+}
+
+module "team_access" {
+  source = "../gateway-auth/team-access"
+
+  environment = module.core_helpers.environment
+  teams       = module.core_helpers.teams
 }
 
 # Kubernetes Istio Module (osinfra.io)
@@ -158,6 +166,14 @@ resource "kubernetes_manifest" "gateway_auth_request_authentication" {
   provider = kubernetes.by_cluster[each.key]
 
   manifest = each.value
+}
+
+resource "kubernetes_manifest" "gateway_authentik_application_access_filter" {
+  for_each = local.gateway_auth_application_access_filter_manifests
+
+  provider = kubernetes.by_cluster[each.value.cluster_name]
+
+  manifest = each.value.manifest
 }
 
 resource "kubernetes_manifest" "gateway_authentik_inbound_header_strip_filter" {
