@@ -60,3 +60,8 @@ output "admin_deny" {
   description = "Cloud admin bypass denial."
   value       = local.agentgateway_admin_deny_manifest
 }
+
+output "controller_allow" {
+  description = "Proxy-to-controller discovery exception."
+  value       = local.agentgateway_controller_allow_manifest
+}

@@ -61,6 +61,14 @@ resource "kubernetes_manifest" "agentgateway_admin_authorization" {
   manifest = local.agentgateway_admin_deny_manifest
 }
 
+resource "kubernetes_manifest" "agentgateway_controller_discovery" {
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = local.agentgateway_controller_allow_manifest
+}
+
 resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
   for_each = local.gateway_clusters
 

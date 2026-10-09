@@ -103,6 +103,15 @@ run "managed_cloud_adapter" {
   command = plan
 
   assert {
+    condition = (module.legacy_manifests.controller_allow.spec.action == "ALLOW" &&
+      module.legacy_manifests.controller_allow.metadata.namespace == "pt-pneuma-agentgateway" &&
+      module.legacy_manifests.controller_allow.spec.selector.matchLabels == { "app.kubernetes.io/name" = "agentgateway" } &&
+      module.legacy_manifests.controller_allow.spec.rules[0].from[0].source.principals == ["cluster.local/ns/pt-pneuma-agentgateway/sa/agentgateway-proxy"] &&
+    module.legacy_manifests.controller_allow.spec.rules[0].to[0].operation.ports == ["9978"])
+    error_message = "Only the proxy identity may reach the controller discovery port; this must not broaden admin access."
+  }
+
+  assert {
     condition     = module.legacy_manifests.admin_allow.spec.action == "ALLOW" && module.legacy_manifests.admin_allow.spec.rules[0].from[0].source.principals == ["cluster.local/ns/istio-ingress/sa/gateway-istio"] && module.legacy_manifests.admin_allow.spec.rules[0].to[0].operation.ports == ["15000"] && module.legacy_manifests.admin_allow.metadata.namespace == "pt-pneuma-agentgateway"
     error_message = "Only the authenticated ingress gateway may reach the admin port through mesh default-deny."
   }

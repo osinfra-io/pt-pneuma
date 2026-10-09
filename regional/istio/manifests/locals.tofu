@@ -58,6 +58,35 @@ locals {
     if module.core_helpers.environment == "sandbox"
   }
 
+  agentgateway_controller_allow_manifest = {
+    apiVersion = "security.istio.io/v1"
+    kind       = "AuthorizationPolicy"
+    metadata = {
+      name      = "agentgateway-controller-discovery"
+      namespace = local.agentgateway_namespace
+    }
+    spec = {
+      action = "ALLOW"
+      rules = [{
+        from = [{
+          source = {
+            principals = ["cluster.local/ns/${local.agentgateway_namespace}/sa/agentgateway-proxy"]
+          }
+        }]
+        to = [{
+          operation = {
+            ports = ["9978"]
+          }
+        }]
+      }]
+      selector = {
+        matchLabels = {
+          "app.kubernetes.io/name" = "agentgateway"
+        }
+      }
+    }
+  }
+
   agentgateway_hostname = "agentgateway.${local.authentik_public_dns_domain}"
 
   agentgateway_namespace = "${module.core_helpers.team}-agentgateway"
