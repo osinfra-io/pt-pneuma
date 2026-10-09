@@ -17,7 +17,7 @@ module "gateway_auth" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=377832147efb535eee9072bf101d2186052e5bd2" # unreleased authentik-application-access test pin
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=8064ae7ae5df44271e183cd5aad16204fcfb4685" # unreleased authentik-application-access test pin
 
   for_each = local.gke_clusters
 
