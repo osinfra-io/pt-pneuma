@@ -2,6 +2,88 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  managed_browser_policy_keys = toset([
+    for key, policy in var.policies : key
+    if policy.mode == "browser" && anytrue([
+      for name in concat(policy.required_groups, policy.required_roles) :
+      contains(keys(var.application_group_members), name)
+    ])
+  ])
+
+  application_authorization_policies = {
+    for key, policy in local.resolved_policies : key => policy
+    if policy.mode == "browser" && anytrue([
+      for name in concat(policy.required_groups, policy.required_roles) :
+      contains(keys(var.application_group_members), name)
+    ])
+  }
+
+  browser_authorization_lua = templatefile("${path.module}/browser-authorization.lua.tftpl", {
+    memberships = var.application_group_members
+    policies    = local.application_authorization_policies
+    strings     = local.lua_string_literals
+  })
+
+  # OpenTofu JSON's HTML escapes are not valid Lua string escapes.
+  lua_string_literals = {
+    for value in distinct(concat(
+      keys(var.application_group_members),
+      flatten(values(var.application_group_members)),
+      flatten([
+        for policy in values(local.application_authorization_policies) :
+        concat([policy.host, trimsuffix(policy.path, "/")], policy.exempt_paths, policy.required_groups, policy.required_roles)
+      ]),
+    )) : value => replace(replace(replace(jsonencode(value), "\\u003c", "<"), "\\u003e", ">"), "\\u0026", "&")
+  }
+
+  browser_authorization_filter_manifests = length(local.application_authorization_policies) == 0 ? {} : {
+    application_access = {
+      apiVersion = "networking.istio.io/v1alpha3"
+      kind       = "EnvoyFilter"
+      metadata = {
+        annotations = {
+          "galley.istio.io/analyze-suppress" = "IST0133"
+        }
+        name      = "gateway-authentik-application-access"
+        namespace = var.gateway_namespace
+      }
+      spec = {
+        priority = 10
+        configPatches = [{
+          applyTo = "HTTP_FILTER"
+          match = {
+            context = "GATEWAY"
+            listener = {
+              filterChain = {
+                filter = {
+                  name = "envoy.filters.network.http_connection_manager"
+                  subFilter = {
+                    name = "envoy.filters.http.ext_authz"
+                  }
+                }
+              }
+            }
+          }
+          patch = {
+            operation = "INSERT_AFTER"
+            value = {
+              name = "envoy.filters.http.lua"
+              typed_config = {
+                "@type"    = "type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua"
+                inlineCode = local.browser_authorization_lua
+              }
+            }
+          }
+        }]
+        workloadSelector = {
+          labels = {
+            "gateway.networking.k8s.io/gateway-name" = var.gateway_name
+          }
+        }
+      }
+    }
+  }
+
   callback_paths = [
     "/outpost.goauthentik.io",
     "/outpost.goauthentik.io/*",
@@ -167,8 +249,8 @@ locals {
       custom_authorization_policy_name = "gateway-auth-${substr(sha1("${key}-custom"), 0, 8)}"
       deny_authorization_policy_name   = "gateway-auth-${substr(sha1("${key}-deny"), 0, 8)}"
       exempt_paths = distinct(concat(
-        local.default_exempt_paths,
-        policy.path == "/" ? [] : [
+        contains(local.managed_browser_policy_keys, key) ? local.callback_paths : local.default_exempt_paths,
+        policy.path == "/" || contains(local.managed_browser_policy_keys, key) ? [] : [
           for path in local.default_exempt_paths :
           "${trimsuffix(policy.path, "/")}${path}"
         ],

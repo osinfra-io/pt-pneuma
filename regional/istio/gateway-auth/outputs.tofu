@@ -1,6 +1,11 @@
 # Output Values
 # https://opentofu.org/docs/language/values/outputs
 
+output "browser_authorization_filter_manifests" {
+  description = "Optional post-forward-auth filters enforcing current managed memberships on browser paths."
+  value       = local.browser_authorization_filter_manifests
+}
+
 output "callback_routes" {
   description = "Browser host callback routes in the regional/manifests routes input shape."
   value       = local.callback_routes
