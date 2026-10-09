@@ -248,7 +248,7 @@ jobs:
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_us_east1_b:
-    name: "Authentik: us-east1-b"
+    name: "authentik: us-east1-b"
     needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:
@@ -282,7 +282,7 @@ jobs:
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_us_east4_a:
-    name: "Authentik: us-east4-a"
+    name: "authentik: us-east4-a"
     needs: read_clusters
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     with:

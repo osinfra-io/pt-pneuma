@@ -321,7 +321,7 @@ jobs:
         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 
   authentik_us_east1_b:
-    name: "Authentik: us-east1-b"
+    name: "authentik: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [istio_us_east1_b, main]
@@ -339,7 +339,7 @@ jobs:
       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_config:
-    name: "Authentik Config"
+    name: "authentik Config"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [istio_manifests_us_east1_b, istio_manifests_us_east4_a, main]
@@ -376,7 +376,7 @@ jobs:
       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_us_east4_a:
-    name: "Authentik: us-east4-a"
+    name: "authentik: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east4_a, main]
