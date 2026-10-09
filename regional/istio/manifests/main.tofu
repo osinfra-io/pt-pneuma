@@ -23,7 +23,7 @@ module "team_access" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=127a5f69eed936a06e9faaa826834c5ff0daff9c" # unreleased authentik-application-access test pin
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=498cc19e272902b3579eb24f7c51ae6fa254a44a" # unreleased authentik-application-access test pin
 
   depends_on = [
     kubernetes_namespace_v1.istio_test_gateway_stub,

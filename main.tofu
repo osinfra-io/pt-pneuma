@@ -57,16 +57,17 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=127a5f69eed936a06e9faaa826834c5ff0daff9c" # unreleased authentik-application-access test pin
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=498cc19e272902b3579eb24f7c51ae6fa254a44a" # unreleased authentik-application-access test pin
 
   for_each = local.teams_with_clusters
 
-  cloud_armor_allow_rules    = each.key == module.core_helpers.team ? local.authentik_cloud_armor_allow_rules : {}
-  cloud_armor_waf_exclusions = each.key == module.core_helpers.team ? local.authentik_cloud_armor_waf_exclusions : []
-  gateway_dns                = each.key == module.core_helpers.team ? local.gateway_dns_for_pneuma : {}
-  gke_fleet_host_project_id  = each.key == module.core_helpers.team ? "" : local.team_project_ids[module.core_helpers.team]
-  labels                     = module.core_helpers.labels
-  project                    = local.team_project_ids[each.key]
+  cloud_armor_allow_rules                   = each.key == module.core_helpers.team ? local.authentik_cloud_armor_allow_rules : {}
+  cloud_armor_method_enforcement_exceptions = local.cloud_armor_method_enforcement_exceptions_by_team[each.key]
+  cloud_armor_waf_exclusions                = each.key == module.core_helpers.team ? local.authentik_cloud_armor_waf_exclusions : []
+  gateway_dns                               = each.key == module.core_helpers.team ? local.gateway_dns_for_pneuma : {}
+  gke_fleet_host_project_id                 = each.key == module.core_helpers.team ? "" : local.team_project_ids[module.core_helpers.team]
+  labels                                    = module.core_helpers.labels
+  project                                   = local.team_project_ids[each.key]
 }
 
 # Google Project IAM Member Resource

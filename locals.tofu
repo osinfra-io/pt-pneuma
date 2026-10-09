@@ -23,6 +23,14 @@ locals {
     }
   }
 
+  authentik_cloud_armor_method_enforcement_exceptions = [
+    {
+      hostname    = local.authentik_hostname
+      methods     = ["DELETE", "PATCH", "PUT"]
+      path_prefix = "/api/v3/"
+    }
+  ]
+
   # The Google OAuth flow's "scope" query parameter (e.g. "userinfo.profile") is false-positive
   # matched by the preconfigured LFI WAF rule (owasp-crs-v030301-id930120-lfi). Authentik re-wraps
   # the original query string (including "scope") inside its own "query" parameter at every step of
@@ -99,6 +107,11 @@ locals {
 
   # DNS subdomain per team (e.g., "pneuma"), sourced from team config in pt-logos.
   # Falls back to the team key with its topology prefix stripped (e.g. "pt-pneuma" → "pneuma").
+  cloud_armor_method_enforcement_exceptions_by_team = {
+    for team in keys(local.teams_with_clusters) : team =>
+    team == module.core_helpers.team ? local.authentik_cloud_armor_method_enforcement_exceptions : []
+  }
+
   dns_subdomains = {
     for team_key, team in local.teams_with_clusters :
     team_key => team.dns_subdomain != null ? team.dns_subdomain : replace(team_key, "/^[a-z]+-/", "")
