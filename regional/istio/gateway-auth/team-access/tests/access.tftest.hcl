@@ -70,3 +70,67 @@ run "invalid_environment" {
 
   expect_failures = [var.environment]
 }
+
+run "cross_team_resolved_name" {
+  command = plan
+
+  variables {
+    environment = "sandbox"
+    teams = {
+      st-example = {
+        authentik_groups = {
+          admins = {
+            description = "Cannot claim another team's group"
+            name        = "pt-pneuma: agentgateway Admins"
+          }
+        }
+      }
+    }
+  }
+
+  expect_failures = [var.teams]
+}
+
+run "conflicting_label_and_resolved_name" {
+  command = plan
+
+  variables {
+    environment = "sandbox"
+    teams = {
+      st-example = {
+        authentik_groups = {
+          readers = {
+            description = "Do not silently choose between conflicting identities"
+            label       = "Reports Readers"
+            name        = "st-example: Reports Admins"
+          }
+        }
+      }
+    }
+  }
+
+  expect_failures = [var.teams]
+}
+
+run "duplicate_members_outside_selected_environment" {
+  command = plan
+
+  variables {
+    environment = "sandbox"
+    teams = {
+      st-example = {
+        authentik_groups = {
+          readers = {
+            description = "Every environment is part of the access contract"
+            label       = "Reports Readers"
+            members = {
+              production = ["member@example.com", "member@example.com"]
+            }
+          }
+        }
+      }
+    }
+  }
+
+  expect_failures = [var.teams]
+}

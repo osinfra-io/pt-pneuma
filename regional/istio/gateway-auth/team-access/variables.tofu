@@ -30,9 +30,29 @@ variable "teams" {
     condition = alltrue(flatten([
       for team_key, team in var.teams : [
         for group in values(team.authentik_groups) :
-        group.label != null || group.name != null
+        group.name != null ? (
+          startswith(group.name, "${team_key}: ") &&
+          can(regex("^(pt|st|ct|et)-[a-z0-9-]+: [A-Za-z][A-Za-z0-9]*( [A-Za-z0-9]+)*$", group.name)) &&
+          (group.label == null ? true : group.name == "${team_key}: ${group.label}")
+          ) : (
+          group.label != null && can(regex("^[A-Za-z][A-Za-z0-9]*( [A-Za-z0-9]+)*$", group.label))
+        )
       ]
     ]))
-    error_message = "Application groups require a Logos label or resolved team-qualified name."
+    error_message = "Application groups require a valid Logos label or exact owning-team qualified name; when both are supplied they must agree."
+  }
+
+  validation {
+    condition = alltrue(flatten([
+      for team in values(var.teams) : [
+        for group in values(team.authentik_groups) : [
+          for members in [group.members.non-production, group.members.production, group.members.sandbox] :
+          length(members) == length(distinct(members)) && alltrue([
+            for email in members : can(regex("^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9-]+(\\.[a-z0-9-]+)+$", email))
+          ])
+        ]
+      ]
+    ]))
+    error_message = "Application member lists must contain unique lowercase email addresses in every environment."
   }
 }
