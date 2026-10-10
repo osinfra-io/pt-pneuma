@@ -16,10 +16,11 @@ module "authentication" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=94d1961ee3942085b684557c7555ccd27e31eff2" # v0.2.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=e977fcae27f7c8a6ac2addb36d66d3fe31170ef6" # v0.2.1
 
   depends_on = [terraform_data.browser_group_policy_validation]
 
+  application_groups                    = module.team_access.application_groups
   authentik_url                         = local.authentik_url
   browser_group_policy_bindings         = local.browser_group_policy_bindings
   default_authentication_source_uuids   = local.default_authentication_source_uuids
@@ -32,11 +33,26 @@ module "authentik_config" {
   redirect_uris                         = local.redirect_uris
 }
 
+# Team Application Access Module (osinfra.io)
+# https://github.com/osinfra-io/pt-pneuma
+
+module "team_access" {
+  source = "./team-access"
+
+  environment = module.core_helpers.environment
+  teams       = module.core_helpers.teams
+}
+
 # Terraform Data Resource
 # https://search.opentofu.org/provider/hashicorp/terraform/latest/docs/resources/data
 
 resource "terraform_data" "browser_group_policy_validation" {
   lifecycle {
+    precondition {
+      condition     = module.core_helpers.environment != "sandbox" || contains(keys(module.team_access.application_group_members), "${module.core_helpers.team}: agentgateway Admins")
+      error_message = "Deploy the Logos agentgateway application-group declaration before enabling its sandbox Authentik provider."
+    }
+
     precondition {
       condition     = length(local.browser_group_policy_conflicting_hosts) == 0
       error_message = "Browser routes sharing an Authentik host must declare identical required_groups and required_roles. Conflicting hosts: ${join(", ", local.browser_group_policy_conflicting_hosts)}."

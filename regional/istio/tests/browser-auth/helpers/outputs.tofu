@@ -1,6 +1,11 @@
 output "env" {
   description = "Fixture environment."
-  value       = "sb"
+  value       = "nonprod"
+}
+
+output "environment" {
+  description = "Fixture long environment name."
+  value       = "non-production"
 }
 
 output "team" {

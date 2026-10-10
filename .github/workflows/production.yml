@@ -896,13 +896,13 @@ jobs:
         -var=datadog_app_key=${{ secrets.DATADOG_APP_KEY }}
 
   authentik_us_east1_b:
-    name: "Authentik: us-east1-b"
+    name: "authentik: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [istio_us_east1_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      github_environment: "Production Authentik: us-east1-b"
+      github_environment: "Production authentik: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_plan_args: -var-file=environments/production.tfvars
@@ -914,13 +914,13 @@ jobs:
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_config:
-    name: "Authentik Config"
+    name: "authentik Config"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [istio_manifests_us_east1_b, istio_manifests_us_east1_c, istio_manifests_us_east1_d, istio_manifests_us_east4_a, istio_manifests_us_east4_b, istio_manifests_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      github_environment: "Production Authentik Config"
+      github_environment: "Production authentik Config"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_plan_args: -var-file=environments/production.tfvars
@@ -951,13 +951,13 @@ jobs:
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_us_east1_c:
-    name: "Authentik: us-east1-c"
+    name: "authentik: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east1_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      github_environment: "Production Authentik: us-east1-c"
+      github_environment: "Production authentik: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_plan_args: -var-file=environments/production.tfvars
@@ -985,13 +985,13 @@ jobs:
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_us_east1_d:
-    name: "Authentik: us-east1-d"
+    name: "authentik: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east1_d, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      github_environment: "Production Authentik: us-east1-d"
+      github_environment: "Production authentik: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_plan_args: -var-file=environments/production.tfvars
@@ -1019,13 +1019,13 @@ jobs:
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_us_east4_a:
-    name: "Authentik: us-east4-a"
+    name: "authentik: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east4_a, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      github_environment: "Production Authentik: us-east4-a"
+      github_environment: "Production authentik: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_plan_args: -var-file=environments/production.tfvars
@@ -1053,13 +1053,13 @@ jobs:
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_us_east4_b:
-    name: "Authentik: us-east4-b"
+    name: "authentik: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east4_b, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      github_environment: "Production Authentik: us-east4-b"
+      github_environment: "Production authentik: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_plan_args: -var-file=environments/production.tfvars
@@ -1087,13 +1087,13 @@ jobs:
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   authentik_us_east4_c:
-    name: "Authentik: us-east4-c"
+    name: "authentik: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east4_c, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      github_environment: "Production Authentik: us-east4-c"
+      github_environment: "Production authentik: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_plan_args: -var-file=environments/production.tfvars

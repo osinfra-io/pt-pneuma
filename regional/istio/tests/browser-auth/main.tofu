@@ -4,8 +4,9 @@
 module "shared" {
   source = "../../gateway-auth"
 
-  outpost_namespace = "authentik"
-  policies          = module.legacy_manifests.gateway_auth_authorization_policies
+  application_group_members = module.legacy_manifests.application_group_members
+  outpost_namespace         = "authentik"
+  policies                  = module.legacy_manifests.gateway_auth_authorization_policies
 }
 
 module "legacy_manifests" {

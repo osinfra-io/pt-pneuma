@@ -6,16 +6,30 @@ module "gateway_auth" {
 
   for_each = local.gateway_clusters
 
-  extension_provider_name = local.authentik_extension_provider_name
-  outpost_namespace       = local.authentik_namespace
-  policies                = local.gateway_auth_browser_policy_inputs[each.key]
+  application_group_members = module.team_access.application_group_members
+  extension_provider_name   = local.authentik_extension_provider_name
+  outpost_namespace         = local.authentik_namespace
+  policies                  = local.gateway_auth_browser_policy_inputs[each.key]
+}
+
+module "team_access" {
+  source = "../gateway-auth/team-access"
+
+  environment = module.core_helpers.environment
+  teams       = module.core_helpers.teams
 }
 
 # Kubernetes Istio Module (osinfra.io)
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=fd7ff93a153af0f6ae59a9847c31beac8ad096d9" # v0.9.2
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=7dabb00a7537deea12ac9aaaed313009b00ffd8d" # v0.9.3
+
+  depends_on = [
+    kubernetes_namespace_v1.istio_test_gateway_stub,
+    kubernetes_service_v1.agentgateway_admin,
+    kubernetes_service_v1.istio_test_gateway_stub,
+  ]
 
   for_each = local.gke_clusters
 
@@ -30,6 +44,30 @@ module "kubernetes_istio_manifests" {
 
 # Kubernetes Manifest Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/manifest
+
+resource "kubernetes_manifest" "agentgateway_admin_allow" {
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = local.agentgateway_admin_allow_manifest
+}
+
+resource "kubernetes_manifest" "agentgateway_admin_authorization" {
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = local.agentgateway_admin_deny_manifest
+}
+
+resource "kubernetes_manifest" "agentgateway_controller_discovery" {
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = local.agentgateway_controller_allow_manifest
+}
 
 resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
   for_each = local.gateway_clusters
@@ -160,6 +198,14 @@ resource "kubernetes_manifest" "gateway_auth_request_authentication" {
   manifest = each.value
 }
 
+resource "kubernetes_manifest" "gateway_authentik_application_access_filter" {
+  for_each = local.gateway_auth_application_access_filter_manifests
+
+  provider = kubernetes.by_cluster[each.value.cluster_name]
+
+  manifest = each.value.manifest
+}
+
 resource "kubernetes_manifest" "gateway_authentik_inbound_header_strip_filter" {
   for_each = local.gateway_clusters
 
@@ -242,6 +288,37 @@ resource "kubernetes_namespace_v1" "istio_test_gateway_stub" {
 
 # Kubernetes Service Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/service_v1
+
+resource "kubernetes_service_v1" "agentgateway_admin" {
+  depends_on = [
+    kubernetes_manifest.agentgateway_admin_allow,
+    kubernetes_manifest.agentgateway_admin_authorization,
+    kubernetes_manifest.gateway_auth_custom_authorization_policy,
+    kubernetes_manifest.gateway_authentik_application_access_filter,
+  ]
+
+  for_each = local.agentgateway_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  metadata {
+    name      = "agentgateway-proxy-admin"
+    namespace = local.agentgateway_namespace
+  }
+
+  spec {
+    port {
+      name        = "http-admin"
+      port        = 15000
+      target_port = 15000
+    }
+
+    selector = {
+      "gateway.networking.k8s.io/gateway-name" = "agentgateway-proxy"
+    }
+    type = "ClusterIP"
+  }
+}
 
 resource "kubernetes_service_v1" "istio_test_gateway_stub" {
   for_each = local.gateway_stub_services

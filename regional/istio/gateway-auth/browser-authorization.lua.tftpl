@@ -1,0 +1,95 @@
+local memberships = {
+%{ for name, members in memberships ~}
+  [${strings[name]}] = {
+%{ for email in members ~}
+    [${strings[email]}] = true,
+%{ endfor ~}
+  },
+%{ endfor ~}
+}
+
+local policies = {
+%{ for key, policy in policies ~}
+  {
+    host = ${strings[policy.host]},
+    path = ${strings[trimsuffix(policy.path, "/")]},
+    exemptions = {
+%{ for path in policy.exempt_paths ~}
+      ${strings[path]},
+%{ endfor ~}
+    },
+    groups = {
+%{ for name in policy.required_groups ~}
+      ${strings[name]},
+%{ endfor ~}
+    },
+    roles = {
+%{ for name in policy.required_roles ~}
+      ${strings[name]},
+%{ endfor ~}
+    },
+  },
+%{ endfor ~}
+}
+
+local function matches(path, pattern)
+  if string.sub(pattern, -1) == "*" then
+    return string.sub(path, 1, #pattern - 1) == string.sub(pattern, 1, -2)
+  end
+  return path == pattern
+end
+
+local function has_requirement(names, email, groups)
+  if #names == 0 then return true end
+  for _, name in ipairs(names) do
+    if memberships[name] ~= nil then
+      if memberships[name][email] then return true end
+    elseif groups[name] then
+      return true
+    end
+  end
+  return false
+end
+
+local function deny(handle)
+  handle:logWarn("Declared application access denied")
+  handle:respond({[":status"] = "403", ["content-type"] = "text/plain"}, "Forbidden\n")
+end
+
+function envoy_on_request(handle)
+  local headers = handle:headers()
+  local host = string.lower(headers:get(":authority") or "")
+  host = string.gsub(host, ":%d+$", "")
+  local path = string.match(headers:get(":path") or "", "^[^?]*")
+  for _, policy in ipairs(policies) do
+    if host == policy.host then
+      -- Reject ambiguous encodings instead of authorizing a different normalized route.
+      if string.find(path, "%%") or string.find(path, "\\", 1, true)
+        or string.find(path, "//", 1, true)
+        or string.find(path .. "/", "/%./") or string.find(path .. "/", "/%.%./") then
+        deny(handle)
+        return
+      end
+      if policy.path == "" or path == policy.path
+        or string.sub(path, 1, #policy.path + 1) == policy.path .. "/" then
+        local exempt = false
+        for _, pattern in ipairs(policy.exemptions) do
+          if matches(path, pattern) then exempt = true; break end
+        end
+        if not exempt then
+          local email = headers:get("x-authentik-osinfra-google-email") or ""
+          local groups = {}
+          for name in string.gmatch(headers:get("x-authentik-groups") or "", "[^|]+") do
+            groups[name] = true
+          end
+          if email == "" or string.find(email, "[,%s|]")
+            or not has_requirement(policy.groups, email, groups)
+            or not has_requirement(policy.roles, email, groups) then
+            deny(handle)
+            return
+          end
+        end
+      end
+    end
+  end
+end

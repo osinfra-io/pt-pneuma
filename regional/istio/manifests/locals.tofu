@@ -2,6 +2,118 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  agentgateway_admin_allow_manifest = merge(local.agentgateway_admin_deny_manifest, {
+    metadata = {
+      name      = "agentgateway-admin-ingress"
+      namespace = local.agentgateway_namespace
+    }
+    spec = merge(local.agentgateway_admin_deny_manifest.spec, {
+      action = "ALLOW"
+      rules = [{
+        from = [{
+          source = {
+            principals = ["cluster.local/ns/istio-ingress/sa/gateway-istio"]
+          }
+        }]
+        to = [{
+          operation = {
+            ports = ["15000"]
+          }
+        }]
+      }]
+    })
+  })
+
+  agentgateway_admin_deny_manifest = {
+    apiVersion = "security.istio.io/v1"
+    kind       = "AuthorizationPolicy"
+    metadata = {
+      name      = "agentgateway-admin"
+      namespace = local.agentgateway_namespace
+    }
+    spec = {
+      action = "DENY"
+      rules = [{
+        from = [{
+          source = {
+            notPrincipals = ["cluster.local/ns/istio-ingress/sa/gateway-istio"]
+          }
+        }]
+        to = [{
+          operation = {
+            ports = ["15000"]
+          }
+        }]
+      }]
+      selector = {
+        matchLabels = {
+          "gateway.networking.k8s.io/gateway-name" = "agentgateway-proxy"
+        }
+      }
+    }
+  }
+
+  agentgateway_clusters = {
+    for name, cluster in local.gateway_clusters : name => cluster
+    if module.core_helpers.environment == "sandbox"
+  }
+
+  agentgateway_controller_allow_manifest = {
+    apiVersion = "security.istio.io/v1"
+    kind       = "AuthorizationPolicy"
+    metadata = {
+      name      = "agentgateway-controller-discovery"
+      namespace = local.agentgateway_namespace
+    }
+    spec = {
+      action = "ALLOW"
+      rules = [{
+        from = [{
+          source = {
+            principals = ["cluster.local/ns/${local.agentgateway_namespace}/sa/agentgateway-proxy"]
+          }
+        }]
+        to = [{
+          operation = {
+            ports = ["9978"]
+          }
+        }]
+      }]
+      selector = {
+        matchLabels = {
+          "app.kubernetes.io/name" = "agentgateway"
+        }
+      }
+    }
+  }
+
+  agentgateway_hostname = "agentgateway.${local.authentik_public_dns_domain}"
+
+  agentgateway_namespace = "${module.core_helpers.team}-agentgateway"
+
+  agentgateway_policy_inputs = {
+    for name in keys(local.agentgateway_clusters) : name => {
+      "${name}-agentgateway-admin" = {
+        host            = local.agentgateway_hostname
+        mode            = "browser"
+        path            = "/"
+        required_groups = ["${module.core_helpers.team}: agentgateway Admins"]
+      }
+    }
+  }
+
+  agentgateway_routes = {
+    for name in keys(local.agentgateway_clusters) : name => {
+      agentgateway-admin = {
+        backend_namespace = local.agentgateway_namespace
+        backend_port      = 15000
+        backend_service   = "agentgateway-proxy-admin"
+        host              = local.agentgateway_hostname
+        path              = "/"
+      }
+    }
+  }
+
   # DNS subdomain per cluster, extracted from the gateway DNS zone name
   # (e.g. "pneuma.sb.osinfra.io" → "pneuma", "kryptos.sb.osinfra.io" → "kryptos").
   dns_subdomain = {
@@ -59,6 +171,16 @@ locals {
   # Auth policies generated from the Logos route_auth_policies contract. The gateway
   # cluster enforces every team's external route because all ingress enters through
   # the platform gateway data plane.
+  gateway_auth_application_access_filter_manifests = merge({}, [
+    for cluster_name, renderer in module.gateway_auth : {
+      for key, manifest in renderer.browser_authorization_filter_manifests :
+      "${cluster_name}/${key}" => {
+        cluster_name = cluster_name
+        manifest     = manifest
+      }
+    }
+  ]...)
+
   gateway_auth_authorization_policies = merge(concat(
     [{}],
     [
@@ -111,19 +233,19 @@ locals {
 
   gateway_auth_browser_policy_inputs = {
     for cluster_name in keys(local.gateway_clusters) :
-    cluster_name => {
+    cluster_name => merge({
       for item in local.gateway_auth_route_policy_items :
       "${cluster_name}-${item.key}" => item
-    }
+    }, try(local.agentgateway_policy_inputs[cluster_name], {}))
   }
 
   gateway_auth_policies = {
     for cluster_name in keys(local.gateway_clusters) :
     cluster_name => {
-      for item in local.gateway_auth_route_policy_items :
-      "${cluster_name}-${item.key}" => merge(
+      for key, item in local.gateway_auth_browser_policy_inputs[cluster_name] :
+      key => merge(
         item,
-        module.gateway_auth[cluster_name].resolved_policies["${cluster_name}-${item.key}"],
+        module.gateway_auth[cluster_name].resolved_policies[key],
         { cluster_name = cluster_name },
       )
     }
@@ -389,6 +511,7 @@ locals {
         merge(local.global_routes[peer_name], local.zonal_routes[peer_name])
       ]...),
       try(local.authentik_routes[cluster_name], {}),
+      try(local.agentgateway_routes[cluster_name], {}),
       try(local.authentik_callback_routes[cluster_name], {}),
     ) : {}
   }

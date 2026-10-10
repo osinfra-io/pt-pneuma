@@ -2,6 +2,11 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  agentgateway_gateway_dns = module.core_helpers.environment == "sandbox" ? {
+    for host, record in local.authentik_gateway_dns :
+    replace(host, "authentik.", "agentgateway.") => record
+  } : {}
+
   # Single logical Authentik service (pt-pneuma#142): one shared Cloud SQL primary, one secret
   # key and one issuer are created here in main and consumed by every regional authentik workspace,
   # so all stateless regional server/worker instances form one identity provider (not per-zone IdPs).
@@ -17,6 +22,14 @@ locals {
       priority    = 9000
     }
   }
+
+  authentik_cloud_armor_method_enforcement_exceptions = [
+    {
+      hostname    = local.authentik_hostname
+      methods     = ["DELETE", "PATCH", "PUT"]
+      path_prefix = "/api/v3/"
+    }
+  ]
 
   # The Google OAuth flow's "scope" query parameter (e.g. "userinfo.profile") is false-positive
   # matched by the preconfigured LFI WAF rule (owasp-crs-v030301-id930120-lfi). Authentik re-wraps
@@ -94,6 +107,11 @@ locals {
 
   # DNS subdomain per team (e.g., "pneuma"), sourced from team config in pt-logos.
   # Falls back to the team key with its topology prefix stripped (e.g. "pt-pneuma" → "pneuma").
+  cloud_armor_method_enforcement_exceptions_by_team = {
+    for team in keys(local.teams_with_clusters) : team =>
+    team == module.core_helpers.team ? local.authentik_cloud_armor_method_enforcement_exceptions : []
+  }
+
   dns_subdomains = {
     for team_key, team in local.teams_with_clusters :
     team_key => team.dns_subdomain != null ? team.dns_subdomain : replace(team_key, "/^[a-z]+-/", "")
@@ -143,6 +161,7 @@ locals {
   gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(
     merge(values(local.gateway_dns_by_team)...),
     local.authentik_gateway_dns,
+    local.agentgateway_gateway_dns,
   ) : {}
 
 

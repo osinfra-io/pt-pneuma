@@ -1,0 +1,15 @@
+# Google Client Config Data Source
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/client_config
+
+data "google_client_config" "this" {}
+
+# Google Container Cluster Data Source
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/container_cluster
+
+data "google_container_cluster" "this" {
+  for_each = local.agentgateway_clusters
+
+  location = local.regions[each.key]
+  name     = each.key
+  project  = each.value.project_id
+}

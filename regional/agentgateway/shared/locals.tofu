@@ -1,0 +1,25 @@
+# Local Values
+# https://opentofu.org/docs/language/values/locals
+
+locals {
+  agentgateway_clusters = {
+    for name, cluster in var.clusters : name => cluster
+    if endswith(name, "-${local.zone}") && cluster.team_key == module.core_helpers.team && module.core_helpers.environment == "sandbox"
+  }
+
+  cluster                = one(values(data.google_container_cluster.this))
+  cluster_ca_certificate = local.cluster == null ? null : base64decode(local.cluster.master_auth[0].cluster_ca_certificate)
+  cluster_endpoint       = local.cluster == null ? null : "https://${local.cluster.endpoint}"
+
+  namespace = "${module.core_helpers.team}-agentgateway"
+
+  proxy_env = {
+    ADMIN_ADDR = "0.0.0.0:15000"
+  }
+
+  regions = {
+    for name in keys(var.clusters) : name => regex("(us-[a-z0-9]+)-[a-z]$", name)[0]
+  }
+
+  zone = try(regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0], "")
+}

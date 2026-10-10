@@ -105,3 +105,64 @@ run "cloud_production_custom_authentication_disabled" {
     error_message = "Production host discovery and identification-stage management must remain unchanged."
   }
 }
+
+run "cloud_managed_application_groups" {
+  command = apply
+
+  override_data {
+    target = module.authentik_config.data.authentik_users.google
+    values = {
+      users = []
+    }
+  }
+
+  variables {
+    google_oauth_client_id     = "mock-client"
+    google_oauth_client_secret = "mock-secret"
+  }
+
+  override_module {
+    target = module.core_helpers
+    outputs = {
+      env         = "sb"
+      environment = "sandbox"
+      repository  = "pt-pneuma"
+      team        = "pt-pneuma"
+      teams = {
+        pt-pneuma = {
+          dns_subdomain = "pneuma"
+          authentik_groups = {
+            agentgateway-admins = {
+              description = "UI access"
+              name        = "pt-pneuma: agentgateway Admins"
+              members = {
+                sandbox    = ["sandbox@example.com"]
+                production = ["production@example.com"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  assert {
+    condition     = module.team_access.application_groups["pt-pneuma/agentgateway-admins"].members == tolist(["sandbox@example.com"])
+    error_message = "The cloud Authentik consumer must select only the current environment's declared members."
+  }
+
+  assert {
+    condition     = module.authentik_config.application_groups["pt-pneuma/agentgateway-admins"].name == "pt-pneuma: agentgateway Admins" && !module.authentik_config.application_groups["pt-pneuma/agentgateway-admins"].is_superuser
+    error_message = "The pinned module must create the owning team's named application group without Authentik superuser privileges."
+  }
+
+  assert {
+    condition     = output.pending_application_members["pt-pneuma/agentgateway-admins"] == tolist(["sandbox@example.com"])
+    error_message = "Unenrolled declared members must remain visible as pending rather than being silently reported as provisioned."
+  }
+
+  assert {
+    condition     = module.authentik_config.browser_group_policy_bindings["https://agentgateway.sb.osinfra.io"].groups == tolist(["pt-pneuma: agentgateway Admins"]) && output.cloud_inputs.redirect_uris[1].matching_mode == "strict" && output.cloud_inputs.redirect_uris[1].url == "https://agentgateway.sb.osinfra.io/outpost.goauthentik.io/callback"
+    error_message = "The dedicated admin host must bind the managed group and its exact callback, without broadening existing team-host callback admission."
+  }
+}

@@ -1,6 +1,23 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
+variable "application_group_members" {
+  default     = {}
+  description = "Current environment's declared Google emails keyed by exact team-qualified group name. Managed browser requirements are checked per request after forward-auth, independently of cached group claims."
+  type        = map(list(string))
+
+  validation {
+    condition = alltrue([
+      for name, members in var.application_group_members :
+      can(regex("^[a-z]+-[a-z0-9-]+: [A-Za-z][A-Za-z0-9]*( [A-Za-z0-9]+)*$", name)) &&
+      length(members) == length(distinct(members)) && alltrue([
+        for email in members : can(regex("^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9-]+(\\.[a-z0-9-]+)+$", email))
+      ])
+    ])
+    error_message = "Application memberships require unique lowercase emails and exact team-qualified group names."
+  }
+}
+
 variable "extension_provider_name" {
   default     = "authentik"
   description = "Name shared by the mesh extension provider and browser CUSTOM policies."
@@ -66,6 +83,34 @@ variable "policies" {
     required_groups = optional(list(string), [])
     required_roles  = optional(list(string), [])
   }))
+
+  validation {
+    condition = alltrue(flatten([
+      for policy in values(var.policies) : [
+        for name in concat(policy.required_groups, policy.required_roles) :
+        !strcontains(name, ": ") || contains(keys(var.application_group_members), name)
+      ] if policy.mode == "browser"
+    ]))
+    error_message = "Every team-qualified browser requirement must resolve to a declared application membership list, including empty lists."
+  }
+
+  validation {
+    condition = alltrue([
+      for policy in values(var.policies) :
+      can(regex("^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$", policy.host)) &&
+      can(regex("^/[A-Za-z0-9_./-]*$", policy.path)) &&
+      alltrue([for path in policy.public_paths : can(regex("^/[A-Za-z0-9_./-]*\\*?$", path))]) &&
+      alltrue([
+        for name in concat(policy.required_groups, policy.required_roles) :
+        can(regex("^[!-~]+( [!-~]+)*$", name)) && !strcontains(name, "|") && !strcontains(name, ",")
+      ])
+      if policy.mode == "browser" && anytrue([
+        for name in concat(policy.required_groups, policy.required_roles) :
+        contains(keys(var.application_group_members), name)
+      ])
+    ])
+    error_message = "Managed browser policies require lowercase literal hosts, unencoded paths, and unambiguous ASCII group names."
+  }
 
   validation {
     condition     = alltrue([for policy in values(var.policies) : contains(["api-jwt", "browser", "public"], policy.mode)])
