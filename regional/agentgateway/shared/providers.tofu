@@ -55,21 +55,19 @@ provider "google" {
 }
 
 provider "helm" {
-  alias    = "by_cluster"
-  for_each = var.clusters
+  alias = "by_cluster"
 
   kubernetes = {
-    cluster_ca_certificate = base64decode(data.google_container_cluster.this[each.key].master_auth[0].cluster_ca_certificate)
-    host                   = "https://${data.google_container_cluster.this[each.key].endpoint}"
+    cluster_ca_certificate = local.cluster_ca_certificate
+    host                   = local.cluster_endpoint
     token                  = data.google_client_config.this.access_token
   }
 }
 
 provider "kubernetes" {
-  alias    = "by_cluster"
-  for_each = var.clusters
+  alias = "by_cluster"
 
-  cluster_ca_certificate = base64decode(data.google_container_cluster.this[each.key].master_auth[0].cluster_ca_certificate)
-  host                   = "https://${data.google_container_cluster.this[each.key].endpoint}"
+  cluster_ca_certificate = local.cluster_ca_certificate
+  host                   = local.cluster_endpoint
   token                  = data.google_client_config.this.access_token
 }

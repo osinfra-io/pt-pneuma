@@ -7,7 +7,7 @@ data "google_client_config" "this" {}
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/data-sources/container_cluster
 
 data "google_container_cluster" "this" {
-  for_each = var.clusters
+  for_each = local.agentgateway_clusters
 
   location = local.regions[each.key]
   name     = each.key

@@ -7,6 +7,10 @@ locals {
     if endswith(name, "-${local.zone}") && cluster.team_key == module.core_helpers.team && module.core_helpers.environment == "sandbox"
   }
 
+  cluster                = one(values(data.google_container_cluster.this))
+  cluster_ca_certificate = local.cluster == null ? null : base64decode(local.cluster.master_auth[0].cluster_ca_certificate)
+  cluster_endpoint       = local.cluster == null ? null : "https://${local.cluster.endpoint}"
+
   namespace = "${module.core_helpers.team}-agentgateway"
 
   proxy_env = {

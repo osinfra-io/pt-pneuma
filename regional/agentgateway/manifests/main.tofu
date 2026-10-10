@@ -7,7 +7,7 @@ module "kubernetes_agentgateway_manifests" {
   for_each = local.agentgateway_clusters
 
   providers = {
-    kubernetes = kubernetes.by_cluster[each.key]
+    kubernetes = kubernetes.by_cluster
   }
 
   labels    = module.core_helpers.labels
