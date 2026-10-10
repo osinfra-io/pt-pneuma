@@ -16,7 +16,7 @@ module "authentication" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=4bf455990821fb084b78c01a6e4beff0135220e4" # unreleased authentik-application-access test pin
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=e977fcae27f7c8a6ac2addb36d66d3fe31170ef6" # v0.2.1
 
   depends_on = [terraform_data.browser_group_policy_validation]
 
