@@ -11,7 +11,7 @@ module "kubernetes_authentik" {
   for_each = local.authentik_clusters
 
   providers = {
-    helm = helm.by_cluster[each.key]
+    helm = helm.by_cluster
   }
 
   cloud_sql_connection_name                 = local.main.authentik_cloud_sql_connection_name
@@ -45,7 +45,7 @@ module "kubernetes_authentik" {
 # restriction: as the identity provider, every Authentik endpoint must be reachable.
 resource "kubernetes_manifest" "authentik_allow_gateway" {
   for_each = local.authentik_clusters
-  provider = kubernetes.by_cluster[each.key]
+  provider = kubernetes.by_cluster
 
   manifest = {
     apiVersion = "security.istio.io/v1"
@@ -86,7 +86,7 @@ resource "kubernetes_manifest" "authentik_allow_gateway" {
 
 resource "kubernetes_secret_v1" "authentik" {
   for_each = local.authentik_clusters
-  provider = kubernetes.by_cluster[each.key]
+  provider = kubernetes.by_cluster
 
   data = local.main.authentik_secret_env
 
