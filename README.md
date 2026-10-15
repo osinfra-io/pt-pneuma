@@ -12,7 +12,7 @@ Pneuma provides the managed Kubernetes runtime built on Corpus projects and netw
 | --- | --- |
 | Team/project identity, workload namespace needs, image location, routes, authentication requirements, certificates, and observability options | Managed clusters, namespace access, workload identity integration, ingress and mesh connectivity, gateway authentication, certificates, telemetry, and policy enforcement |
 
-Application teams own their workloads and manifests. Corpus owns projects and networking; Pneuma owns clusters and cluster-level add-ons; Kryptos owns OpenBao and secrets policy.
+Application teams own their workloads and manifests. Corpus owns projects and networking; Pneuma owns clusters, cluster-level add-ons, and OpenBao.
 
 ### 🛠️ Tools
 
