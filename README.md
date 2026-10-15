@@ -93,6 +93,6 @@ flowchart LR
     z2_opa_gatekeeper --> z2_opa_templates["OPA Gatekeeper Templates: us-east4-a"]:::opa
     z2_opa_templates --> z2_opa_constraints["OPA Gatekeeper Constraints: us-east4-a"]:::opa
 
-    z1_istio_manifests --> authentik_config["authentik Config (global)"]:::authentik
+    z1_istio_manifests --> authentik_config["authentik Config"]:::authentik
     z2_istio_manifests --> authentik_config
 ```
