@@ -47,8 +47,8 @@ flowchart LR
     classDef datadog fill:#632CA6,stroke:#632CA6,color:#fff
     classDef opa fill:#23263B,stroke:#23263B,color:#fff
     classDef authentik fill:#FD4B2D,stroke:#FD4B2D,color:#fff
-    classDef agentgateway fill:#2E7D32,stroke:#2E7D32,color:#fff
-    classDef openbao fill:#000,stroke:#000,color:#fff
+    classDef agentgateway fill:#8A3FFC,stroke:#8A3FFC,color:#fff
+    classDef openbao fill:#0094FF,stroke:#0094FF,color:#fff
 
     main["Main"]:::gke
 
