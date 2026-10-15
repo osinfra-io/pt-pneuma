@@ -245,6 +245,22 @@ jobs:
       working_directory: regional/cert-manager
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  openbao_us_east1_b:
+    name: "OpenBao: us-east1-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_b_onboarding, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OpenBao: us-east1-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-b-openbao-production
+      working_directory: regional/openbao
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   cert_manager_us_east1_c:
     name: "cert-manager: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
@@ -259,6 +275,22 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-cert-manager-production
       working_directory: regional/cert-manager
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  openbao_us_east1_c:
+    name: "OpenBao: us-east1-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_c_onboarding, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OpenBao: us-east1-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-c-openbao-production
+      working_directory: regional/openbao
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   cert_manager_us_east1_d:
@@ -277,6 +309,22 @@ jobs:
       working_directory: regional/cert-manager
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  openbao_us_east1_d:
+    name: "OpenBao: us-east1-d"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east1_d_onboarding, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OpenBao: us-east1-d"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-d-openbao-production
+      working_directory: regional/openbao
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   cert_manager_us_east4_a:
     name: "cert-manager: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
@@ -291,6 +339,22 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-cert-manager-production
       working_directory: regional/cert-manager
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  openbao_us_east4_a:
+    name: "OpenBao: us-east4-a"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_a_onboarding, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OpenBao: us-east4-a"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-a-openbao-production
+      working_directory: regional/openbao
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   cert_manager_us_east4_b:
@@ -309,6 +373,22 @@ jobs:
       working_directory: regional/cert-manager
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  openbao_us_east4_b:
+    name: "OpenBao: us-east4-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_b_onboarding, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OpenBao: us-east4-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-b-openbao-production
+      working_directory: regional/openbao
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   cert_manager_us_east4_c:
     name: "cert-manager: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
@@ -323,6 +403,22 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-cert-manager-production
       working_directory: regional/cert-manager
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  openbao_us_east4_c:
+    name: "OpenBao: us-east4-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@66e04fe1c5a017238caf7be3d544a0a66b918dd1 # v0.5.5
+    needs: [us_east4_c_onboarding, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production OpenBao: us-east4-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-c-openbao-production
+      working_directory: regional/openbao
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   cert_manager_istio_csr_us_east1_b:

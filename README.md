@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Pneuma provides the managed Kubernetes runtime built on Corpus projects and networking. It provisions GKE clusters and the shared cluster services required for workloads: namespace onboarding, cert-manager, Istio ambient mesh and gateways, Authentik gateway authentication, Datadog, and OPA Gatekeeper.
+Pneuma provides the managed Kubernetes runtime built on Corpus projects and networking. It provisions GKE clusters and the shared cluster services required for workloads: namespace onboarding, cert-manager, Istio ambient mesh and gateways, authentik gateway authentication, agentgateway, OpenBao, Datadog, and OPA Gatekeeper.
 
 ## Consumer contract
 
@@ -12,7 +12,7 @@ Pneuma provides the managed Kubernetes runtime built on Corpus projects and netw
 | --- | --- |
 | Team/project identity, workload namespace needs, image location, routes, authentication requirements, certificates, and observability options | Managed clusters, namespace access, workload identity integration, ingress and mesh connectivity, gateway authentication, certificates, telemetry, and policy enforcement |
 
-Application teams own their workloads and manifests. Corpus owns projects and networking; Pneuma owns clusters and cluster-level add-ons; Kryptos owns OpenBao and secrets policy.
+Application teams own their workloads and manifests. Corpus owns projects and networking; Pneuma owns clusters, cluster-level add-ons, and OpenBao.
 
 ### 🛠️ Tools
 
@@ -23,6 +23,7 @@ Application teams own their workloads and manifests. Corpus owns projects and ne
 
 Links to documentation and other resources required to develop and iterate in this repository successfully.
 
+- [agentgateway](https://agentgateway.dev/docs/)
 - [authentik](https://docs.goauthentik.io/)
 - [cert-manager](https://cert-manager.io/docs/)
 - [datadog kubernetes monitoring](https://docs.datadoghq.com/containers/kubernetes/)
@@ -32,12 +33,13 @@ Links to documentation and other resources required to develop and iterate in th
 - [kubernetes](https://kubernetes.io/docs/home/)
 - [kubernetes gateway api](https://gateway-api.sigs.k8s.io/)
 - [opa gatekeeper](https://open-policy-agent.github.io/gatekeeper/website/docs/)
+- [openbao](https://openbao.org/docs/)
 
 ## 🔄 Deployment Dependency Graph
 
-Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain. Authentik is deployed per zone (the primary us-east1-b zone first, then the rest), while a single global **Authentik Config** job runs after every zone's Authentik deployment.
+Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain. authentik is deployed per zone (the primary us-east1-b zone first, then the rest), while a single global **authentik Config** job runs after every zone's authentik deployment.
 
-The primary Authentik deployment is also a prerequisite for every other Authentik zone so database migrations complete before additional instances start.
+The primary authentik deployment is also a prerequisite for every other authentik zone so database migrations complete before additional instances start.
 
 ```mermaid
 flowchart LR
@@ -47,6 +49,8 @@ flowchart LR
     classDef datadog fill:#632CA6,stroke:#632CA6,color:#fff
     classDef opa fill:#23263B,stroke:#23263B,color:#fff
     classDef authentik fill:#FD4B2D,stroke:#FD4B2D,color:#fff
+    classDef agentgateway fill:#8A3FFC,stroke:#8A3FFC,color:#fff
+    classDef openbao fill:#79C0AB,stroke:#79C0AB,color:#000
 
     main["Main"]:::gke
 
@@ -54,13 +58,17 @@ flowchart LR
     z1_regional --> z1_onboarding["Onboarding: us-east1-b"]:::gke
     z1_onboarding --> z1_cert_manager["cert-manager: us-east1-b"]:::certmanager
     z1_onboarding --> z1_datadog["Datadog: us-east1-b"]:::datadog
+    z1_onboarding --> z1_openbao["OpenBao: us-east1-b"]:::openbao
     z1_cert_manager --> z1_cert_manager_istio_csr["cert-manager Istio CSR: us-east1-b"]:::certmanager
     z1_cert_manager --> z1_opa_gatekeeper["OPA Gatekeeper: us-east1-b"]:::opa
     z1_cert_manager_istio_csr --> z1_istio["Istio: us-east1-b"]:::istio
-    z1_istio --> z1_authentik["Authentik: us-east1-b"]:::authentik
+    z1_istio --> z1_authentik["authentik: us-east1-b"]:::authentik
     z1_istio --> z1_istio_manifests["Istio Manifests: us-east1-b"]:::istio
     z1_authentik --> z1_istio_manifests
     z1_istio_manifests --> z1_istio_test["Istio Test: us-east1-b"]:::istio
+    z1_istio --> z1_agentgateway["agentgateway: us-east1-b"]:::agentgateway
+    z1_agentgateway --> z1_agentgateway_manifests["agentgateway Manifests: us-east1-b"]:::agentgateway
+    authentik_config --> z1_agentgateway_manifests
     z1_datadog --> z1_datadog_manifests["Datadog Manifests: us-east1-b"]:::datadog
     z1_opa_gatekeeper --> z1_opa_templates["OPA Gatekeeper Templates: us-east1-b"]:::opa
     z1_opa_templates --> z1_opa_constraints["OPA Gatekeeper Constraints: us-east1-b"]:::opa
@@ -69,18 +77,22 @@ flowchart LR
     z2_regional --> z2_onboarding["Onboarding: us-east4-a"]:::gke
     z2_onboarding --> z2_cert_manager["cert-manager: us-east4-a"]:::certmanager
     z2_onboarding --> z2_datadog["Datadog: us-east4-a"]:::datadog
+    z2_onboarding --> z2_openbao["OpenBao: us-east4-a"]:::openbao
     z2_cert_manager --> z2_cert_manager_istio_csr["cert-manager Istio CSR: us-east4-a"]:::certmanager
     z2_cert_manager --> z2_opa_gatekeeper["OPA Gatekeeper: us-east4-a"]:::opa
     z2_cert_manager_istio_csr --> z2_istio["Istio: us-east4-a"]:::istio
-    z1_authentik --> z2_authentik["Authentik: us-east4-a"]:::authentik
+    z1_authentik --> z2_authentik["authentik: us-east4-a"]:::authentik
     z2_istio --> z2_authentik
     z2_istio --> z2_istio_manifests["Istio Manifests: us-east4-a"]:::istio
     z2_authentik --> z2_istio_manifests
     z2_istio_manifests --> z2_istio_test["Istio Test: us-east4-a"]:::istio
+    z2_istio --> z2_agentgateway["agentgateway: us-east4-a"]:::agentgateway
+    z2_agentgateway --> z2_agentgateway_manifests["agentgateway Manifests: us-east4-a"]:::agentgateway
+    authentik_config --> z2_agentgateway_manifests
     z2_datadog --> z2_datadog_manifests["Datadog Manifests: us-east4-a"]:::datadog
     z2_opa_gatekeeper --> z2_opa_templates["OPA Gatekeeper Templates: us-east4-a"]:::opa
     z2_opa_templates --> z2_opa_constraints["OPA Gatekeeper Constraints: us-east4-a"]:::opa
 
-    z1_istio_manifests --> authentik_config["Authentik Config (global)"]:::authentik
+    z1_istio_manifests --> authentik_config["authentik Config"]:::authentik
     z2_istio_manifests --> authentik_config
 ```

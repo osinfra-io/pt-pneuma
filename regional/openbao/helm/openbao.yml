@@ -1,0 +1,35 @@
+# OpenBao Helm Chart Values
+# https://openbao.org/docs/platform/k8s/helm/
+
+injector:
+  enabled: true
+
+server:
+  affinity: |
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: openbao
+              app.kubernetes.io/instance: openbao
+              component: server
+          topologyKey: kubernetes.io/hostname
+
+  auditStorage:
+    enabled: true
+
+  ha:
+    enabled: true
+    raft:
+      enabled: true
+
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+ui:
+  enabled: true
