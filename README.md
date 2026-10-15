@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Pneuma provides the managed Kubernetes runtime built on Corpus projects and networking. It provisions GKE clusters and the shared cluster services required for workloads: namespace onboarding, cert-manager, Istio ambient mesh and gateways, Authentik gateway authentication, Datadog, and OPA Gatekeeper.
+Pneuma provides the managed Kubernetes runtime built on Corpus projects and networking. It provisions GKE clusters and the shared cluster services required for workloads: namespace onboarding, cert-manager, Istio ambient mesh and gateways, Authentik gateway authentication, agentgateway, OpenBao, Datadog, and OPA Gatekeeper.
 
 ## Consumer contract
 
@@ -23,6 +23,7 @@ Application teams own their workloads and manifests. Corpus owns projects and ne
 
 Links to documentation and other resources required to develop and iterate in this repository successfully.
 
+- [agentgateway](https://agentgateway.dev/docs/)
 - [authentik](https://docs.goauthentik.io/)
 - [cert-manager](https://cert-manager.io/docs/)
 - [datadog kubernetes monitoring](https://docs.datadoghq.com/containers/kubernetes/)
@@ -32,6 +33,7 @@ Links to documentation and other resources required to develop and iterate in th
 - [kubernetes](https://kubernetes.io/docs/home/)
 - [kubernetes gateway api](https://gateway-api.sigs.k8s.io/)
 - [opa gatekeeper](https://open-policy-agent.github.io/gatekeeper/website/docs/)
+- [openbao](https://openbao.org/docs/)
 
 ## 🔄 Deployment Dependency Graph
 
