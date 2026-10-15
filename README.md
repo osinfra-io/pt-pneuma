@@ -48,7 +48,7 @@ flowchart LR
     classDef opa fill:#23263B,stroke:#23263B,color:#fff
     classDef authentik fill:#FD4B2D,stroke:#FD4B2D,color:#fff
     classDef agentgateway fill:#8A3FFC,stroke:#8A3FFC,color:#fff
-    classDef openbao fill:#336D5C,stroke:#336D5C,color:#fff
+    classDef openbao fill:#79C0AB,stroke:#79C0AB,color:#000
 
     main["Main"]:::gke
 
