@@ -156,7 +156,7 @@ locals {
 
   # Merged gateway DNS for all teams — passed to pneuma's MCI module instance so the
   # single MCI global address creates DNS A records for every team that routes through
-  # pneuma's gateway (e.g. both pneuma.sb.osinfra.io and kryptos.sb.osinfra.io), plus the
+  # pneuma's gateway (e.g. pneuma.sb.osinfra.io and any member team subdomain), plus the
   # environment-level authentik.<env>.osinfra.io record for the shared IdP.
   gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(
     merge(values(local.gateway_dns_by_team)...),
@@ -181,7 +181,7 @@ locals {
 
   # GKE namespaces per team, derived from Logos team data.
   # Every team's namespaces — including pneuma's own — are prefixed with the team key (e.g. "openbao"
-  # on pt-kryptos becomes "pt-kryptos-openbao", "istio-test" on pt-pneuma becomes
+  # on pt-pneuma becomes "pt-pneuma-openbao", "istio-test" on pt-pneuma becomes
   # "pt-pneuma-istio-test") to ensure namespace uniqueness across all clusters and to satisfy Istio
   # namespace sameness: when a stub Service is created on the pneuma gateway cluster under the same
   # prefixed namespace name, Istio's multi-primary discovery merges the remote team's pod endpoints

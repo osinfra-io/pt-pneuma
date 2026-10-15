@@ -142,7 +142,7 @@ locals {
   }
 
   # Namespace per cluster — team-prefixed for every team, including pneuma (e.g.
-  # "pt-pneuma-istio-test", "pt-kryptos-istio-test"). Each team's istio-test workload is isolated
+  # "pt-pneuma-istio-test"). Each team's istio-test workload is isolated
   # in its own namespace and dogfooded exactly like a member team, so Istio routing targets only
   # that team's cluster pods.
   namespace = {
@@ -150,7 +150,7 @@ locals {
     cluster_name => "${cluster_config.team_key}-istio-test"
   }
 
-  # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
+  # Region per cluster, parsed from the cluster name (e.g. "pt-pneuma-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :
     cluster_name => regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]

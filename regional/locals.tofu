@@ -16,7 +16,7 @@ locals {
 
   # GKE Hub memberships - for fleet host cluster, build memberships for all other clusters
   # Cluster IDs follow format: projects/{project}/locations/{location}/clusters/{cluster-name}
-  # Extracts region from cluster name suffix (e.g. "us-east1" from "pt-kryptos-us-east1-b")
+  # Extracts region from cluster name suffix (e.g. "us-east1" from "pt-pneuma-us-east1-b")
   gke_hub_memberships = {
     for cluster_name, cluster_config in local.main.gke_clusters :
     cluster_name => {

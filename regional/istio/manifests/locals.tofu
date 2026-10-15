@@ -115,7 +115,7 @@ locals {
   }
 
   # DNS subdomain per cluster, extracted from the gateway DNS zone name
-  # (e.g. "pneuma.sb.osinfra.io" → "pneuma", "kryptos.sb.osinfra.io" → "kryptos").
+  # (e.g. "pneuma.sb.osinfra.io" → "pneuma").
   dns_subdomain = {
     for cluster_name in keys(local.gke_clusters) :
     cluster_name => try(split(".", local.dns_zone[cluster_name])[0], "")
@@ -431,7 +431,7 @@ locals {
   # Per-team global (apex) HTTPRoutes derived from each team's Logos-declared namespace routes. Keyed
   # by the team's cluster in this zone. Every route declared under a mesh-enabled namespace becomes an
   # apex HTTPRoute on the team's subdomain ("<subdomain>.osinfra.io"), co-located with its backend
-  # Service in the team-prefixed namespace (e.g. "pt-kryptos-istio-test").
+  # Service in the team-prefixed namespace (e.g. "pt-pneuma-istio-test").
   global_routes = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => merge([
@@ -492,7 +492,7 @@ locals {
     cluster_name => renderer.callback_routes
   }
 
-  # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
+  # Region per cluster, parsed from the cluster name (e.g. "pt-pneuma-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :
     cluster_name => regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]
