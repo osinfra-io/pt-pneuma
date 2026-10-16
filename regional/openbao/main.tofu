@@ -126,7 +126,7 @@ resource "kubernetes_manifest" "openbao_backendconfig" {
         unhealthyThreshold = 2
       }
       securityPolicy = {
-        name = "istio-gateway"
+        name = local.main.pneuma_ingress_policy_name
       }
     }
   }
@@ -148,7 +148,7 @@ resource "kubernetes_manifest" "openbao_frontendconfig" {
       redirectToHttps = {
         enabled = true
       }
-      sslPolicy = "istio-gateway"
+      sslPolicy = local.main.pneuma_ingress_policy_name
     }
   }
 }

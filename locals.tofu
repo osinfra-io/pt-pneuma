@@ -47,6 +47,140 @@ locals {
     }
   ]
 
+  cloud_armor_method_enforcement_exception_expression = join(" || ", [
+    for scope in local.authentik_cloud_armor_method_enforcement_exceptions :
+    "(has(request.headers['host']) && request.headers['host'] == ${jsonencode(scope.hostname)} && request.path.startsWith(${jsonencode(scope.path_prefix)}) && request.method.matches(${jsonencode(join("|", [for method in sort(tolist(scope.methods)) : "^${method}$"]))}))"
+  ])
+
+  cloud_armor_preconfigured_waf_rules = [
+    {
+      action      = "deny(403)"
+      description = "OWASP: SQL injection"
+      name        = "sqli-v33-stable"
+      preview     = false
+      priority    = 10000
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: Cross-site scripting"
+      name        = "xss-v33-stable"
+      preview     = false
+      priority    = 10010
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: Local file inclusion"
+      name        = "lfi-v33-stable"
+      preview     = false
+      priority    = 10020
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: Remote file inclusion"
+      name        = "rfi-v33-stable"
+      preview     = false
+      priority    = 10030
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: Remote code execution"
+      name        = "rce-v33-stable"
+      preview     = false
+      priority    = 10040
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: Method enforcement"
+      name        = "methodenforcement-v33-stable"
+      preview     = false
+      priority    = 10050
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: Scanner detection"
+      name        = "scannerdetection-v33-stable"
+      preview     = false
+      priority    = 10060
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: Protocol attack"
+      name        = "protocolattack-v33-stable"
+      preview     = false
+      priority    = 10070
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: PHP injection attack"
+      name        = "php-v33-stable"
+      preview     = false
+      priority    = 10080
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: Session fixation"
+      name        = "sessionfixation-v33-stable"
+      preview     = false
+      priority    = 10090
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: Java attack"
+      name        = "java-v33-stable"
+      preview     = false
+      priority    = 10100
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "OWASP: NodeJS attack"
+      name        = "nodejs-v33-stable"
+      preview     = false
+      priority    = 10110
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "Log4j vulnerability"
+      name        = "cve-canary"
+      preview     = false
+      priority    = 10120
+      sensitivity = 1
+    },
+    {
+      action      = "deny(403)"
+      description = "JSON-based SQL injection bypass vulnerability"
+      name        = "json-sqli-canary"
+      preview     = false
+      priority    = 10130
+      sensitivity = 1
+    },
+  ]
+
+  cloud_armor_waf_exclusions_by_rule_set = {
+    for rule in local.cloud_armor_preconfigured_waf_rules : rule.name => [
+      for exclusion in local.authentik_cloud_armor_waf_exclusions : exclusion
+      if exclusion.target_rule_set == rule.name
+    ]
+  }
+
+  cloud_armor_waf_rule_expressions = {
+    for rule in local.cloud_armor_preconfigured_waf_rules : rule.name =>
+    rule.name == "methodenforcement-v33-stable" && length(local.authentik_cloud_armor_method_enforcement_exceptions) > 0 ?
+    "evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}}) && !(${local.cloud_armor_method_enforcement_exception_expression})" :
+    "evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}})"
+  }
+
   # The Cloud SQL instance is platform-managed by pt-corpus (see cloud_sql in the pt-pneuma Logos
   # tfvars, keyed "authentik"). Discover it in the pneuma project via the google_sql_database_instances
   # data source (cross-repo state access is not permitted) and read its generated name (which corpus
@@ -93,6 +227,8 @@ locals {
   # OpenBao has a dedicated global GKE multi-cluster ingress, separate from the Istio mesh gateway.
   openbao_hostname = "openbao.${local.authentik_public_dns_domain}"
 
+  pneuma_ingress_policy_name = "pneuma-ingress"
+
   # Namespace provisioned through the standard Logos-driven onboarding flow and the chart-created
   # Kubernetes service account for Authentik. Both are needed here to bind Workload Identity for the
   # Cloud SQL Auth Proxy.
@@ -117,11 +253,6 @@ locals {
 
   # DNS subdomain per team (e.g., "pneuma"), sourced from team config in pt-logos.
   # Falls back to the team key with its topology prefix stripped (e.g. "pt-pneuma" → "pneuma").
-  cloud_armor_method_enforcement_exceptions_by_team = {
-    for team in keys(local.teams_with_clusters) : team =>
-    team == module.core_helpers.team ? local.authentik_cloud_armor_method_enforcement_exceptions : []
-  }
-
   dns_subdomains = {
     for team_key, team in local.teams_with_clusters :
     team_key => team.dns_subdomain != null ? team.dns_subdomain : replace(team_key, "/^[a-z]+-/", "")
