@@ -1,7 +1,4 @@
 https://authentik.nonprod.osinfra.io
-https://kryptos.nonprod.osinfra.io
 https://pneuma.nonprod.osinfra.io
-https://us-east1-b.kryptos.nonprod.osinfra.io
 https://us-east1-b.pneuma.nonprod.osinfra.io
-https://us-east4-a.kryptos.nonprod.osinfra.io
 https://us-east4-a.pneuma.nonprod.osinfra.io
