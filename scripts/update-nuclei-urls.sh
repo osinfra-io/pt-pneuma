@@ -28,8 +28,8 @@ fi
 # Active zones per environment (mirrors locals.tofu active_zones).
 
 SB_ZONES=("us-east1-b" "us-east4-a")
-NONPROD_ZONES=("us-east1-b" "us-east4-a")
-PROD_ZONES=("us-east1-b" "us-east1-c" "us-east1-d" "us-east4-a" "us-east4-b" "us-east4-c")
+NONPROD_ZONES=()
+PROD_ZONES=("us-east1-b")
 
 # Collect team data from logos tfvars.
 
