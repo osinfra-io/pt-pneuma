@@ -13,6 +13,8 @@ readonly INIT_FILE="${SCRIPT_DIR}/.work/openbao-init.json"
   exit 1
 }
 
+root_token="$(jq --exit-status --raw-output '.root_token' "${INIT_FILE}")"
+
 echo "OpenBao UI:  https://openbao.localhost/ui/"
 echo "Method:      Token"
-echo "Root token:  $(jq --raw-output '.root_token' "${INIT_FILE}")"
+echo "Root token:  ${root_token}"
