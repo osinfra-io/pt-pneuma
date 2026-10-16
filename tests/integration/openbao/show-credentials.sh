@@ -14,6 +14,10 @@ readonly INIT_FILE="${SCRIPT_DIR}/.work/openbao-init.json"
 }
 
 root_token="$(jq --exit-status --raw-output '.root_token' "${INIT_FILE}")"
+[ -n "${root_token}" ] || {
+  echo "OpenBao credentials: .root_token in ${INIT_FILE} is empty" >&2
+  exit 1
+}
 
 echo "OpenBao UI:  https://openbao.localhost/ui/"
 echo "Method:      Token"
