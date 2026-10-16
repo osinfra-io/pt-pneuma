@@ -73,6 +73,13 @@ terraform {
       source = "hashicorp/google"
     }
 
+    # Google Cloud Platform Beta Provider
+    # https://search.opentofu.org/provider/hashicorp/google-beta/latest/docs
+
+    google-beta = {
+      source = "hashicorp/google-beta"
+    }
+
     # Random Provider
     # https://search.opentofu.org/provider/hashicorp/random/latest/docs
 
@@ -88,6 +95,11 @@ terraform {
     }
   }
 }
+
+# Google Cloud Platform Beta Provider
+# https://search.opentofu.org/provider/hashicorp/google-beta/latest/docs
+
+provider "google-beta" {}
 
 # Google Cloud Provider
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs

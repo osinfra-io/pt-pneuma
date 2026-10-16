@@ -14,6 +14,8 @@ Pneuma provides the managed Kubernetes runtime built on Corpus projects and netw
 
 Application teams own their workloads and manifests. Corpus owns projects and networking; Pneuma owns clusters, cluster-level add-ons, and OpenBao.
 
+The main workspace manages the shared `shared-ingress` Cloud Armor and SSL policies. The Istio mesh gateway and OpenBao use separate, service-specific backend configurations with those shared policies; OpenBao remains outside the mesh and is exposed through both a global multi-cluster ingress and per-zone ingress endpoints.
+
 ### 🛠️ Tools
 
 - [pre-commit](https://github.com/pre-commit/pre-commit)

@@ -90,6 +90,31 @@ output "kubernetes_istio_gateway_mci_global_address" {
   }
 }
 
+output "openbao_hostname" {
+  description = "Global public hostname for the OpenBao multi-cluster ingress"
+  value       = local.openbao_hostname
+}
+
+output "openbao_mci_global_address" {
+  description = "The global IP address reserved for the OpenBao multi-cluster ingress"
+  value       = google_compute_global_address.openbao_mci.address
+}
+
+output "openbao_mci_ssl_certificate_name" {
+  description = "The Google-managed SSL certificate name for the OpenBao multi-cluster ingress"
+  value       = google_compute_managed_ssl_certificate.openbao_mci.name
+}
+
+output "openbao_public_dns_zone_name" {
+  description = "The environment-level public DNS zone for OpenBao global and zonal ingress records"
+  value       = local.authentik_public_dns_zone_name
+}
+
+output "shared_ingress_policy_name" {
+  description = "Name of the shared Cloud Armor security and SSL policies for Pneuma-managed ingress"
+  value       = local.shared_ingress_policy_name
+}
+
 output "project_id" {
   description = "The platform-managed project ID"
   value       = data.google_project.platform_managed.project_id
