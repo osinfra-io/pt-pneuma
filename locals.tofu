@@ -227,7 +227,7 @@ locals {
   # OpenBao has a dedicated global GKE multi-cluster ingress, separate from the Istio mesh gateway.
   openbao_hostname = "openbao.${local.authentik_public_dns_domain}"
 
-  pneuma_ingress_policy_name = "pneuma-ingress"
+  shared_ingress_policy_name = "shared-ingress"
 
   # Namespace provisioned through the standard Logos-driven onboarding flow and the chart-created
   # Kubernetes service account for Authentik. Both are needed here to bind Workload Identity for the

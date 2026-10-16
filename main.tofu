@@ -91,7 +91,7 @@ resource "google_compute_managed_ssl_certificate" "openbao_mci" {
 # Google Compute Security Policy Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/compute_security_policy
 
-resource "google_compute_security_policy" "pneuma_ingress" {
+resource "google_compute_security_policy" "shared_ingress" {
   provider = google-beta
 
   advanced_options_config {
@@ -111,7 +111,7 @@ resource "google_compute_security_policy" "pneuma_ingress" {
     }
   }
 
-  name    = local.pneuma_ingress_policy_name
+  name    = local.shared_ingress_policy_name
   project = local.team_project_ids[module.core_helpers.team]
 
   dynamic "rule" {
@@ -220,9 +220,9 @@ resource "google_compute_security_policy" "pneuma_ingress" {
 # Google Compute SSL Policy Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/compute_ssl_policy
 
-resource "google_compute_ssl_policy" "pneuma_ingress" {
+resource "google_compute_ssl_policy" "shared_ingress" {
   min_tls_version = "TLS_1_2"
-  name            = local.pneuma_ingress_policy_name
+  name            = local.shared_ingress_policy_name
   profile         = "MODERN"
   project         = local.team_project_ids[module.core_helpers.team]
 }

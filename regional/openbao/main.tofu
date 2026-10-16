@@ -126,7 +126,7 @@ resource "kubernetes_manifest" "openbao_backendconfig" {
         unhealthyThreshold = 2
       }
       securityPolicy = {
-        name = local.main.pneuma_ingress_policy_name
+        name = local.main.shared_ingress_policy_name
       }
     }
   }
@@ -148,7 +148,7 @@ resource "kubernetes_manifest" "openbao_frontendconfig" {
       redirectToHttps = {
         enabled = true
       }
-      sslPolicy = local.main.pneuma_ingress_policy_name
+      sslPolicy = local.main.shared_ingress_policy_name
     }
   }
 }

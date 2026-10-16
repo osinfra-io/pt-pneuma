@@ -110,9 +110,9 @@ output "openbao_public_dns_zone_name" {
   value       = local.authentik_public_dns_zone_name
 }
 
-output "pneuma_ingress_policy_name" {
+output "shared_ingress_policy_name" {
   description = "Name of the shared Cloud Armor security and SSL policies for Pneuma-managed ingress"
-  value       = local.pneuma_ingress_policy_name
+  value       = local.shared_ingress_policy_name
 }
 
 output "project_id" {
