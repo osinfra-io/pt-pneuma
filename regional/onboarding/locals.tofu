@@ -16,7 +16,7 @@ locals {
   # Namespaces per cluster, derived from Logos team data. The team's GitHub Actions
   # service account (from pt-corpus) is bound as the namespace administrator.
   # Every team's namespaces — including pneuma's own — are prefixed with the team key
-  # (e.g. "openbao" on pt-kryptos becomes "pt-kryptos-openbao", "istio-test" on pt-pneuma
+  # (e.g. "openbao" on pt-pneuma becomes "pt-pneuma-openbao", "istio-test" on pt-pneuma
   # becomes "pt-pneuma-istio-test") matching the prefixed keys in the main workspace's
   # workload_identity_service_account_emails output. The prefix also ensures Istio namespace
   # sameness works: the stub Service on the pneuma gateway cluster lives in the same prefixed
@@ -34,7 +34,7 @@ locals {
     }
   }
 
-  # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
+  # Region per cluster, parsed from the cluster name (e.g. "pt-pneuma-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :
     cluster_name => regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]

@@ -93,7 +93,7 @@ locals {
   authentik_resolved_outpost_service_name = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)
   authentik_resolved_outpost_service_port = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
 
-  # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
+  # Region per cluster, parsed from the cluster name (e.g. "pt-pneuma-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :
     cluster_name => regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]

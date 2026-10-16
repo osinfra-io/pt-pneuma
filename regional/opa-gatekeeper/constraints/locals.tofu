@@ -43,7 +43,7 @@ locals {
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
-  # Region per cluster, parsed from the cluster name (e.g. "pt-kryptos-us-east1-b" → "us-east1").
+  # Region per cluster, parsed from the cluster name (e.g. "pt-pneuma-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :
     cluster_name => regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]
