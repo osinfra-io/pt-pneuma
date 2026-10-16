@@ -5,7 +5,6 @@ set -euo pipefail
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly WORK_DIR="${SCRIPT_DIR}/.work"
 readonly OWNER_NAME="local-gateway-stack-owner"
-readonly OWNER_VALUE="osinfra-local-gateway-stack"
 readonly INIT_FILE="${WORK_DIR}/openbao-init.json"
 source "${SCRIPT_DIR}/../shared/cluster.sh"
 

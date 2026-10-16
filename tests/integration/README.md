@@ -23,7 +23,7 @@ tests/integration/verify.sh
 tests/integration/teardown.sh        # deletes local users and database data
 ```
 
-Component scripts can be rerun individually (for example `tests/integration/authentik/setup.sh`) while iterating. Google browser sign-in is a manual developer step; see the `local-integration-testing` skill.
+Component scripts can be rerun individually (for example `tests/integration/authentik/setup.sh`) while iterating. `tests/integration/openbao/show-credentials.sh` prints the OpenBao URL and its throwaway local root token. Google browser sign-in is a manual developer step; see the `local-integration-testing` skill.
 
 ## Hostnames and certificate
 
