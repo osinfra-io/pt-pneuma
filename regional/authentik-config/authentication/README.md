@@ -6,4 +6,4 @@ The shared identification stage is managed by the Arche configuration module, wi
 
 Root `moved.tofu` preserves all four existing cloud resource addresses. The local fixture moves its existing Development brand into this module rather than creating a competing domain brand.
 
-Run mocked regressions with `tofu init -backend=false` and `tofu test` in this directory. For live verification, use `/platform-grouping:test-local-gateway-stack` from the [platform-grouping plugin](https://github.com/osinfra-io/pt-ai-plugins/tree/main/plugins/platform-grouping).
+Run mocked regressions with `tofu init -backend=false` and `tofu test` in this directory. For live verification, use `/platform-grouping:local-integration-testing` from the [platform-grouping plugin](https://github.com/osinfra-io/pt-ai-plugins/tree/main/plugins/platform-grouping).
