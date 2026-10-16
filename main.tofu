@@ -70,6 +70,41 @@ module "kubernetes_istio" {
   project                                   = local.team_project_ids[each.key]
 }
 
+# Google Compute Global Address Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/compute_global_address
+
+resource "google_compute_global_address" "openbao_mci" {
+  labels  = module.core_helpers.labels
+  name    = "openbao-mci"
+  project = local.team_project_ids[module.core_helpers.team]
+}
+
+# Google Compute Managed SSL Certificate Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/compute_managed_ssl_certificate
+
+resource "google_compute_managed_ssl_certificate" "openbao_mci" {
+  managed {
+    domains = [local.openbao_hostname]
+  }
+
+  name    = "openbao-mci"
+  project = local.team_project_ids[module.core_helpers.team]
+}
+
+# Google DNS Record Set Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/dns_record_set
+
+resource "google_dns_record_set" "openbao_mci" {
+  for_each = local.openbao_global_dns
+
+  managed_zone = each.value.managed_zone
+  name         = "${each.key}."
+  project      = each.value.project
+  rrdatas      = [google_compute_global_address.openbao_mci.address]
+  ttl          = 300
+  type         = "A"
+}
+
 # Google Project IAM Member Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/project_iam_member
 

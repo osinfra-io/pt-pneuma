@@ -83,6 +83,16 @@ locals {
 
   authentik_public_dns_zone_name = module.core_helpers.env == "prod" ? "osinfra-io" : "${module.core_helpers.env}-osinfra-io"
 
+  openbao_global_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
+    (local.openbao_hostname) = {
+      managed_zone = local.authentik_public_dns_zone_name
+      project      = data.google_project.shared_vpc_host.project_id
+    }
+  } : {}
+
+  # OpenBao has a dedicated global GKE multi-cluster ingress, separate from the Istio mesh gateway.
+  openbao_hostname = "openbao.${local.authentik_public_dns_domain}"
+
   # Namespace provisioned through the standard Logos-driven onboarding flow and the chart-created
   # Kubernetes service account for Authentik. Both are needed here to bind Workload Identity for the
   # Cloud SQL Auth Proxy.

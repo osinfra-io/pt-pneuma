@@ -18,6 +18,11 @@ server:
   auditStorage:
     enabled: true
 
+  service:
+    annotations:
+      cloud.google.com/backend-config: '{"default":"openbao-backend"}'
+    type: NodePort
+
   ha:
     enabled: true
     raft:
