@@ -3,7 +3,6 @@
 set -euo pipefail
 
 readonly OWNER_NAME="local-gateway-stack-owner"
-readonly OWNER_VALUE="osinfra-local-gateway-stack"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../shared/cluster.sh"
 
