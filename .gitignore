@@ -20,3 +20,6 @@ plan.out
 *.gz
 *.tgz
 *.tar
+
+# Local integration test generated state
+tests/integration/**/.work/

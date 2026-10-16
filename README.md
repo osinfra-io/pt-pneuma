@@ -37,6 +37,10 @@ Links to documentation and other resources required to develop and iterate in th
 - [opa gatekeeper](https://open-policy-agent.github.io/gatekeeper/website/docs/)
 - [openbao](https://openbao.org/docs/)
 
+## 🧪 Local integration tests
+
+An opt-in Docker Desktop Kind suite in [`tests/integration`](tests/integration/README.md) runs Authentik, Istio ambient, agentgateway, and OpenBao together using the checked-out `pt-arche-kubernetes-*` modules. It is not a CI gate.
+
 ## 🔄 Deployment Dependency Graph
 
 Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain. authentik is deployed per zone (the primary us-east1-b zone first, then the rest), while a single global **authentik Config** job runs after every zone's authentik deployment.
