@@ -176,7 +176,7 @@ resource "kubernetes_manifest" "openbao_mci" {
     kubernetes_manifest.openbao_mcs,
   ]
 
-  for_each = local.gke_clusters
+  for_each = local.openbao_config_clusters
 
   provider = kubernetes.by_cluster[each.key]
 
@@ -226,7 +226,7 @@ resource "kubernetes_manifest" "openbao_mcs" {
     helm_release.openbao,
   ]
 
-  for_each = local.gke_clusters
+  for_each = local.openbao_config_clusters
 
   provider = kubernetes.by_cluster[each.key]
 

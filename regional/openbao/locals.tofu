@@ -13,6 +13,14 @@ locals {
     if endswith(cluster_name, "-${local.zone}") && cluster_config.team_key == module.core_helpers.team
   }
 
+  # GKE MultiClusterIngress and MultiClusterService resources are managed only from
+  # the fleet's config cluster.
+  openbao_config_clusters = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => cluster_config
+    if cluster_name == "pt-pneuma-us-east1-b"
+  }
+
   # Helm set values derived from OpenTofu context and environment-specific variables.
   helm_set_values = concat(
     [
@@ -32,7 +40,7 @@ locals {
   openbao_multi_cluster_service_clusters = [
     for cluster_name, cluster_config in local.main.gke_clusters :
     {
-      link = "${local.regions[cluster_name]}/${cluster_name}"
+      link = "${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}/${cluster_name}"
     }
     if cluster_config.team_key == module.core_helpers.team
   ]
