@@ -32,12 +32,14 @@ assert_state_or_absent() {
   local resource_kind="$3"
   local resource_name="$4"
   local namespace="$5"
+  local namespace_args=()
+  [ -z "${namespace}" ] || namespace_args=(--namespace="${namespace}")
 
   if state_has "${stage}" "${address}"; then
     return
   fi
 
-  if kubectl get "${resource_kind}" "${resource_name}" --namespace="${namespace}" \
+  if kubectl get "${resource_kind}" "${resource_name}" "${namespace_args[@]}" \
     --ignore-not-found --output=name 2>/dev/null | grep --quiet .; then
     fail "${resource_kind}/${resource_name} exists but is not in ${stage} state; explicitly import/adopt it before setup"
   fi

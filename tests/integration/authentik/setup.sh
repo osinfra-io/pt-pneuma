@@ -90,7 +90,7 @@ while True:
         stages = get("/api/v3/stages/identification/?name=default-authentication-identification")["results"]
         if len(outposts) == 1 and len(flows) == 1 and len(stages) == 1:
             break
-    except (urllib.error.URLError, TimeoutError) as error:
+    except (urllib.error.URLError, TimeoutError, ValueError, KeyError) as error:
         print(f"Waiting for Authentik bootstrap ({type(error).__name__}).", file=sys.stderr)
     if time.monotonic() >= deadline:
         raise SystemExit("Timed out waiting for built-in Authentik objects; inspect server/worker logs.")
