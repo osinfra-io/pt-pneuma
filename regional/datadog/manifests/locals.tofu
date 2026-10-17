@@ -2,6 +2,8 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  artifact_registry = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
+
   # Clusters in this zone whose owning team has opted in to platform-managed Datadog.
   datadog_clusters = {
     for cluster_name, cluster_config in local.gke_clusters :

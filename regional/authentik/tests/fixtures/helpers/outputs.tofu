@@ -1,15 +1,19 @@
 variable "environment" {
-  type = string
+  description = "Mock environment name"
+  type        = string
 }
 
 output "environment" {
-  value = var.environment
+  description = "Mock environment name"
+  value       = var.environment
 }
 
 output "repository" {
-  value = "pt-pneuma"
+  description = "Mock same-repository state discovery"
+  value       = "pt-pneuma"
 }
 
 output "team" {
-  value = "pt-pneuma"
+  description = "Mock owning platform team"
+  value       = "pt-pneuma"
 }

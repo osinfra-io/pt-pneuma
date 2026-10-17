@@ -2,6 +2,10 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  application_group_members = {
+    for group in values(local.application_groups) : group.name => group.members
+  }
+
   application_groups = merge({}, [
     for team_key, team in var.teams : {
       for key, group in team.authentik_groups : "${team_key}/${key}" => {
@@ -11,8 +15,4 @@ locals {
       }
     }
   ]...)
-
-  application_group_members = {
-    for group in values(local.application_groups) : group.name => group.members
-  }
 }

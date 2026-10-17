@@ -44,13 +44,7 @@ output "authentik_secret_env" {
 
 output "clusters" {
   description = "Slim GKE cluster map (all teams, all zones) for the deployment workflow to pass to zone workspaces as TF_VAR_clusters, keyed by cluster name"
-  value = {
-    for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => {
-      project_id = cluster_config.project_id
-      team_key   = cluster_config.team_key
-    }
-  }
+  value       = local.clusters_slim
 }
 
 output "gateway_dns" {
@@ -76,18 +70,12 @@ output "kubernetes_cert_manager_tls_self_signed_cert_cert_manager_root_key" {
 
 output "kubernetes_engine_workload_identity_service_account_emails" {
   description = "The email addresses of the service accounts for the Kubernetes namespace workload identity, keyed by team then namespace"
-  value = {
-    for team_key, google_kubernetes_engine in module.google_kubernetes_engine :
-    team_key => google_kubernetes_engine.workload_identity_service_account_emails
-  }
+  value       = local.kubernetes_engine_workload_identity_service_account_emails
 }
 
 output "kubernetes_istio_gateway_mci_global_address" {
   description = "The IP address for the Istio Gateway multi-cluster ingress, keyed by team"
-  value = {
-    for team_key, istio in module.kubernetes_istio :
-    team_key => istio.gateway_mci_global_address
-  }
+  value       = local.kubernetes_istio_gateway_mci_global_addresses
 }
 
 output "openbao_hostname" {
@@ -110,11 +98,6 @@ output "openbao_public_dns_zone_name" {
   value       = local.authentik_public_dns_zone_name
 }
 
-output "shared_ingress_policy_name" {
-  description = "Name of the shared Cloud Armor security and SSL policies for Pneuma-managed ingress"
-  value       = local.shared_ingress_policy_name
-}
-
 output "project_id" {
   description = "The platform-managed project ID"
   value       = data.google_project.platform_managed.project_id
@@ -123,6 +106,11 @@ output "project_id" {
 output "project_number" {
   description = "The platform-managed project number"
   value       = data.google_project.platform_managed.number
+}
+
+output "shared_ingress_policy_name" {
+  description = "Name of the shared Cloud Armor security and SSL policies for Pneuma-managed ingress"
+  value       = local.shared_ingress_policy_name
 }
 
 output "shared_vpc_host_project_id" {

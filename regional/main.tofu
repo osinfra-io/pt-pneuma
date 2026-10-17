@@ -9,11 +9,11 @@ module "google_kubernetes_engine_regional" {
   cluster_prefix              = each.value.team_key
   enable_deletion_protection  = false
   enable_gateway_api          = each.value.enable_gateway_api
-  enable_gke_hub_host         = lookup(each.value, "enable_gke_hub_host", false)
-  gke_hub_memberships         = lookup(each.value, "gke_hub_memberships", {})
+  enable_gke_hub_host         = each.value.enable_gke_hub_host
+  gke_hub_memberships         = each.value.gke_hub_memberships
   labels                      = module.core_helpers.labels
-  node_pools                  = lookup(each.value, "node_pools", {})
-  private_endpoint_subnetwork = "${each.key}-master"
+  node_pools                  = each.value.node_pools
+  private_endpoint_subnetwork = each.value.private_endpoint_subnetwork
   project                     = each.value.project_id
   resource_labels             = module.core_helpers.labels
   subnet                      = each.key

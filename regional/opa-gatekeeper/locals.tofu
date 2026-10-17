@@ -2,6 +2,8 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  artifact_registry = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
+
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
   gke_clusters = {

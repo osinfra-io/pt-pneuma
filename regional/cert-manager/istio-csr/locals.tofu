@@ -10,6 +10,8 @@ locals {
     if endswith(cluster_name, "-${local.zone}")
   }
 
+  main = data.terraform_remote_state.main.outputs
+
   # Region per cluster, parsed from the cluster name (e.g. "pt-pneuma-us-east1-b" → "us-east1").
   regions = {
     for cluster_name in keys(var.clusters) :
@@ -18,6 +20,4 @@ locals {
 
   # This deployment zone, parsed from the workspace name. Static context safe.
   zone = try(regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0], "")
-
-  main = data.terraform_remote_state.main.outputs
 }

@@ -27,7 +27,7 @@ module "kubernetes_istio" {
     kubernetes = kubernetes.by_cluster[each.key]
   }
 
-  artifact_registry                           = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
+  artifact_registry                           = local.artifact_registry
   cluster_prefix                              = each.value.team_key
   cni_cpu_limits                              = var.kubernetes_istio_cni_cpu_limits
   cni_cpu_requests                            = var.kubernetes_istio_cni_cpu_requests
@@ -42,8 +42,8 @@ module "kubernetes_istio" {
   gateway_autoscale_min                       = var.kubernetes_istio_gateway_autoscale_min
   gateway_cpu_limits                          = var.kubernetes_istio_gateway_cpu_limits
   gateway_cpu_requests                        = var.kubernetes_istio_gateway_cpu_requests
-  gateway_dns                                 = each.value.team_key == module.core_helpers.team ? local.gateway_dns[each.key] : {}
-  gateway_mci_global_address                  = try(local.main.kubernetes_istio_gateway_mci_global_address[each.value.team_key], null)
+  gateway_dns                                 = local.gateway_dns[each.key]
+  gateway_mci_global_address                  = local.gateway_mci_global_addresses[each.key]
   gateway_memory_limits                       = var.kubernetes_istio_gateway_memory_limits
   gateway_memory_requests                     = var.kubernetes_istio_gateway_memory_requests
   labels                                      = module.core_helpers.labels
