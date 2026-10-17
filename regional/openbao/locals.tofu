@@ -36,6 +36,47 @@ locals {
     if cluster_name == "pt-pneuma-us-east1-b"
   }
 
+  # Values that depend on main workspace outputs: the Workload Identity binding for the OpenBao
+  # ServiceAccount and the Raft config (the chart default plus the gcpckms auto-unseal stanza).
+  openbao_dynamic_helm_values = yamlencode({
+    server = {
+      ha = {
+        raft = {
+          config = <<-EOT
+            ui = true
+
+            listener "tcp" {
+              tls_disable = 1
+              address = "[::]:8200"
+              cluster_address = "[::]:8201"
+            }
+
+            seal "gcpckms" {
+              crypto_key = "${local.main.openbao_kms_seal.crypto_key}"
+              key_ring   = "${local.main.openbao_kms_seal.key_ring}"
+              project    = "${local.main.openbao_kms_seal.project}"
+              region     = "${local.main.openbao_kms_seal.region}"
+            }
+
+            storage "raft" {
+              path = "/openbao/data"
+            }
+
+            service_registration "kubernetes" {}
+          EOT
+        }
+      }
+
+      serviceAccount = {
+        annotations = {
+          "iam.gke.io/gcp-service-account" = local.main.openbao_kms_service_account_email
+        }
+
+        name = "openbao"
+      }
+    }
+  })
+
   # OpenBao's global MultiClusterService spans every platform-managed OpenBao cluster.
   openbao_multi_cluster_service_clusters = [
     for cluster_name, cluster_config in local.main.gke_clusters :

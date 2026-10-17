@@ -359,6 +359,16 @@ locals {
     team_key => istio.gateway_mci_global_address
   }
 
+  openbao_kms_member = "serviceAccount:${google_service_account.openbao_kms.email}"
+
+  # Seal settings consumed by the regional openbao workspaces to render the gcpckms seal stanza.
+  openbao_kms_seal = {
+    crypto_key = google_kms_crypto_key.openbao_unseal.name
+    key_ring   = google_kms_key_ring.openbao_unseal.name
+    project    = google_kms_key_ring.openbao_unseal.project
+    region     = google_kms_key_ring.openbao_unseal.location
+  }
+
   openbao_global_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
     (local.openbao_hostname) = {
       dns_name     = "${local.openbao_hostname}."
@@ -369,6 +379,8 @@ locals {
 
   # OpenBao has a dedicated global GKE multi-cluster ingress, separate from the Istio mesh gateway.
   openbao_hostname = "openbao.${local.authentik_public_dns_domain}"
+
+  openbao_workload_identity_member = "serviceAccount:${local.team_project_ids[module.core_helpers.team]}.svc.id.goog[${module.core_helpers.team}-openbao/openbao]"
 
   shared_ingress_policy_name = "shared-ingress"
 

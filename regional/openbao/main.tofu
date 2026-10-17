@@ -42,7 +42,8 @@ resource "helm_release" "openbao" {
   set = local.helm_set_values
 
   values = [
-    file("${path.module}/helm/openbao.yml")
+    file("${path.module}/helm/openbao.yml"),
+    local.openbao_dynamic_helm_values
   ]
 
   version = var.openbao_version
