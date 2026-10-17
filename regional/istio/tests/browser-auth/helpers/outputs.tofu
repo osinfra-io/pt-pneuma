@@ -8,6 +8,11 @@ output "environment" {
   value       = "non-production"
 }
 
+output "repository" {
+  description = "Fixture repository name."
+  value       = "pt-pneuma"
+}
+
 output "team" {
   description = "Fixture gateway team."
   value       = "pt-pneuma"

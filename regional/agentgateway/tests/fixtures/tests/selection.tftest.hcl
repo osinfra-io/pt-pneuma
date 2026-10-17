@@ -13,9 +13,6 @@ variables {
       team_key   = "st-example"
     }
   }
-  state_bucket             = "mock-state"
-  state_kms_encryption_key = "mock-key"
-  state_prefix             = "mock-prefix"
 }
 
 run "owning_team_and_zone_only" {

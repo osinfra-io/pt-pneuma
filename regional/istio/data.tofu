@@ -23,9 +23,8 @@ data "terraform_remote_state" "main" {
   backend = "gcs"
 
   config = {
-    bucket             = var.state_bucket
-    kms_encryption_key = var.state_kms_encryption_key
-    prefix             = module.core_helpers.repository
+    bucket = local.state_bucket
+    prefix = module.core_helpers.repository
   }
 
   workspace = "main-${module.core_helpers.environment}"
@@ -35,9 +34,8 @@ data "terraform_remote_state" "authentik_config" {
   backend = "gcs"
 
   config = {
-    bucket             = var.state_bucket
-    kms_encryption_key = var.state_kms_encryption_key
-    prefix             = module.core_helpers.repository
+    bucket = local.state_bucket
+    prefix = module.core_helpers.repository
   }
 
   workspace = "authentik-config-${module.core_helpers.environment}"
@@ -47,9 +45,8 @@ data "terraform_remote_state" "regional" {
   backend = "gcs"
 
   config = {
-    bucket             = var.state_bucket
-    kms_encryption_key = var.state_kms_encryption_key
-    prefix             = module.core_helpers.repository
+    bucket = local.state_bucket
+    prefix = module.core_helpers.repository
   }
 
   workspace = "${module.core_helpers.region}-${module.core_helpers.zone}-${module.core_helpers.environment}"

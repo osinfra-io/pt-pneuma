@@ -49,6 +49,8 @@ locals {
     cluster_name => regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]
   }
 
+  state_bucket = "${module.core_helpers.repository}-state-${module.core_helpers.env}"
+
   # This deployment zone, parsed from the workspace name. Static context safe.
   zone = try(regex("^(us-[a-z0-9]+-[a-z])", terraform.workspace)[0], "")
 }

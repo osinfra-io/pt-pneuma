@@ -9,18 +9,3 @@ variable "clusters" {
     team_key   = string
   }))
 }
-
-variable "state_bucket" {
-  description = "GCS state bucket supplied by the deployment workflow."
-  type        = string
-}
-
-variable "state_kms_encryption_key" {
-  description = "KMS state encryption key supplied by the deployment workflow."
-  type        = string
-}
-
-variable "state_prefix" {
-  description = "State prefix supplied by the deployment workflow."
-  type        = string
-}

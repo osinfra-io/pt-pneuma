@@ -109,4 +109,6 @@ locals {
   sandbox_brand_domain = "authentik.sb.osinfra.io"
   sandbox_brand_title  = "osinfra.io | Sandbox"
   sandbox_flow_title   = "Welcome to osinfra.io sandbox!"
+
+  state_bucket = "${module.core_helpers.repository}-state-${module.core_helpers.env}"
 }

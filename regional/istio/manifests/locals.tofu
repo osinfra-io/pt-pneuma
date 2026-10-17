@@ -523,6 +523,8 @@ locals {
     ) : {}
   }
 
+  state_bucket = "${module.core_helpers.repository}-state-${module.core_helpers.env}"
+
   # Per-team zonal probe HTTPRoutes derived from each team's Logos-declared istio-test routes. Keyed
   # by the team's cluster in this zone. Only the istio-test namespace is scaffolded per zone (a
   # platform test convention); each apex route gets a zonal sibling targeting the per-zone Service
