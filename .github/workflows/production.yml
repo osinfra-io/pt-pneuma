@@ -248,7 +248,7 @@ jobs:
   openbao_us_east1_b:
     name: "OpenBao: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
-    needs: [us_east1_b_onboarding, main]
+    needs: [cert_manager_us_east1_b, us_east1_b_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OpenBao: us-east1-b"
@@ -280,7 +280,7 @@ jobs:
   openbao_us_east1_c:
     name: "OpenBao: us-east1-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
-    needs: [us_east1_c_onboarding, main]
+    needs: [cert_manager_us_east1_c, us_east1_c_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OpenBao: us-east1-c"
@@ -312,7 +312,7 @@ jobs:
   openbao_us_east1_d:
     name: "OpenBao: us-east1-d"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
-    needs: [us_east1_d_onboarding, main]
+    needs: [cert_manager_us_east1_d, us_east1_d_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OpenBao: us-east1-d"
@@ -344,7 +344,7 @@ jobs:
   openbao_us_east4_a:
     name: "OpenBao: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
-    needs: [us_east4_a_onboarding, main]
+    needs: [cert_manager_us_east4_a, us_east4_a_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OpenBao: us-east4-a"
@@ -376,7 +376,7 @@ jobs:
   openbao_us_east4_b:
     name: "OpenBao: us-east4-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
-    needs: [us_east4_b_onboarding, main]
+    needs: [cert_manager_us_east4_b, us_east4_b_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OpenBao: us-east4-b"
@@ -408,7 +408,7 @@ jobs:
   openbao_us_east4_c:
     name: "OpenBao: us-east4-c"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
-    needs: [us_east4_c_onboarding, main]
+    needs: [cert_manager_us_east4_c, us_east4_c_onboarding, main]
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production OpenBao: us-east4-c"

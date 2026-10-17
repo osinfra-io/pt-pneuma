@@ -530,7 +530,7 @@ jobs:
 
   cert_manager_us_east1_b:
     name: "cert-manager: us-east1-b"
-    needs: [cert_manager_istio_csr_us_east1_b, opa_gatekeeper_us_east1_b, read_clusters]
+    needs: [cert_manager_istio_csr_us_east1_b, openbao_us_east1_b, opa_gatekeeper_us_east1_b, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
     with:
       checkout_ref: ${{ github.ref }}
@@ -564,7 +564,7 @@ jobs:
 
   cert_manager_us_east4_a:
     name: "cert-manager: us-east4-a"
-    needs: [cert_manager_istio_csr_us_east4_a, opa_gatekeeper_us_east4_a, read_clusters]
+    needs: [cert_manager_istio_csr_us_east4_a, openbao_us_east4_a, opa_gatekeeper_us_east4_a, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
     with:
       checkout_ref: ${{ github.ref }}
