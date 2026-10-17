@@ -20,6 +20,6 @@ module "kubernetes_datadog_operator_manifests" {
   enable_apm                     = module.core_helpers.teams[each.value.team_key].enable_datadog_apm
   enable_usm                     = module.core_helpers.teams[each.value.team_key].enable_datadog_apm
   node_agent_container_resources = var.kubernetes_datadog_operator_node_agent_container_resources
-  registry                       = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
+  registry                       = local.artifact_registry
   team                           = each.value.team_key
 }

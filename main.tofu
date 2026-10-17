@@ -6,7 +6,7 @@ module "google_kubernetes_engine" {
 
   for_each = local.teams_with_clusters
 
-  gke_fleet_host_project_id = each.key == "pt-pneuma" ? "" : local.team_project_ids["pt-pneuma"]
+  gke_fleet_host_project_id = local.gke_fleet_host_project_id_by_team[each.key]
   labels                    = module.core_helpers.labels
   namespaces                = local.gke_namespaces_by_team[each.key]
   project                   = local.team_project_ids[each.key]
@@ -61,8 +61,8 @@ module "kubernetes_istio" {
 
   for_each = local.teams_with_clusters
 
-  gateway_dns               = each.key == module.core_helpers.team ? local.gateway_dns_for_pneuma : {}
-  gke_fleet_host_project_id = each.key == module.core_helpers.team ? "" : local.team_project_ids[module.core_helpers.team]
+  gateway_dns               = local.istio_gateway_dns_by_team[each.key]
+  gke_fleet_host_project_id = local.gke_fleet_host_project_id_by_team[each.key]
   labels                    = module.core_helpers.labels
   project                   = local.team_project_ids[each.key]
 }
@@ -234,7 +234,7 @@ resource "google_dns_record_set" "openbao_mci" {
   for_each = local.openbao_global_dns
 
   managed_zone = each.value.managed_zone
-  name         = "${each.key}."
+  name         = each.value.dns_name
   project      = each.value.project
   rrdatas      = [google_compute_global_address.openbao_mci.address]
   ttl          = 300
@@ -247,7 +247,7 @@ resource "google_dns_record_set" "openbao_mci" {
 # The Cloud SQL Auth Proxy sidecar in the Authentik pods connects as this service account via
 # Workload Identity; roles/cloudsql.client lets it open the proxied connection to the instance.
 resource "google_project_iam_member" "authentik_cloud_sql_client" {
-  member  = "serviceAccount:${google_service_account.authentik_cloud_sql.email}"
+  member  = local.authentik_cloud_sql_member
   project = local.team_project_ids[module.core_helpers.team]
   role    = "roles/cloudsql.client"
 }
@@ -269,7 +269,7 @@ resource "google_service_account" "authentik_cloud_sql" {
 # Bind the Authentik Kubernetes service account (authentik/authentik) to the Google service account
 # so the Cloud SQL Auth Proxy sidecar authenticates through GKE Workload Identity.
 resource "google_service_account_iam_member" "authentik_cloud_sql_workload_identity" {
-  member             = "serviceAccount:${local.team_project_ids[module.core_helpers.team]}.svc.id.goog[${local.authentik_kubernetes_namespace}/${local.authentik_kubernetes_service_account}]"
+  member             = local.authentik_workload_identity_member
   role               = "roles/iam.workloadIdentityUser"
   service_account_id = google_service_account.authentik_cloud_sql.name
 }

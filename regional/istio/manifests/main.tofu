@@ -106,7 +106,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
               http2_protocol_options = {}
               lb_policy              = "ROUND_ROBIN"
               load_assignment = {
-                cluster_name = "pt-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
+                cluster_name = local.datadog_aap_cluster_names[each.key]
                 endpoints = [
                   {
                     lb_endpoints = [
@@ -124,7 +124,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
                   }
                 ]
               }
-              name = "pt-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
+              name = local.datadog_aap_cluster_names[each.key]
               transport_socket = {
                 name = "envoy.transport_sockets.tls"
                 typed_config = {
@@ -161,7 +161,7 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
                 failure_mode_allow = true
                 grpc_service = {
                   envoy_grpc = {
-                    cluster_name = "pt-${regex("(us-[a-z0-9]+-[a-z])$", each.key)[0]}"
+                    cluster_name = local.datadog_aap_cluster_names[each.key]
                   }
                   timeout = "0.5s"
                 }
@@ -244,7 +244,7 @@ resource "kubernetes_manifest" "gateway_authentik_jwt_bypass_filter" {
             context = "GATEWAY"
             routeConfiguration = {
               vhost = {
-                name = "${local.authentik_hostname}:443"
+                name = local.authentik_vhost_name
               }
             }
           }

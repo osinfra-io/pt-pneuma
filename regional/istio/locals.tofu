@@ -2,6 +2,36 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  artifact_registry = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
+
+  authentik_extension_provider_name = "authentik"
+
+  # Well-known Authentik embedded outpost coordinates used as fallbacks for the ext_authz
+  # provider, since the Istio mesh config is applied before the authentik-config workspace exists
+  # (its remote state is empty on first apply). Once authentik-config is applied, its authoritative
+  # outputs take precedence via try(). The embedded outpost is served by the authentik-server
+  # Service, so a gateway always calls its region-local authentik-server for forward-auth.
+  authentik_outpost_namespace    = local.main.authentik_kubernetes_namespace
+  authentik_outpost_path_prefix  = "/outpost.goauthentik.io/auth/envoy"
+  authentik_outpost_service_name = "authentik-server"
+  authentik_outpost_service_port = 80
+
+  # Resolve the outpost namespace once so the ext_authz service and the clusterLocal serviceSettings
+  # host always target the same namespace; a mismatch would let the gateway route forward-auth to
+  # another region's authentik-server.
+  authentik_resolved_outpost_namespace = try(data.terraform_remote_state.authentik_config.outputs.outpost_namespace, local.authentik_outpost_namespace)
+
+  authentik_resolved_outpost_service_name = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)
+  authentik_resolved_outpost_service_port = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
+
+  # GKE clusters in this zone that have the Istio gateway enabled (platform team only).
+  # Used for resources that are gateway-specific (e.g. Datadog AAP extproc).
+  gateway_clusters = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => cluster_config
+    if cluster_config.team_key == module.core_helpers.team
+  }
+
   # Gateway DNS per cluster. Pneuma (gateway) clusters create zonal A records for ALL
   # teams — because every team's DNS routes through pneuma's single ingress gateway.
   # Member team clusters get nothing (their traffic arrives via the mesh, not a local LB).
@@ -14,12 +44,9 @@ locals {
     } : {}
   }
 
-  # GKE clusters in this zone that have the Istio gateway enabled (platform team only).
-  # Used for resources that are gateway-specific (e.g. Datadog AAP extproc).
-  gateway_clusters = {
+  gateway_mci_global_addresses = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config
-    if cluster_config.team_key == module.core_helpers.team
+    cluster_name => try(local.main.kubernetes_istio_gateway_mci_global_address[cluster_config.team_key], null)
   }
 
   # GKE clusters in this zone — the subset that actually receives the add-on.
@@ -29,9 +56,6 @@ locals {
     cluster_name => cluster_config
     if endswith(cluster_name, "-${local.zone}")
   }
-
-  # Main workspace outputs
-  main = data.terraform_remote_state.main.outputs
 
   # Canonical forward-auth rendering shared with the local fixture.
   istio_mesh_config_extension_providers = {
@@ -60,6 +84,9 @@ locals {
     ] : []
   }
 
+  # Main workspace outputs
+  main = data.terraform_remote_state.main.outputs
+
   # Multi-cluster service links per cluster — the set of the owning team's clusters
   # (across all zones) that participate in the Istio multi-cluster mesh.
   multi_cluster_service_clusters = {
@@ -72,26 +99,6 @@ locals {
       if peer_config.team_key == cluster_config.team_key
     ]
   }
-
-  authentik_extension_provider_name = "authentik"
-
-  # Well-known Authentik embedded outpost coordinates used as fallbacks for the ext_authz
-  # provider, since the Istio mesh config is applied before the authentik-config workspace exists
-  # (its remote state is empty on first apply). Once authentik-config is applied, its authoritative
-  # outputs take precedence via try(). The embedded outpost is served by the authentik-server
-  # Service, so a gateway always calls its region-local authentik-server for forward-auth.
-  authentik_outpost_namespace    = local.main.authentik_kubernetes_namespace
-  authentik_outpost_path_prefix  = "/outpost.goauthentik.io/auth/envoy"
-  authentik_outpost_service_name = "authentik-server"
-  authentik_outpost_service_port = 80
-
-  # Resolve the outpost namespace once so the ext_authz service and the clusterLocal serviceSettings
-  # host always target the same namespace; a mismatch would let the gateway route forward-auth to
-  # another region's authentik-server.
-  authentik_resolved_outpost_namespace = try(data.terraform_remote_state.authentik_config.outputs.outpost_namespace, local.authentik_outpost_namespace)
-
-  authentik_resolved_outpost_service_name = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)
-  authentik_resolved_outpost_service_port = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-pneuma-us-east1-b" → "us-east1").
   regions = {

@@ -47,6 +47,79 @@ locals {
     }
   ]
 
+  # Connection name (project:region:instance) of the corpus-managed instance, used by the Cloud SQL
+  # Auth Proxy sidecar in the Authentik pods to reach the private-IP, ENCRYPTED_ONLY database over
+  # Workload Identity.
+  authentik_cloud_sql_connection_name = one(local.authentik_cloud_sql_instances[*].connection_name)
+
+  authentik_cloud_sql_instance_name = one(local.authentik_cloud_sql_instances[*].name)
+
+  # The Cloud SQL instance is platform-managed by pt-corpus (see cloud_sql in the pt-pneuma Logos
+  # tfvars, keyed "authentik"). Discover it in the pneuma project via the google_sql_database_instances
+  # data source (cross-repo state access is not permitted) and read its generated name (which corpus
+  # prefixes with the instance key) for the database/user. one() errors on more than one match; the
+  # zero-match case is caught by the precondition on google_sql_database.authentik.
+  authentik_cloud_sql_instances = [
+    for instance in data.google_sql_database_instances.authentik.instances :
+    instance
+    if instance.region == local.authentik_primary_region && startswith(instance.name, "authentik-")
+  ]
+
+  authentik_cloud_sql_member = "serviceAccount:${google_service_account.authentik_cloud_sql.email}"
+
+  # Private DNS FQDN of the corpus-managed Cloud SQL instance. Corpus creates the record
+  # {instance}.{region}.{team} in the environment private zone (gcp.priv[.env].osinfra.io).
+  authentik_database_host = "authentik.${local.authentik_primary_region}.sql.${module.core_helpers.team}.${local.authentik_private_dns_domain}"
+
+  authentik_database_name = "authentik"
+
+  authentik_database_user = "authentik"
+
+  # Apex A record for the shared platform Authentik IdP, published in the environment-level
+  # <env>.osinfra.io public zone (owned by pt-corpus in the shared VPC host project). It is merged
+  # into the main gateway module's DNS input only — not the gateway_dns output that regional/istio
+  # zonal-prefixes — so it resolves to the single MCI global address, not per-zone gateway LBs.
+  authentik_gateway_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
+    (local.authentik_hostname) = {
+      managed_zone = local.authentik_public_dns_zone_name
+      project      = data.google_project.shared_vpc_host.project_id
+    }
+  } : {}
+
+  # Authentik is a single platform-wide IdP shared by every team, so it is published at the
+  # environment-level public zone (authentik.<env>.osinfra.io) rather than under any one team's
+  # subdomain. The <env>.osinfra.io zone is owned by pt-corpus in the shared VPC host project; prod
+  # drops the env segment. The A record is created below via the main gateway module.
+  authentik_hostname = "authentik.${local.authentik_public_dns_domain}"
+
+  # Namespace provisioned through the standard Logos-driven onboarding flow and the chart-created
+  # Kubernetes service account for Authentik. Both are needed here to bind Workload Identity for the
+  # Cloud SQL Auth Proxy.
+  authentik_kubernetes_namespace = "${module.core_helpers.team}-authentik"
+
+  authentik_kubernetes_service_account = "authentik"
+
+  # The primary region hosting the single shared Cloud SQL instance. Present in every environment's
+  # active zones; regional clusters reach it privately over the shared VPC.
+  authentik_primary_region = "us-east1"
+
+  authentik_private_dns_domain = module.core_helpers.env == "prod" ? "gcp.priv.osinfra.io" : "gcp.priv.${module.core_helpers.env}.osinfra.io"
+
+  authentik_public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
+
+  authentik_public_dns_zone_name = module.core_helpers.env == "prod" ? "osinfra-io" : "${module.core_helpers.env}-osinfra-io"
+
+  # Keys in the Authentik environment Secret, generated once and shared by every regional workspace
+  # via main's outputs (mounted into server and worker through the chart's global.envFrom).
+  authentik_secret_env = {
+    AUTHENTIK_BOOTSTRAP_PASSWORD   = random_password.authentik_admin.result
+    AUTHENTIK_BOOTSTRAP_TOKEN      = random_password.authentik_bootstrap_token.result
+    AUTHENTIK_POSTGRESQL__PASSWORD = random_password.authentik_database.result
+    AUTHENTIK_SECRET_KEY           = random_password.authentik_secret_key.result
+  }
+
+  authentik_workload_identity_member = "serviceAccount:${local.team_project_ids[module.core_helpers.team]}.svc.id.goog[${local.authentik_kubernetes_namespace}/${local.authentik_kubernetes_service_account}]"
+
   cloud_armor_method_enforcement_exception_expression = join(" || ", [
     for scope in local.authentik_cloud_armor_method_enforcement_exceptions :
     "(has(request.headers['host']) && request.headers['host'] == ${jsonencode(scope.hostname)} && request.path.startsWith(${jsonencode(scope.path_prefix)}) && request.method.matches(${jsonencode(join("|", [for method in sort(tolist(scope.methods)) : "^${method}$"]))}))"
@@ -181,74 +254,13 @@ locals {
     "evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}})"
   }
 
-  # The Cloud SQL instance is platform-managed by pt-corpus (see cloud_sql in the pt-pneuma Logos
-  # tfvars, keyed "authentik"). Discover it in the pneuma project via the google_sql_database_instances
-  # data source (cross-repo state access is not permitted) and read its generated name (which corpus
-  # prefixes with the instance key) for the database/user. one() errors on more than one match; the
-  # zero-match case is caught by the precondition on google_sql_database.authentik.
-  authentik_cloud_sql_instances = [
-    for instance in data.google_sql_database_instances.authentik.instances :
-    instance
-    if instance.region == local.authentik_primary_region && startswith(instance.name, "authentik-")
-  ]
-
-  # Connection name (project:region:instance) of the corpus-managed instance, used by the Cloud SQL
-  # Auth Proxy sidecar in the Authentik pods to reach the private-IP, ENCRYPTED_ONLY database over
-  # Workload Identity.
-  authentik_cloud_sql_connection_name = one(local.authentik_cloud_sql_instances[*].connection_name)
-
-  authentik_cloud_sql_instance_name = one(local.authentik_cloud_sql_instances[*].name)
-
-  # Private DNS FQDN of the corpus-managed Cloud SQL instance. Corpus creates the record
-  # {instance}.{region}.{team} in the environment private zone (gcp.priv[.env].osinfra.io).
-  authentik_database_host = "authentik.${local.authentik_primary_region}.sql.${module.core_helpers.team}.${local.authentik_private_dns_domain}"
-
-  authentik_database_name = "authentik"
-
-  authentik_database_user = "authentik"
-
-  # Authentik is a single platform-wide IdP shared by every team, so it is published at the
-  # environment-level public zone (authentik.<env>.osinfra.io) rather than under any one team's
-  # subdomain. The <env>.osinfra.io zone is owned by pt-corpus in the shared VPC host project; prod
-  # drops the env segment. The A record is created below via the main gateway module.
-  authentik_hostname = "authentik.${local.authentik_public_dns_domain}"
-
-  authentik_public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
-
-  authentik_public_dns_zone_name = module.core_helpers.env == "prod" ? "osinfra-io" : "${module.core_helpers.env}-osinfra-io"
-
-  openbao_global_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
-    (local.openbao_hostname) = {
-      managed_zone = local.authentik_public_dns_zone_name
-      project      = data.google_project.shared_vpc_host.project_id
+  # Slim GKE cluster map passed to zone workspaces as TF_VAR_clusters.
+  clusters_slim = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => {
+      project_id = cluster_config.project_id
+      team_key   = cluster_config.team_key
     }
-  } : {}
-
-  # OpenBao has a dedicated global GKE multi-cluster ingress, separate from the Istio mesh gateway.
-  openbao_hostname = "openbao.${local.authentik_public_dns_domain}"
-
-  shared_ingress_policy_name = "shared-ingress"
-
-  # Namespace provisioned through the standard Logos-driven onboarding flow and the chart-created
-  # Kubernetes service account for Authentik. Both are needed here to bind Workload Identity for the
-  # Cloud SQL Auth Proxy.
-  authentik_kubernetes_namespace = "${module.core_helpers.team}-authentik"
-
-  authentik_kubernetes_service_account = "authentik"
-
-  # The primary region hosting the single shared Cloud SQL instance. Present in every environment's
-  # active zones; regional clusters reach it privately over the shared VPC.
-  authentik_primary_region = "us-east1"
-
-  authentik_private_dns_domain = module.core_helpers.env == "prod" ? "gcp.priv.osinfra.io" : "gcp.priv.${module.core_helpers.env}.osinfra.io"
-
-  # Keys in the Authentik environment Secret, generated once and shared by every regional workspace
-  # via main's outputs (mounted into server and worker through the chart's global.envFrom).
-  authentik_secret_env = {
-    AUTHENTIK_BOOTSTRAP_PASSWORD   = random_password.authentik_admin.result
-    AUTHENTIK_BOOTSTRAP_TOKEN      = random_password.authentik_bootstrap_token.result
-    AUTHENTIK_POSTGRESQL__PASSWORD = random_password.authentik_database.result
-    AUTHENTIK_SECRET_KEY           = random_password.authentik_secret_key.result
   }
 
   # DNS subdomain per team (e.g., "pneuma"), sourced from team config in pt-logos.
@@ -271,17 +283,6 @@ locals {
   # Environment key for logos lookup (title case with hyphens preserved)
   # Converts workspace environment (e.g., "non-production") to logos format (e.g., "Non-Production")
   environment_key = title(module.core_helpers.environment)
-
-  # Apex A record for the shared platform Authentik IdP, published in the environment-level
-  # <env>.osinfra.io public zone (owned by pt-corpus in the shared VPC host project). It is merged
-  # into the main gateway module's DNS input only — not the gateway_dns output that regional/istio
-  # zonal-prefixes — so it resolves to the single MCI global address, not per-zone gateway LBs.
-  authentik_gateway_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
-    (local.authentik_hostname) = {
-      managed_zone = local.authentik_public_dns_zone_name
-      project      = data.google_project.shared_vpc_host.project_id
-    }
-  } : {}
 
   # Gateway DNS configuration for Istio per team
   # Constructs DNS zone information for each team's public DNS zone created in pt-corpus
@@ -320,6 +321,12 @@ locals {
     }
   ]...)
 
+  # GKE fleet host project per team; the host team itself has none.
+  gke_fleet_host_project_id_by_team = {
+    for team_key in keys(local.teams_with_clusters) :
+    team_key => team_key == module.core_helpers.team ? "" : local.team_project_ids[module.core_helpers.team]
+  }
+
   # GKE namespaces per team, derived from Logos team data.
   # Every team's namespaces — including pneuma's own — are prefixed with the team key (e.g. "openbao"
   # on pt-pneuma becomes "pt-pneuma-openbao", "istio-test" on pt-pneuma becomes
@@ -335,6 +342,35 @@ locals {
       "${team_key}-${ns_name}" => ns
     }
   }
+
+  # Only the host team's Istio instance creates gateway DNS records.
+  istio_gateway_dns_by_team = {
+    for team_key in keys(local.teams_with_clusters) :
+    team_key => team_key == module.core_helpers.team ? local.gateway_dns_for_pneuma : {}
+  }
+
+  kubernetes_engine_workload_identity_service_account_emails = {
+    for team_key, google_kubernetes_engine in module.google_kubernetes_engine :
+    team_key => google_kubernetes_engine.workload_identity_service_account_emails
+  }
+
+  kubernetes_istio_gateway_mci_global_addresses = {
+    for team_key, istio in module.kubernetes_istio :
+    team_key => istio.gateway_mci_global_address
+  }
+
+  openbao_global_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
+    (local.openbao_hostname) = {
+      dns_name     = "${local.openbao_hostname}."
+      managed_zone = local.authentik_public_dns_zone_name
+      project      = data.google_project.shared_vpc_host.project_id
+    }
+  } : {}
+
+  # OpenBao has a dedicated global GKE multi-cluster ingress, separate from the Istio mesh gateway.
+  openbao_hostname = "openbao.${local.authentik_public_dns_domain}"
+
+  shared_ingress_policy_name = "shared-ingress"
 
   # Platform-managed project ID per team, discovered from pt-corpus labels.
   team_project_ids = {

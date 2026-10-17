@@ -3,12 +3,6 @@ output "authentication" {
   value       = module.authentication
 }
 
-output "pending_application_members" {
-  description = "Pending identities exposed by the pinned cloud configuration module."
-  sensitive   = true
-  value       = module.authentik_config.pending_application_members
-}
-
 output "cloud_inputs" {
   description = "Resolved cloud inputs independent of the extracted brand/flow resources"
   value = {
@@ -18,4 +12,10 @@ output "cloud_inputs" {
     namespace                           = local.namespace
     redirect_uris                       = local.redirect_uris
   }
+}
+
+output "pending_application_members" {
+  description = "Pending identities exposed by the pinned cloud configuration module."
+  sensitive   = true
+  value       = module.authentik_config.pending_application_members
 }

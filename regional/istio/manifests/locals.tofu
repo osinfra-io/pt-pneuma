@@ -114,6 +114,54 @@ locals {
     }
   }
 
+  authentik_callback_routes = {
+    for cluster_name, renderer in module.gateway_auth :
+    cluster_name => renderer.callback_routes
+  }
+
+  authentik_dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
+
+  authentik_extension_provider_name = "authentik"
+
+  authentik_hostname = "authentik.${local.authentik_public_dns_domain}"
+
+  authentik_issuer_url = "https://${local.authentik_hostname}/application/o/gateway/"
+
+  authentik_jwks_uri = "${local.authentik_issuer_url}jwks/"
+
+  authentik_namespace = local.main.authentik_kubernetes_namespace
+
+  # Authentik is a single platform-wide IdP shared by every team, so it is published at the
+  # environment-level public zone (authentik.<env>.osinfra.io), not under any one team's subdomain.
+  # Prod drops the env segment.
+  authentik_public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
+
+  # HTTPRoute exposing the Authentik IdP UI and OIDC endpoints on the shared ingress gateway.
+  # Authentik is a single platform-managed IdP running in the gateway team's cluster, so the route
+  # exists only on the gateway cluster. Its host
+  # ("authentik.<env>.osinfra.io") is a distinct hostname from every team apex/zonal host, so
+  # the host-scoped gateway_auth AuthorizationPolicies never match it — the IdP is reachable without
+  # forward-auth, as an identity provider must be (it authenticates users itself).
+  authentik_routes = {
+    for cluster_name, cluster_config in local.gateway_clusters :
+    cluster_name => {
+      "authentik-${local.authentik_dns_subdomain}" = {
+        backend_namespace = local.authentik_namespace
+        backend_port      = 80
+        backend_service   = "authentik-server"
+        host              = local.authentik_hostname
+        path              = "/"
+      }
+    }
+  }
+
+  authentik_vhost_name = "${local.authentik_hostname}:443"
+
+  datadog_aap_cluster_names = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => "pt-${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}"
+  }
+
   # DNS subdomain per cluster, extracted from the gateway DNS zone name
   # (e.g. "pneuma.sb.osinfra.io" → "pneuma").
   dns_subdomain = {
@@ -135,39 +183,6 @@ locals {
     cluster_name => local.regions[cluster_name] == "us-east1" ? "us-east4" : "us-east1"
   }
 
-  # GKE clusters in this zone that have the Istio gateway enabled (platform team only).
-  # Used for resources that are gateway-specific (e.g. Datadog AAP EnvoyFilter).
-  gateway_cluster = one(keys(local.gateway_clusters))
-
-  gateway_clusters = {
-    for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config
-    if cluster_config.team_key == module.core_helpers.team
-  }
-
-  # Selectorless stub Services and their namespaces are created before HTTPRoutes so Gateway API
-  # backendRefs resolve during this workspace. Istio multicluster discovery fills their endpoints.
-  gateway_stub_namespaces = local.gateway_cluster == null ? toset([]) : toset([
-    for cluster_name, cluster_config in local.gke_clusters :
-    "${cluster_config.team_key}-istio-test"
-    if cluster_config.team_key != module.core_helpers.team
-  ])
-
-  gateway_stub_services = local.gateway_cluster == null ? {} : merge([
-    for cluster_name, cluster_config in local.gke_clusters : {
-      "${cluster_config.team_key}-istio-test/istio-test" = {
-        namespace = "${cluster_config.team_key}-istio-test"
-        service   = "istio-test"
-      }
-
-      "${cluster_config.team_key}-istio-test/istio-test-${local.zone}" = {
-        namespace = "${cluster_config.team_key}-istio-test"
-        service   = "istio-test-${local.zone}"
-      }
-    }
-    if cluster_config.team_key != module.core_helpers.team
-  ]...)
-
   # Auth policies generated from the Logos route_auth_policies contract. The gateway
   # cluster enforces every team's external route because all ingress enters through
   # the platform gateway data plane.
@@ -181,6 +196,22 @@ locals {
     }
   ]...)
 
+  gateway_auth_authentik_issuer_urls = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => try(
+      data.terraform_remote_state.authentik_config.outputs.issuer_url,
+      local.authentik_issuer_url,
+    )
+  }
+
+  gateway_auth_authentik_jwks_uris = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => try(
+      data.terraform_remote_state.authentik_config.outputs.jwks_uri,
+      local.authentik_jwks_uri,
+    )
+  }
+
   gateway_auth_authorization_policies = merge(concat(
     [{}],
     [
@@ -191,14 +222,28 @@ locals {
     ]
   )...)
 
-  gateway_auth_gateway_selector = {
-    "gateway.networking.k8s.io/gateway-name" = "gateway"
+  gateway_auth_browser_policy_inputs = {
+    for cluster_name in keys(local.gateway_clusters) :
+    cluster_name => merge({
+      for item in local.gateway_auth_route_policy_items :
+      "${cluster_name}-${item.key}" => item
+    }, try(local.agentgateway_policy_inputs[cluster_name], {}))
   }
+
+  # Browser CUSTOM rendering is shared; native API-JWT DENY remains above.
+  gateway_auth_custom_authorization_policy_manifests = merge(concat(
+    [{}],
+    [for renderer in values(module.gateway_auth) : renderer.custom_authorization_policy_manifests],
+  )...)
 
   # Route auth policy modes that generate an enforced AuthorizationPolicy. "public" is intentionally
   # excluded upstream; any other value would silently produce no policy (fail-open) and is rejected
   # before apply by terraform_data.gateway_auth_policy_validation.
   gateway_auth_enforced_modes = ["api-jwt", "browser"]
+
+  gateway_auth_gateway_selector = {
+    "gateway.networking.k8s.io/gateway-name" = "gateway"
+  }
 
   gateway_auth_invalid_mode_route_keys = [
     for item in local.gateway_auth_route_policy_items : item.key
@@ -214,30 +259,6 @@ locals {
       !startswith(path, "/") || contains(["/", "/*", "*"], path)
     ])
   ]
-
-  gateway_auth_authentik_jwks_uris = {
-    for cluster_name in keys(local.gateway_clusters) :
-    cluster_name => try(
-      data.terraform_remote_state.authentik_config.outputs.jwks_uri,
-      local.authentik_jwks_uri,
-    )
-  }
-
-  gateway_auth_authentik_issuer_urls = {
-    for cluster_name in keys(local.gateway_clusters) :
-    cluster_name => try(
-      data.terraform_remote_state.authentik_config.outputs.issuer_url,
-      local.authentik_issuer_url,
-    )
-  }
-
-  gateway_auth_browser_policy_inputs = {
-    for cluster_name in keys(local.gateway_clusters) :
-    cluster_name => merge({
-      for item in local.gateway_auth_route_policy_items :
-      "${cluster_name}-${item.key}" => item
-    }, try(local.agentgateway_policy_inputs[cluster_name], {}))
-  }
 
   gateway_auth_policies = {
     for cluster_name in keys(local.gateway_clusters) :
@@ -414,11 +435,38 @@ locals {
     ])
   ])
 
-  # Browser CUSTOM rendering is shared; native API-JWT DENY remains above.
-  gateway_auth_custom_authorization_policy_manifests = merge(concat(
-    [{}],
-    [for renderer in values(module.gateway_auth) : renderer.custom_authorization_policy_manifests],
-  )...)
+  # GKE clusters in this zone that have the Istio gateway enabled (platform team only).
+  # Used for resources that are gateway-specific (e.g. Datadog AAP EnvoyFilter).
+  gateway_cluster = one(keys(local.gateway_clusters))
+
+  gateway_clusters = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => cluster_config
+    if cluster_config.team_key == module.core_helpers.team
+  }
+
+  # Selectorless stub Services and their namespaces are created before HTTPRoutes so Gateway API
+  # backendRefs resolve during this workspace. Istio multicluster discovery fills their endpoints.
+  gateway_stub_namespaces = local.gateway_cluster == null ? toset([]) : toset([
+    for cluster_name, cluster_config in local.gke_clusters :
+    "${cluster_config.team_key}-istio-test"
+    if cluster_config.team_key != module.core_helpers.team
+  ])
+
+  gateway_stub_services = local.gateway_cluster == null ? {} : merge([
+    for cluster_name, cluster_config in local.gke_clusters : {
+      "${cluster_config.team_key}-istio-test/istio-test" = {
+        namespace = "${cluster_config.team_key}-istio-test"
+        service   = "istio-test"
+      }
+
+      "${cluster_config.team_key}-istio-test/istio-test-${local.zone}" = {
+        namespace = "${cluster_config.team_key}-istio-test"
+        service   = "istio-test-${local.zone}"
+      }
+    }
+    if cluster_config.team_key != module.core_helpers.team
+  ]...)
 
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
@@ -450,47 +498,6 @@ locals {
 
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
-
-  authentik_extension_provider_name = "authentik"
-
-  authentik_namespace = local.main.authentik_kubernetes_namespace
-
-  authentik_dns_subdomain = module.core_helpers.teams[module.core_helpers.team].dns_subdomain != null ? module.core_helpers.teams[module.core_helpers.team].dns_subdomain : replace(module.core_helpers.team, "/^[a-z]+-/", "")
-
-  # Authentik is a single platform-wide IdP shared by every team, so it is published at the
-  # environment-level public zone (authentik.<env>.osinfra.io), not under any one team's subdomain.
-  # Prod drops the env segment.
-  authentik_public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
-
-  authentik_hostname = "authentik.${local.authentik_public_dns_domain}"
-
-  authentik_issuer_url = "https://${local.authentik_hostname}/application/o/gateway/"
-
-  authentik_jwks_uri = "${local.authentik_issuer_url}jwks/"
-
-  # HTTPRoute exposing the Authentik IdP UI and OIDC endpoints on the shared ingress gateway.
-  # Authentik is a single platform-managed IdP running in the gateway team's cluster, so the route
-  # exists only on the gateway cluster. Its host
-  # ("authentik.<env>.osinfra.io") is a distinct hostname from every team apex/zonal host, so
-  # the host-scoped gateway_auth AuthorizationPolicies never match it — the IdP is reachable without
-  # forward-auth, as an identity provider must be (it authenticates users itself).
-  authentik_routes = {
-    for cluster_name, cluster_config in local.gateway_clusters :
-    cluster_name => {
-      "authentik-${local.authentik_dns_subdomain}" = {
-        backend_namespace = local.authentik_namespace
-        backend_port      = 80
-        backend_service   = "authentik-server"
-        host              = local.authentik_hostname
-        path              = "/"
-      }
-    }
-  }
-
-  authentik_callback_routes = {
-    for cluster_name, renderer in module.gateway_auth :
-    cluster_name => renderer.callback_routes
-  }
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-pneuma-us-east1-b" → "us-east1").
   regions = {

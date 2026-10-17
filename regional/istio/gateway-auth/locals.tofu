@@ -2,38 +2,12 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  managed_browser_policy_keys = toset([
-    for key, policy in var.policies : key
-    if policy.mode == "browser" && anytrue([
-      for name in concat(policy.required_groups, policy.required_roles) :
-      contains(keys(var.application_group_members), name)
-    ])
-  ])
-
   application_authorization_policies = {
     for key, policy in local.resolved_policies : key => policy
     if policy.mode == "browser" && anytrue([
       for name in concat(policy.required_groups, policy.required_roles) :
       contains(keys(var.application_group_members), name)
     ])
-  }
-
-  browser_authorization_lua = templatefile("${path.module}/browser-authorization.lua.tftpl", {
-    memberships = var.application_group_members
-    policies    = local.application_authorization_policies
-    strings     = local.lua_string_literals
-  })
-
-  # OpenTofu JSON's HTML escapes are not valid Lua string escapes.
-  lua_string_literals = {
-    for value in distinct(concat(
-      keys(var.application_group_members),
-      flatten(values(var.application_group_members)),
-      flatten([
-        for policy in values(local.application_authorization_policies) :
-        concat([policy.host, trimsuffix(policy.path, "/")], policy.exempt_paths, policy.required_groups, policy.required_roles)
-      ]),
-    )) : value => replace(replace(replace(jsonencode(value), "\\u003c", "<"), "\\u003e", ">"), "\\u0026", "&")
   }
 
   browser_authorization_filter_manifests = length(local.application_authorization_policies) == 0 ? {} : {
@@ -83,6 +57,12 @@ locals {
       }
     }
   }
+
+  browser_authorization_lua = templatefile("${path.module}/browser-authorization.lua.tftpl", {
+    memberships = var.application_group_members
+    policies    = local.application_authorization_policies
+    strings     = local.lua_string_literals
+  })
 
   callback_paths = [
     "/outpost.goauthentik.io",
@@ -242,6 +222,26 @@ locals {
       }
     }
   }
+
+  # OpenTofu JSON's HTML escapes are not valid Lua string escapes.
+  lua_string_literals = {
+    for value in distinct(concat(
+      keys(var.application_group_members),
+      flatten(values(var.application_group_members)),
+      flatten([
+        for policy in values(local.application_authorization_policies) :
+        concat([policy.host, trimsuffix(policy.path, "/")], policy.exempt_paths, policy.required_groups, policy.required_roles)
+      ]),
+    )) : value => replace(replace(replace(jsonencode(value), "\\u003c", "<"), "\\u003e", ">"), "\\u0026", "&")
+  }
+
+  managed_browser_policy_keys = toset([
+    for key, policy in var.policies : key
+    if policy.mode == "browser" && anytrue([
+      for name in concat(policy.required_groups, policy.required_roles) :
+      contains(keys(var.application_group_members), name)
+    ])
+  ])
 
   resolved_policies = {
     for key, policy in var.policies :
