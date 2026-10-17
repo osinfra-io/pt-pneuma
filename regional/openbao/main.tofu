@@ -152,12 +152,15 @@ resource "kubernetes_manifest" "openbao_ca_certificate" {
     }
     spec = {
       commonName = "openbao-ca"
-      isCA       = true
+      # The CA must outlive every leaf it signs; renewing it does not reissue existing leaves.
+      duration = "87600h"
+      isCA     = true
       issuerRef = {
         kind = "Issuer"
         name = "openbao-selfsigned"
       }
-      secretName = "openbao-ca"
+      renewBefore = "8760h"
+      secretName  = "openbao-ca"
     }
   }
 }
