@@ -19,14 +19,6 @@ variable "clusters" {
   }))
 }
 
-variable "state_bucket" {
-  type = string
-}
-
-variable "state_kms_encryption_key" {
-  type = string
-}
-
 variable "test_environment" {
   default = "sandbox"
   type    = string

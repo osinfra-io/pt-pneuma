@@ -28,9 +28,6 @@ override_data {
 
 variables {
   sandbox_authentication_enabled = true
-  state_bucket                   = "mock-state"
-  state_kms_encryption_key       = "mock-kms"
-  state_prefix                   = "mock-prefix"
 }
 
 run "cloud_sandbox_root" {

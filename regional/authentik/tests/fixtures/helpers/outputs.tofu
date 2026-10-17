@@ -1,6 +1,19 @@
+locals {
+  environments = {
+    non-production = "nonprod"
+    production     = "prod"
+    sandbox        = "sb"
+  }
+}
+
 variable "environment" {
   description = "Mock environment name"
   type        = string
+}
+
+output "env" {
+  description = "Mock short environment name"
+  value       = local.environments[var.environment]
 }
 
 output "environment" {

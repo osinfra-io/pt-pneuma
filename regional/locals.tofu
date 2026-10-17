@@ -41,6 +41,8 @@ locals {
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
+  state_bucket = "${module.core_helpers.repository}-state-${module.core_helpers.env}"
+
   # Subnet name constructed from team, region, and zone
   subnet = "${module.core_helpers.team}-${module.core_helpers.region}-${module.core_helpers.zone}"
 }
