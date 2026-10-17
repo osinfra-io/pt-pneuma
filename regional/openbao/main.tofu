@@ -289,9 +289,9 @@ resource "kubernetes_manifest" "openbao_mcs" {
     kind       = "MultiClusterService"
     metadata = {
       annotations = {
-        "cloud.google.com/app-protocols"  = jsonencode({ "https" = "HTTPS" })
         "cloud.google.com/backend-config" = jsonencode({ "default" = kubernetes_manifest.openbao_backendconfig[each.key].manifest.metadata.name })
         "cloud.google.com/neg"            = jsonencode({ "ingress" = true })
+        "networking.gke.io/app-protocols" = jsonencode({ "https" = "HTTPS" })
       }
       name      = "openbao-mcs"
       namespace = "${module.core_helpers.team}-openbao"
