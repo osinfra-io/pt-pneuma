@@ -241,6 +241,49 @@ resource "google_dns_record_set" "openbao_mci" {
   type         = "A"
 }
 
+# Google KMS Crypto Key Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/kms_crypto_key
+
+resource "google_kms_crypto_key" "openbao_unseal" {
+  # CryptoKeys cannot be deleted from Google Cloud Platform. Losing this key means losing access to every secret
+  # stored in OpenBao, so destruction is blocked.
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  key_ring        = google_kms_key_ring.openbao_unseal.id
+  labels          = module.core_helpers.labels
+  name            = "unseal"
+  rotation_period = "7776000s"
+}
+
+# Google KMS Crypto Key IAM Member Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/kms_crypto_key_iam_member
+
+resource "google_kms_crypto_key_iam_member" "openbao_unseal" {
+  crypto_key_id = google_kms_crypto_key.openbao_unseal.id
+  member        = local.openbao_kms_member
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+}
+
+# Google KMS Key Ring Resource
+# https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/kms_key_ring
+
+resource "google_kms_key_ring" "openbao_unseal" {
+  # KeyRings cannot be deleted from Google Cloud Platform. Destroying a OpenTofu-managed KeyRing will remove it from
+  # state but will not delete the resource from the project.
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  # The multi-region location lets OpenBao clusters in every region use the same key.
+  location = "us"
+  name     = "openbao-unseal"
+  project  = local.team_project_ids[module.core_helpers.team]
+}
+
 # Google Project IAM Member Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/project_iam_member
 
@@ -263,6 +306,14 @@ resource "google_service_account" "authentik_cloud_sql" {
   project      = local.team_project_ids[module.core_helpers.team]
 }
 
+# Identity the OpenBao pods impersonate to auto-unseal with Cloud KMS. Every regional OpenBao cluster
+# shares the project's Workload Identity pool, namespace and chart ServiceAccount.
+resource "google_service_account" "openbao_kms" {
+  account_id   = "openbao-kms"
+  display_name = "OpenBao KMS Auto-Unseal"
+  project      = local.team_project_ids[module.core_helpers.team]
+}
+
 # Google Service Account IAM Member Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/service_account_iam_member
 
@@ -272,6 +323,14 @@ resource "google_service_account_iam_member" "authentik_cloud_sql_workload_ident
   member             = local.authentik_workload_identity_member
   role               = "roles/iam.workloadIdentityUser"
   service_account_id = google_service_account.authentik_cloud_sql.name
+}
+
+# Bind the OpenBao Kubernetes service account to the Google service account so the pods
+# authenticate to Cloud KMS through GKE Workload Identity.
+resource "google_service_account_iam_member" "openbao_kms_workload_identity" {
+  member             = local.openbao_workload_identity_member
+  role               = "roles/iam.workloadIdentityUser"
+  service_account_id = google_service_account.openbao_kms.name
 }
 
 # Google SQL Database Resource

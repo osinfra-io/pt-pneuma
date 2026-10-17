@@ -83,6 +83,16 @@ output "openbao_hostname" {
   value       = local.openbao_hostname
 }
 
+output "openbao_kms_seal" {
+  description = "GCP Cloud KMS settings (project, region, key ring, crypto key) for the OpenBao auto-unseal gcpckms seal, consumed by the regional openbao workspaces"
+  value       = local.openbao_kms_seal
+}
+
+output "openbao_kms_service_account_email" {
+  description = "Email of the Google service account the OpenBao pods impersonate via Workload Identity to use the auto-unseal KMS key, consumed by the regional openbao workspaces"
+  value       = google_service_account.openbao_kms.email
+}
+
 output "openbao_mci_global_address" {
   description = "The global IP address reserved for the OpenBao multi-cluster ingress"
   value       = google_compute_global_address.openbao_mci.address
