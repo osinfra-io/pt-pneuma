@@ -1,10 +1,21 @@
 # OpenBao Helm Chart Values
 # https://openbao.org/docs/platform/k8s/helm/
 
+global:
+  tlsDisable: false
+
 injector:
   enabled: true
 
 server:
+  # The TLS Secret is mounted by the chart at /openbao/userconfig/openbao-tls.
+  extraEnvironmentVars:
+    BAO_CACERT: /openbao/userconfig/openbao-tls/ca.crt
+
+  extraVolumes:
+    - name: openbao-tls
+      type: secret
+
   affinity: |
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -20,6 +31,7 @@ server:
 
   service:
     annotations:
+      cloud.google.com/app-protocols: '{"https":"HTTPS"}'
       cloud.google.com/backend-config: '{"default":"openbao-backend"}'
       cloud.google.com/neg: '{"ingress": true}'
     type: NodePort

@@ -37,7 +37,7 @@ locals {
   }
 
   # Values that depend on main workspace outputs: the Workload Identity binding for the OpenBao
-  # ServiceAccount and the Raft config (the chart default plus the gcpckms auto-unseal stanza).
+  # ServiceAccount and the Raft config (the chart default with TLS enabled plus the gcpckms auto-unseal stanza).
   openbao_dynamic_helm_values = yamlencode({
     server = {
       ha = {
@@ -46,9 +46,10 @@ locals {
             ui = true
 
             listener "tcp" {
-              tls_disable = 1
               address = "[::]:8200"
               cluster_address = "[::]:8201"
+              tls_cert_file = "/openbao/userconfig/openbao-tls/tls.crt"
+              tls_key_file = "/openbao/userconfig/openbao-tls/tls.key"
             }
 
             seal "gcpckms" {
@@ -76,6 +77,21 @@ locals {
       }
     }
   })
+
+  # SANs for the pod certificate: the external hostnames, every in-cluster name clients and Raft peers
+  # use, and loopback for the in-pod bao CLI and probes.
+  openbao_tls_dns_names = [
+    local.main.openbao_hostname,
+    local.openbao_zonal_hostname,
+    "*.openbao-internal",
+    "*.openbao-internal.${module.core_helpers.team}-openbao.svc.cluster.local",
+    "openbao",
+    "openbao-active",
+    "openbao-active.${module.core_helpers.team}-openbao.svc.cluster.local",
+    "openbao.${module.core_helpers.team}-openbao",
+    "openbao.${module.core_helpers.team}-openbao.svc",
+    "openbao.${module.core_helpers.team}-openbao.svc.cluster.local",
+  ]
 
   # OpenBao's global MultiClusterService spans every platform-managed OpenBao cluster.
   openbao_multi_cluster_service_clusters = [

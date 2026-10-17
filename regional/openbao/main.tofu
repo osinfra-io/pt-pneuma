@@ -29,6 +29,7 @@ resource "google_dns_record_set" "openbao_zonal" {
 resource "helm_release" "openbao" {
   depends_on = [
     kubernetes_manifest.openbao_backendconfig,
+    kubernetes_manifest.openbao_tls_certificate,
   ]
 
   for_each = local.gke_clusters
@@ -123,11 +124,66 @@ resource "kubernetes_manifest" "openbao_backendconfig" {
         # Keep standby nodes healthy while sealed or uninitialized nodes remain unhealthy.
         requestPath        = "/v1/sys/health?standbyok=true"
         timeoutSec         = 3
-        type               = "HTTP"
+        type               = "HTTPS"
         unhealthyThreshold = 2
       }
       securityPolicy = {
         name = local.main.shared_ingress_policy_name
+      }
+    }
+  }
+}
+
+resource "kubernetes_manifest" "openbao_ca_certificate" {
+  depends_on = [
+    kubernetes_manifest.openbao_selfsigned_issuer,
+  ]
+
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Certificate"
+    metadata = {
+      name      = "openbao-ca"
+      namespace = "${module.core_helpers.team}-openbao"
+    }
+    spec = {
+      commonName = "openbao-ca"
+      # The CA must outlive every leaf it signs; renewing it does not reissue existing leaves.
+      duration = "87600h"
+      isCA     = true
+      issuerRef = {
+        kind = "Issuer"
+        name = "openbao-selfsigned"
+      }
+      renewBefore = "8760h"
+      secretName  = "openbao-ca"
+    }
+  }
+}
+
+resource "kubernetes_manifest" "openbao_ca_issuer" {
+  depends_on = [
+    kubernetes_manifest.openbao_ca_certificate,
+  ]
+
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Issuer"
+    metadata = {
+      name      = "openbao-ca"
+      namespace = "${module.core_helpers.team}-openbao"
+    }
+    spec = {
+      ca = {
+        secretName = "openbao-ca"
       }
     }
   }
@@ -238,6 +294,7 @@ resource "kubernetes_manifest" "openbao_mcs" {
       annotations = {
         "cloud.google.com/backend-config" = jsonencode({ "default" = kubernetes_manifest.openbao_backendconfig[each.key].manifest.metadata.name })
         "cloud.google.com/neg"            = jsonencode({ "ingress" = true })
+        "networking.gke.io/app-protocols" = jsonencode({ "https" = "HTTPS" })
       }
       name      = "openbao-mcs"
       namespace = "${module.core_helpers.team}-openbao"
@@ -248,7 +305,7 @@ resource "kubernetes_manifest" "openbao_mcs" {
         spec = {
           ports = [
             {
-              name       = "http"
+              name       = "https"
               port       = 8200
               protocol   = "TCP"
               targetPort = 8200
@@ -261,6 +318,52 @@ resource "kubernetes_manifest" "openbao_mcs" {
           }
         }
       }
+    }
+  }
+}
+
+resource "kubernetes_manifest" "openbao_selfsigned_issuer" {
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Issuer"
+    metadata = {
+      name      = "openbao-selfsigned"
+      namespace = "${module.core_helpers.team}-openbao"
+    }
+    spec = {
+      selfSigned = {}
+    }
+  }
+}
+
+resource "kubernetes_manifest" "openbao_tls_certificate" {
+  depends_on = [
+    kubernetes_manifest.openbao_ca_issuer,
+  ]
+
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Certificate"
+    metadata = {
+      name      = "openbao-tls"
+      namespace = "${module.core_helpers.team}-openbao"
+    }
+    spec = {
+      dnsNames    = local.openbao_tls_dns_names
+      ipAddresses = ["127.0.0.1"]
+      issuerRef = {
+        kind = "Issuer"
+        name = "openbao-ca"
+      }
+      secretName = "openbao-tls"
     }
   }
 }
