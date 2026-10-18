@@ -267,6 +267,12 @@ resource "google_kms_crypto_key_iam_member" "openbao_unseal" {
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
 }
 
+resource "google_kms_crypto_key_iam_member" "openbao_unseal_viewer" {
+  crypto_key_id = google_kms_crypto_key.openbao_unseal.id
+  member        = local.openbao_kms_member
+  role          = "roles/cloudkms.viewer"
+}
+
 # Google KMS Key Ring Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/kms_key_ring
 
