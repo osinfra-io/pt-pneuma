@@ -8,5 +8,5 @@ import {
 
 import {
   id = data.authentik_stage.default_authentication.id
-  to = module.authentik_config.authentik_stage_identification.default_authentication[0]
+  to = module.authentik_config.authentik_stage_identification.default_authentication
 }

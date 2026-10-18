@@ -16,5 +16,5 @@ import {
   for_each = local.manage_default_authentication_stage ? toset(["default"]) : toset([])
 
   id = data.authentik_stage.default_authentication_identification[each.key].id
-  to = module.authentik_config.authentik_stage_identification.default_authentication[0]
+  to = module.authentik_config.authentik_stage_identification.default_authentication
 }

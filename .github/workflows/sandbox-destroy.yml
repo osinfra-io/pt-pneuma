@@ -136,26 +136,6 @@ jobs:
       working_directory: regional/agentgateway
       workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
-  authentik_config:
-    name: "authentik Config"
-    needs: [agentgateway_manifests_us_east1_b, agentgateway_manifests_us_east4_a, read_clusters]
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
-    with:
-      checkout_ref: ${{ github.ref }}
-      github_environment: "Sandbox authentik Config"
-      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
-      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -destroy -var-file=environments/sandbox.tfvars
-      opentofu_state_bucket: pt-pneuma-state-sb
-      opentofu_var_json: "{\"clusters\": ${{ needs.read_clusters.outputs.passthrough || '{}' }}}"
-      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
-      opentofu_workspace: authentik-config-sandbox
-      working_directory: regional/authentik-config
-      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
-    secrets:
-      opentofu_plan_secret_args: >-
-        -var=google_oauth_client_secret=${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET_SB }}
-
   datadog_manifests_us_east1_b:
     name: "Datadog Manifests: us-east1-b"
     needs: read_clusters
@@ -320,7 +300,7 @@ jobs:
 
   istio_manifests_us_east1_b:
     name: "Istio Manifests: us-east1-b"
-    needs: [authentik_config, istio_test_us_east1_b, read_clusters]
+    needs: [agentgateway_manifests_us_east1_b, istio_test_us_east1_b, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
     with:
       checkout_ref: ${{ github.ref }}
@@ -354,7 +334,7 @@ jobs:
 
   istio_manifests_us_east4_a:
     name: "Istio Manifests: us-east4-a"
-    needs: [authentik_config, istio_test_us_east4_a, read_clusters]
+    needs: [agentgateway_manifests_us_east4_a, istio_test_us_east4_a, read_clusters]
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
     with:
       checkout_ref: ${{ github.ref }}
