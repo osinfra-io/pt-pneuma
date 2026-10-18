@@ -16,7 +16,7 @@ module "authentication" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=da50522a7688c415037b0eee69a247deb27aee58" # v0.2.2
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=9ef97b8976223c02ee822351e055cd0bdbc92ed9" # simplify-browser-application-name (testing)
 
   depends_on = [terraform_data.browser_group_policy_validation]
 
