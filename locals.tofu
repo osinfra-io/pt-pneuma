@@ -92,7 +92,7 @@ locals {
   # drops the env segment. The A record is created below via the main gateway module.
   authentik_hostname = "authentik.${local.authentik_public_dns_domain}"
 
-  # Namespace provisioned through the standard Logos-driven onboarding flow and the chart-created
+  # Platform-installed (unprefixed) namespace created in regional/authentik and the chart-created
   # Kubernetes service account for Authentik. Both are needed here to bind Workload Identity for the
   # Cloud SQL Auth Proxy.
   authentik_kubernetes_namespace = "authentik"
