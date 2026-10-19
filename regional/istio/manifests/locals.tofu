@@ -89,7 +89,7 @@ locals {
 
   agentgateway_hostname = "agentgateway.${local.authentik_public_dns_domain}"
 
-  agentgateway_namespace = "${module.core_helpers.team}-agentgateway"
+  agentgateway_namespace = "agentgateway"
 
   agentgateway_policy_inputs = {
     for name in keys(local.agentgateway_clusters) : name => {

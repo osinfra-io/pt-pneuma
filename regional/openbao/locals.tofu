@@ -84,13 +84,13 @@ locals {
     local.main.openbao_hostname,
     local.openbao_zonal_hostname,
     "*.openbao-internal",
-    "*.openbao-internal.${module.core_helpers.team}-openbao.svc.cluster.local",
+    "*.openbao-internal.openbao.svc.cluster.local",
     "openbao",
     "openbao-active",
-    "openbao-active.${module.core_helpers.team}-openbao.svc.cluster.local",
-    "openbao.${module.core_helpers.team}-openbao",
-    "openbao.${module.core_helpers.team}-openbao.svc",
-    "openbao.${module.core_helpers.team}-openbao.svc.cluster.local",
+    "openbao-active.openbao.svc.cluster.local",
+    "openbao.openbao",
+    "openbao.openbao.svc",
+    "openbao.openbao.svc.cluster.local",
   ]
 
   # OpenBao's global MultiClusterService spans every platform-managed OpenBao cluster.
