@@ -37,7 +37,7 @@ resource "helm_release" "openbao" {
 
   chart      = "openbao"
   name       = "openbao"
-  namespace  = "${module.core_helpers.team}-openbao"
+  namespace  = "openbao"
   repository = "https://openbao.github.io/openbao-helm"
 
   set = local.helm_set_values
@@ -72,7 +72,7 @@ resource "kubernetes_ingress_v1" "openbao" {
     }
 
     name      = "openbao"
-    namespace = "${module.core_helpers.team}-openbao"
+    namespace = "openbao"
   }
 
   spec {
@@ -114,7 +114,7 @@ resource "kubernetes_manifest" "openbao_backendconfig" {
     kind       = "BackendConfig"
     metadata = {
       name      = "openbao-backend"
-      namespace = "${module.core_helpers.team}-openbao"
+      namespace = "openbao"
     }
     spec = {
       healthCheck = {
@@ -148,7 +148,7 @@ resource "kubernetes_manifest" "openbao_ca_certificate" {
     kind       = "Certificate"
     metadata = {
       name      = "openbao-ca"
-      namespace = "${module.core_helpers.team}-openbao"
+      namespace = "openbao"
     }
     spec = {
       commonName = "openbao-ca"
@@ -179,7 +179,7 @@ resource "kubernetes_manifest" "openbao_ca_issuer" {
     kind       = "Issuer"
     metadata = {
       name      = "openbao-ca"
-      namespace = "${module.core_helpers.team}-openbao"
+      namespace = "openbao"
     }
     spec = {
       ca = {
@@ -199,7 +199,7 @@ resource "kubernetes_manifest" "openbao_frontendconfig" {
     kind       = "FrontendConfig"
     metadata = {
       name      = "openbao-frontend"
-      namespace = "${module.core_helpers.team}-openbao"
+      namespace = "openbao"
     }
     spec = {
       redirectToHttps = {
@@ -220,7 +220,7 @@ resource "kubernetes_manifest" "openbao_managed_certificate" {
     kind       = "ManagedCertificate"
     metadata = {
       name      = "openbao-zonal-tls"
-      namespace = "${module.core_helpers.team}-openbao"
+      namespace = "openbao"
     }
     spec = {
       domains = [local.openbao_zonal_hostname]
@@ -247,7 +247,7 @@ resource "kubernetes_manifest" "openbao_mci" {
         "networking.gke.io/static-ip"        = local.main.openbao_mci_global_address
       }
       name      = "openbao-mci"
-      namespace = "${module.core_helpers.team}-openbao"
+      namespace = "openbao"
     }
     spec = {
       template = {
@@ -297,7 +297,7 @@ resource "kubernetes_manifest" "openbao_mcs" {
         "networking.gke.io/app-protocols" = jsonencode({ "https" = "HTTPS" })
       }
       name      = "openbao-mcs"
-      namespace = "${module.core_helpers.team}-openbao"
+      namespace = "openbao"
     }
     spec = {
       clusters = local.openbao_multi_cluster_service_clusters
@@ -332,7 +332,7 @@ resource "kubernetes_manifest" "openbao_selfsigned_issuer" {
     kind       = "Issuer"
     metadata = {
       name      = "openbao-selfsigned"
-      namespace = "${module.core_helpers.team}-openbao"
+      namespace = "openbao"
     }
     spec = {
       selfSigned = {}
@@ -354,7 +354,7 @@ resource "kubernetes_manifest" "openbao_tls_certificate" {
     kind       = "Certificate"
     metadata = {
       name      = "openbao-tls"
-      namespace = "${module.core_helpers.team}-openbao"
+      namespace = "openbao"
     }
     spec = {
       dnsNames    = local.openbao_tls_dns_names

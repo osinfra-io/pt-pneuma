@@ -89,7 +89,7 @@ locals {
 
   agentgateway_hostname = "agentgateway.${local.authentik_public_dns_domain}"
 
-  agentgateway_namespace = "${module.core_helpers.team}-agentgateway"
+  agentgateway_namespace = "agentgateway"
 
   agentgateway_policy_inputs = {
     for name in keys(local.agentgateway_clusters) : name => {
@@ -479,14 +479,14 @@ locals {
   # Per-team global (apex) HTTPRoutes derived from each team's Logos-declared namespace routes. Keyed
   # by the team's cluster in this zone. Every route declared under a mesh-enabled namespace becomes an
   # apex HTTPRoute on the team's subdomain ("<subdomain>.osinfra.io"), co-located with its backend
-  # Service in the team-prefixed namespace (e.g. "pt-pneuma-istio-test").
+  # Service in the namespace (team-prefixed for member teams, e.g. "pt-example-istio-test").
   global_routes = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => merge([
       for ns_name, ns in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) : {
         for route_name, route in try(ns.routes, {}) :
         "${route_name}-${local.dns_subdomain[cluster_name]}" => {
-          backend_namespace = "${cluster_config.team_key}-${ns_name}"
+          backend_namespace = cluster_config.team_key == module.core_helpers.team ? ns_name : "${cluster_config.team_key}-${ns_name}"
           backend_port      = route.port
           backend_service   = route.service
           host              = local.dns_zone[cluster_name]
@@ -534,7 +534,7 @@ locals {
     cluster_name => {
       for route_name, route in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces["istio-test"].routes, {}) :
       "${route_name}-${local.dns_subdomain[cluster_name]}-${local.zone}" => {
-        backend_namespace = "${cluster_config.team_key}-istio-test"
+        backend_namespace = cluster_config.team_key == module.core_helpers.team ? "istio-test" : "${cluster_config.team_key}-istio-test"
         backend_port      = route.port
         backend_service   = "${route.service}-${local.zone}"
         host              = "${local.zone}.${local.dns_zone[cluster_name]}"

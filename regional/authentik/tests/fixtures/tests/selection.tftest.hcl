@@ -18,7 +18,7 @@ override_data {
   target = data.terraform_remote_state.main
   values = {
     outputs = {
-      authentik_kubernetes_namespace = "pt-pneuma-authentik"
+      authentik_kubernetes_namespace = "authentik"
     }
   }
 }

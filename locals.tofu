@@ -95,7 +95,7 @@ locals {
   # Namespace provisioned through the standard Logos-driven onboarding flow and the chart-created
   # Kubernetes service account for Authentik. Both are needed here to bind Workload Identity for the
   # Cloud SQL Auth Proxy.
-  authentik_kubernetes_namespace = "${module.core_helpers.team}-authentik"
+  authentik_kubernetes_namespace = "authentik"
 
   authentik_kubernetes_service_account = "authentik"
 
@@ -328,18 +328,17 @@ locals {
   }
 
   # GKE namespaces per team, derived from Logos team data.
-  # Every team's namespaces — including pneuma's own — are prefixed with the team key (e.g. "openbao"
-  # on pt-pneuma becomes "pt-pneuma-openbao", "istio-test" on pt-pneuma becomes
-  # "pt-pneuma-istio-test") to ensure namespace uniqueness across all clusters and to satisfy Istio
+  # Member teams' namespaces are prefixed with the team key (e.g. "istio-test" on pt-example becomes
+  # "pt-example-istio-test") to ensure namespace uniqueness across all clusters and to satisfy Istio
   # namespace sameness: when a stub Service is created on the pneuma gateway cluster under the same
   # prefixed namespace name, Istio's multi-primary discovery merges the remote team's pod endpoints
-  # into the stub automatically. Prefixing uniformly (with no platform-team exception) lets pneuma
-  # dogfood the model exactly like a member team.
+  # into the stub automatically. The platform team (pneuma) owns the gateway cluster, so its own
+  # namespaces (e.g. "openbao") are not prefixed.
   gke_namespaces_by_team = {
     for team_key, team in local.teams_with_clusters :
     team_key => {
       for ns_name, ns in try(team.platform_managed_project.kubernetes_engine_namespaces, {}) :
-      "${team_key}-${ns_name}" => ns
+      team_key == module.core_helpers.team ? ns_name : "${team_key}-${ns_name}" => ns
     }
   }
 
@@ -380,7 +379,7 @@ locals {
   # OpenBao has a dedicated global GKE multi-cluster ingress, separate from the Istio mesh gateway.
   openbao_hostname = "openbao.${local.authentik_public_dns_domain}"
 
-  openbao_workload_identity_member = "serviceAccount:${local.team_project_ids[module.core_helpers.team]}.svc.id.goog[${module.core_helpers.team}-openbao/openbao]"
+  openbao_workload_identity_member = "serviceAccount:${local.team_project_ids[module.core_helpers.team]}.svc.id.goog[openbao/openbao]"
 
   shared_ingress_policy_name = "shared-ingress"
 

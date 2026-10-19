@@ -11,7 +11,7 @@ locals {
   cluster_ca_certificate = local.cluster == null ? null : base64decode(local.cluster.master_auth[0].cluster_ca_certificate)
   cluster_endpoint       = local.cluster == null ? null : "https://${local.cluster.endpoint}"
 
-  namespace = "${module.core_helpers.team}-agentgateway"
+  namespace = "agentgateway"
 
   proxy_env = {
     ADMIN_ADDR = "0.0.0.0:15000"

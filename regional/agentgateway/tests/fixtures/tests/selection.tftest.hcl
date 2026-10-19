@@ -19,7 +19,7 @@ run "owning_team_and_zone_only" {
   command = plan
 
   assert {
-    condition     = keys(output.clusters) == ["pt-pneuma-us-east1-b"] && output.namespace == "pt-pneuma-agentgateway"
+    condition     = keys(output.clusters) == ["pt-pneuma-us-east1-b"] && output.namespace == "agentgateway"
     error_message = "Sandbox agentgateway must deploy only to the owning team's cluster in this workspace's zone."
   }
 
