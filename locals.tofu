@@ -333,13 +333,12 @@ locals {
   # namespace sameness: when a stub Service is created on the pneuma gateway cluster under the same
   # prefixed namespace name, Istio's multi-primary discovery merges the remote team's pod endpoints
   # into the stub automatically. The platform team (pneuma) owns the gateway cluster, so its own
-  # namespaces (e.g. "openbao") are not prefixed, except "istio-test", which stays prefixed like
-  # every team's so the mesh validation workload is isolated the same way.
+  # namespaces (e.g. "openbao") are not prefixed.
   gke_namespaces_by_team = {
     for team_key, team in local.teams_with_clusters :
     team_key => {
       for ns_name, ns in try(team.platform_managed_project.kubernetes_engine_namespaces, {}) :
-      team_key == module.core_helpers.team && ns_name != "istio-test" ? ns_name : "${team_key}-${ns_name}" => ns
+      team_key == module.core_helpers.team ? ns_name : "${team_key}-${ns_name}" => ns
     }
   }
 

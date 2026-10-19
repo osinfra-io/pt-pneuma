@@ -20,12 +20,12 @@ locals {
   # workload_identity_service_account_emails output. The prefix also ensures Istio namespace
   # sameness works: the stub Service on the pneuma gateway cluster lives in the same prefixed
   # namespace, so Istio multi-primary discovery merges remote endpoints automatically. The platform
-  # team (pneuma) owns the gateway cluster, so its own namespaces are not prefixed, except "istio-test".
+  # team (pneuma) owns the gateway cluster, so its own namespaces are not prefixed.
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {
       for namespace_name, namespace in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) :
-      cluster_config.team_key == module.core_helpers.team && namespace_name != "istio-test" ? namespace_name : "${cluster_config.team_key}-${namespace_name}" => {
+      cluster_config.team_key == module.core_helpers.team ? namespace_name : "${cluster_config.team_key}-${namespace_name}" => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
         mesh_enabled           = namespace.mesh_enabled
       }
