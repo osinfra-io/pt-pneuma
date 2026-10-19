@@ -373,7 +373,7 @@ jobs:
   authentik_config:
     name: "authentik Config"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
-    if: github.actor != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]' && (needs.main.outputs.passthrough || '{}') != '{}'
     needs: [istio_manifests_us_east1_b, istio_manifests_us_east4_a, main]
     with:
       checkout_ref: ${{ github.ref }}
