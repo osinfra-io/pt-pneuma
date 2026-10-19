@@ -1,15 +1,12 @@
 name: Production
-run-name: ${{ github.event.workflow_run.display_title || 'Production' }}
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows:
-      - Non-Production
-    types:
-      - completed
+  push:
     branches:
       - main
+    paths-ignore:
+      - "**.md"
 
 concurrency:
   group: production
@@ -27,10 +24,7 @@ jobs:
   main:
     name: "Main"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@f896997141ccd237ba0360aa30feaa0d1ff21e4f # v0.6.0
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_commit.author.name != 'dependabot[bot]')
+    if: github.event.head_commit.author.username != 'dependabot[bot]'
     with:
       checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       github_environment: "Production: Main"
