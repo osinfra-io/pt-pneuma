@@ -39,11 +39,20 @@ locals {
   # not defined by this repo. Excluding just the "scope" and "query" parameter values from the LFI
   # rule's inspection (rather than allowing the whole request past every preconfigured WAF rule)
   # fixes the false positive while still running SQLi/XSS/RCE/etc. checks on this traffic.
+  #
+  # Google also appends "prompt=none" to the callback, which the preconfigured RCE WAF rule
+  # (owasp-crs-v030301-id932115-rce) reads as the Windows "prompt" command once it is wrapped in the
+  # "query" parameter. The same exclusion is applied to that rule.
   authentik_cloud_armor_waf_exclusions = [
     {
       request_query_param_names = ["scope", "query"]
       target_rule_ids           = ["owasp-crs-v030301-id930120-lfi"]
       target_rule_set           = "lfi-v33-stable"
+    },
+    {
+      request_query_param_names = ["query"]
+      target_rule_ids           = ["owasp-crs-v030301-id932115-rce"]
+      target_rule_set           = "rce-v33-stable"
     }
   ]
 
