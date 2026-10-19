@@ -140,12 +140,13 @@ locals {
 
   kubernetes_project = data.terraform_remote_state.main.outputs.project_id
 
-  # Namespace per cluster — team-prefixed for member teams (e.g. "pt-example-istio-test"), plain
-  # "istio-test" for pneuma. Each team's istio-test workload is isolated in its own namespace, so
-  # Istio routing targets only that team's cluster pods.
+  # Namespace per cluster — team-prefixed for every team, including pneuma (e.g.
+  # "pt-pneuma-istio-test"). Each team's istio-test workload is isolated
+  # in its own namespace and dogfooded exactly like a member team, so Istio routing targets only
+  # that team's cluster pods.
   namespace = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key == module.core_helpers.team ? "istio-test" : "${cluster_config.team_key}-istio-test"
+    cluster_name => "${cluster_config.team_key}-istio-test"
   }
 
   # Region per cluster, parsed from the cluster name (e.g. "pt-pneuma-us-east1-b" → "us-east1").
