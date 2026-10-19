@@ -2,11 +2,11 @@ name: Non-Production
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - "**.md"
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - "**.md"
 
 concurrency:
   group: non-production
