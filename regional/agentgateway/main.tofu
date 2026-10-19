@@ -12,5 +12,21 @@ module "kubernetes_agentgateway" {
   }
 
   labels    = module.core_helpers.labels
-  namespace = local.namespace
+  namespace = kubernetes_namespace_v1.agentgateway[each.key].metadata[0].name
+}
+
+# Kubernetes Namespace Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/namespace_v1
+
+resource "kubernetes_namespace_v1" "agentgateway" {
+  for_each = local.agentgateway_clusters
+  provider = kubernetes.by_cluster
+
+  metadata {
+    labels = {
+      "istio.io/dataplane-mode" = "ambient"
+    }
+
+    name = local.namespace
+  }
 }

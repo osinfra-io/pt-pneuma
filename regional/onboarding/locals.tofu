@@ -15,17 +15,17 @@ locals {
 
   # Namespaces per cluster, derived from Logos team data. The team's GitHub Actions
   # service account (from pt-corpus) is bound as the namespace administrator.
-  # Member teams' namespaces are prefixed with the team key (e.g. "istio-test" on pt-example becomes
-  # "pt-example-istio-test") matching the prefixed keys in the main workspace's
+  # Every namespace declared in Logos team data is prefixed with the team key (e.g. "istio-test" on
+  # pt-pneuma becomes "pt-pneuma-istio-test") matching the prefixed keys in the main workspace's
   # workload_identity_service_account_emails output. The prefix also ensures Istio namespace
   # sameness works: the stub Service on the pneuma gateway cluster lives in the same prefixed
-  # namespace, so Istio multi-primary discovery merges remote endpoints automatically. The platform
-  # team (pneuma) owns the gateway cluster, so its own namespaces are not prefixed.
+  # namespace, so Istio multi-primary discovery merges remote endpoints automatically. Pneuma's
+  # platform workloads (authentik, openbao, agentgateway) are installed by their own workspaces.
   namespaces = {
     for cluster_name, cluster_config in local.gke_clusters :
     cluster_name => {
       for namespace_name, namespace in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) :
-      cluster_config.team_key == module.core_helpers.team ? namespace_name : "${cluster_config.team_key}-${namespace_name}" => {
+      "${cluster_config.team_key}-${namespace_name}" => {
         google_service_account = "${cluster_config.team_key}-github@${local.main.shared_vpc_host_project_id}.iam.gserviceaccount.com"
         mesh_enabled           = namespace.mesh_enabled
       }

@@ -23,7 +23,7 @@ module "kubernetes_authentik" {
   external_database_name                    = local.main.authentik_database_name
   external_database_user                    = local.main.authentik_database_user
   google_service_account_email              = local.main.authentik_cloud_sql_service_account_email
-  namespace                                 = local.authentik_namespace
+  namespace                                 = kubernetes_namespace_v1.authentik[each.key].metadata[0].name
   server_replicas                           = var.authentik_server_replicas
   server_resources_limits_cpu               = var.authentik_server_resources_limits_cpu
   server_resources_limits_memory            = var.authentik_server_resources_limits_memory
@@ -53,7 +53,7 @@ resource "kubernetes_manifest" "authentik_allow_gateway" {
 
     metadata = {
       name      = "authentik-allow-gateway"
-      namespace = local.authentik_namespace
+      namespace = kubernetes_namespace_v1.authentik[each.key].metadata[0].name
     }
 
     spec = {
@@ -81,6 +81,22 @@ resource "kubernetes_manifest" "authentik_allow_gateway" {
   }
 }
 
+# Kubernetes Namespace Resource
+# https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/namespace_v1
+
+resource "kubernetes_namespace_v1" "authentik" {
+  for_each = local.authentik_clusters
+  provider = kubernetes.by_cluster
+
+  metadata {
+    labels = {
+      "istio.io/dataplane-mode" = "ambient"
+    }
+
+    name = local.authentik_namespace
+  }
+}
+
 # Kubernetes Secret Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/secret_v1
 
@@ -92,7 +108,7 @@ resource "kubernetes_secret_v1" "authentik" {
 
   metadata {
     name      = local.authentik_secret_name
-    namespace = local.authentik_namespace
+    namespace = kubernetes_namespace_v1.authentik[each.key].metadata[0].name
   }
 
   type = "Opaque"
