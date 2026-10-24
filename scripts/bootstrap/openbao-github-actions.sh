@@ -3,25 +3,22 @@
 set -euo pipefail
 
 if [[ "${1:-}" == "--help" ]]; then
-  echo "Usage: $0 sandbox <pr-number> | non-production | production"
+  echo "Usage: $0 sandbox | non-production | production"
   echo "Requires bao, jq, and an existing administrative OpenBao login."
   exit 0
 fi
 
+[[ $# == 1 ]] || { echo "Specify one environment: sandbox, non-production, or production." >&2; exit 1; }
+
 case "${1:-}" in
   sandbox)
-    [[ "${2:-}" =~ ^[1-9][0-9]*$ && $# == 2 ]] || {
-      echo "Sandbox requires a PR number: $0 sandbox 266" >&2
-      exit 1
-    }
     address="https://openbao.sb.osinfra.io"
     environment="Sandbox OpenBao: us-east1-b"
-    ref="refs/pull/$2/merge"
+    ref="refs/pull/*/merge"
     events='["pull_request"]'
     plan_subject="repo:osinfra-io/pt-pneuma:pull_request"
     ;;
   non-production | production)
-    [[ $# == 1 ]] || { echo "Unexpected arguments." >&2; exit 1; }
     if [[ "$1" == non-production ]]; then
       address="https://openbao.nonprod.osinfra.io"
       environment="Non-Production OpenBao: us-east1-b"
@@ -34,7 +31,7 @@ case "${1:-}" in
     plan_subject="repo:osinfra-io/pt-pneuma:ref:refs/heads/main"
     ;;
   *)
-    echo "Usage: $0 sandbox <pr-number> | non-production | production" >&2
+    echo "Usage: $0 sandbox | non-production | production" >&2
     exit 1
     ;;
 esac
@@ -162,6 +159,7 @@ for access in plan apply; do
       user_claim: "sub",
       bound_audiences: ["pt-pneuma-openbao"],
       bound_subject: $subject,
+      bound_claims_type: "glob",
       bound_claims: {
         repository_id: "1093115151",
         repository_owner_id: "104685378",
@@ -177,4 +175,3 @@ for access in plan apply; do
 done
 
 echo "Configured GitHub Actions authentication at $BAO_ADDR for $ref."
-echo "Rerunning sandbox bootstrap replaces the previously allowed PR ref."
