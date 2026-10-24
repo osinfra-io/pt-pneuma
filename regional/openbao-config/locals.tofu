@@ -4,6 +4,30 @@
 locals {
   authentik_config = data.terraform_remote_state.authentik_config.outputs
 
+  github_actions_bound_claims = {
+    event_name          = module.core_helpers.env == "sb" ? "pull_request" : "push,workflow_dispatch"
+    ref                 = module.core_helpers.env == "sb" ? "refs/pull/*/merge" : "refs/heads/main"
+    repository_id       = "1093115151"
+    repository_owner_id = "104685378"
+  }
+
+  github_actions_environment = {
+    sb      = "Sandbox"
+    nonprod = "Non-Production"
+    prod    = "Production"
+  }[module.core_helpers.env]
+
+  github_actions_plan_subject = module.core_helpers.env == "sb" ? "repo:osinfra-io/pt-pneuma:pull_request" : "repo:osinfra-io/pt-pneuma:ref:refs/heads/main"
+
+  github_actions_roles = {
+    for access in ["apply", "plan"] : access => {
+      import_id   = "auth/github-actions/role/pt-pneuma-openbao-${access}"
+      policy      = file("${path.module}/policies/github-actions-${access}.hcl")
+      policy_name = "pt-pneuma-openbao-${access}"
+      subject     = access == "apply" ? "repo:osinfra-io/pt-pneuma:environment:${local.github_actions_environment} OpenBao: us-east1-b" : local.github_actions_plan_subject
+    }
+  }
+
   main = data.terraform_remote_state.main.outputs
 
   openbao_group_keys = [

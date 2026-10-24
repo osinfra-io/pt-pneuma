@@ -23,6 +23,13 @@ resource "vault_identity_group" "team" {
 # OpenBao JWT Authentication Backend Resource
 # https://search.opentofu.org/provider/hashicorp/vault/latest/docs/resources/jwt_auth_backend
 
+resource "vault_jwt_auth_backend" "github_actions" {
+  bound_issuer       = "https://token.actions.githubusercontent.com"
+  oidc_discovery_url = "https://token.actions.githubusercontent.com"
+  path               = "github-actions"
+  type               = "jwt"
+}
+
 resource "vault_jwt_auth_backend" "oidc" {
   default_role       = "default"
   oidc_client_id     = local.authentik_config.openbao_oidc_client_id
@@ -34,6 +41,23 @@ resource "vault_jwt_auth_backend" "oidc" {
 
 # OpenBao JWT Authentication Backend Role Resource
 # https://search.opentofu.org/provider/hashicorp/vault/latest/docs/resources/jwt_auth_backend_role
+
+resource "vault_jwt_auth_backend_role" "github_actions" {
+  for_each = local.github_actions_roles
+
+  backend                = vault_jwt_auth_backend.github_actions.path
+  bound_audiences        = ["pt-pneuma-openbao"]
+  bound_claims           = local.github_actions_bound_claims
+  bound_claims_type      = "glob"
+  bound_subject          = each.value.subject
+  role_name              = each.value.policy_name
+  role_type              = "jwt"
+  token_explicit_max_ttl = 900
+  token_max_ttl          = 900
+  token_policies         = [vault_policy.github_actions[each.key].name]
+  token_ttl              = 900
+  user_claim             = "sub"
+}
 
 resource "vault_jwt_auth_backend_role" "oidc" {
   allowed_redirect_uris = [
@@ -66,6 +90,13 @@ resource "vault_mount" "team_kv" {
 
 # OpenBao Policy Resource
 # https://search.opentofu.org/provider/hashicorp/vault/latest/docs/resources/policy
+
+resource "vault_policy" "github_actions" {
+  for_each = local.github_actions_roles
+
+  name   = each.value.policy_name
+  policy = each.value.policy
+}
 
 resource "vault_policy" "team" {
   depends_on = [vault_mount.team_kv]

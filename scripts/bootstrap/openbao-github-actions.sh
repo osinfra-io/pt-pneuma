@@ -57,92 +57,10 @@ bao write auth/github-actions/config \
   oidc_discovery_url=https://token.actions.githubusercontent.com \
   bound_issuer=https://token.actions.githubusercontent.com
 
-bao policy write pt-pneuma-openbao-plan - <<'HCL'
-path "sys/auth" {
-  capabilities = ["read"]
-}
-path "sys/mounts" {
-  capabilities = ["read"]
-}
-path "sys/auth/oidc" {
-  capabilities = ["read"]
-}
-path "sys/auth/oidc/*" {
-  capabilities = ["read"]
-}
-path "sys/mounts/auth/oidc/tune" {
-  capabilities = ["read"]
-}
-path "sys/mounts/team-kv" {
-  capabilities = ["read"]
-}
-path "sys/mounts/team-kv/*" {
-  capabilities = ["read"]
-}
-path "auth/oidc/config" {
-  capabilities = ["read"]
-}
-path "auth/oidc/role/default" {
-  capabilities = ["read"]
-}
-path "sys/policies/acl/pt-pneuma-openbao-*" {
-  capabilities = ["read"]
-}
-path "identity/group/id/*" {
-  capabilities = ["read"]
-}
-path "identity/group-alias/id/*" {
-  capabilities = ["read"]
-}
-HCL
-
-bao policy write pt-pneuma-openbao-apply - <<'HCL'
-path "sys/auth" {
-  capabilities = ["read"]
-}
-path "sys/mounts" {
-  capabilities = ["read"]
-}
-path "sys/auth/oidc" {
-  capabilities = ["create", "read", "update", "delete", "sudo"]
-}
-path "sys/auth/oidc/*" {
-  capabilities = ["read", "update", "sudo"]
-}
-path "sys/mounts/auth/oidc/tune" {
-  capabilities = ["read", "update"]
-}
-path "auth/oidc/config" {
-  capabilities = ["read", "update"]
-}
-path "auth/oidc/role/default" {
-  capabilities = ["create", "read", "update", "delete"]
-}
-path "sys/mounts/team-kv" {
-  capabilities = ["create", "read", "update", "delete", "sudo"]
-}
-path "sys/mounts/team-kv/*" {
-  capabilities = ["read", "update"]
-}
-path "sys/policies/acl/pt-pneuma-openbao-*" {
-  capabilities = ["create", "read", "update", "delete"]
-}
-path "identity/group" {
-  capabilities = ["create", "update"]
-}
-path "identity/group/id/*" {
-  capabilities = ["read", "update", "delete"]
-}
-path "identity/group-alias" {
-  capabilities = ["create", "update"]
-}
-path "identity/group-alias/id/*" {
-  capabilities = ["read", "update", "delete"]
-}
-path "auth/token/create" {
-  capabilities = ["update"]
-}
-HCL
+policy_directory="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../regional/openbao-config/policies" && pwd)"
+for access in plan apply; do
+  bao policy write "pt-pneuma-openbao-$access" "$policy_directory/github-actions-$access.hcl"
+done
 
 for access in plan apply; do
   subject="$plan_subject"

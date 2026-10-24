@@ -63,6 +63,10 @@ variables {
 run "reader_is_limited_to_read_and_list" {
   command = plan
 
+  module {
+    source = "./tests/fixtures"
+  }
+
   assert {
     condition = (
       strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "path \"team-kv/data/pt-example/*\"") &&
@@ -77,6 +81,10 @@ run "reader_is_limited_to_read_and_list" {
 
 run "writer_cannot_delete_or_manage_versions" {
   command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
 
   assert {
     condition = (
@@ -93,6 +101,10 @@ run "writer_cannot_delete_or_manage_versions" {
 
 run "admin_and_all_roles_stay_inside_team_prefix" {
   command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
 
   assert {
     condition = (
@@ -129,6 +141,10 @@ run "admin_and_all_roles_stay_inside_team_prefix" {
 run "oidc_uses_group_claim_and_exact_callbacks_without_team_token_policies" {
   command = plan
 
+  module {
+    source = "./tests/fixtures"
+  }
+
   assert {
     condition = (
       vault_jwt_auth_backend.oidc.oidc_client_id == "openbao" &&
@@ -160,6 +176,10 @@ run "oidc_uses_group_claim_and_exact_callbacks_without_team_token_policies" {
 run "team_kv_mount_is_version_two" {
   command = plan
 
+  module {
+    source = "./tests/fixtures"
+  }
+
   assert {
     condition = (
       vault_mount.team_kv.path == "team-kv" &&
@@ -167,5 +187,78 @@ run "team_kv_mount_is_version_two" {
       vault_mount.team_kv.options["version"] == "2"
     )
     error_message = "Team secrets must use the dedicated KV v2 mount."
+  }
+}
+
+run "github_actions_sandbox_roles_keep_pr_and_approval_bindings" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  assert {
+    condition = (
+      vault_jwt_auth_backend.github_actions.path == "github-actions" &&
+      vault_jwt_auth_backend.github_actions.bound_issuer == "https://token.actions.githubusercontent.com" &&
+      vault_jwt_auth_backend_role.github_actions["plan"].bound_subject == "repo:osinfra-io/pt-pneuma:pull_request" &&
+      vault_jwt_auth_backend_role.github_actions["apply"].bound_subject == "repo:osinfra-io/pt-pneuma:environment:Sandbox OpenBao: us-east1-b" &&
+      alltrue([
+        for access, role in vault_jwt_auth_backend_role.github_actions :
+        role.bound_claims["ref"] == "refs/pull/*/merge" &&
+        role.bound_claims["event_name"] == "pull_request" &&
+        role.bound_claims["repository_id"] == "1093115151" &&
+        role.bound_claims["repository_owner_id"] == "104685378" &&
+        role.bound_claims_type == "glob" &&
+        role.bound_audiences == toset(["pt-pneuma-openbao"]) &&
+        role.token_policies == toset(["pt-pneuma-openbao-${access}"]) &&
+        role.token_ttl == 900 &&
+        role.token_max_ttl == 900 &&
+        role.token_explicit_max_ttl == 900
+      ])
+    )
+    error_message = "GitHub roles must preserve PR claims, immutable repository bindings, protected apply subject, and short-lived access."
+  }
+
+  assert {
+    condition = (
+      strcontains(vault_policy.github_actions["plan"].policy, "path \"auth/github-actions/config\"") &&
+      !strcontains(vault_policy.github_actions["plan"].policy, "\"update\"") &&
+      !strcontains(vault_policy.github_actions["plan"].policy, "\"sudo\"") &&
+      strcontains(vault_policy.github_actions["apply"].policy, "path \"auth/github-actions/role/pt-pneuma-openbao-*\"")
+    )
+    error_message = "Plan must read the imported authentication configuration without write access; apply must manage its GitHub roles."
+  }
+}
+
+run "github_actions_nonproduction_roles_use_main" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  override_module {
+    target = module.core_helpers
+    outputs = {
+      env         = "nonprod"
+      environment = "non-production"
+      repository  = "pt-pneuma"
+      team        = "pt-pneuma"
+      teams       = {}
+    }
+  }
+
+  assert {
+    condition = (
+      vault_jwt_auth_backend_role.github_actions["plan"].bound_subject == "repo:osinfra-io/pt-pneuma:ref:refs/heads/main" &&
+      vault_jwt_auth_backend_role.github_actions["apply"].bound_subject == "repo:osinfra-io/pt-pneuma:environment:Non-Production OpenBao: us-east1-b" &&
+      alltrue([
+        for role in vault_jwt_auth_backend_role.github_actions :
+        role.bound_claims["ref"] == "refs/heads/main" &&
+        role.bound_claims["event_name"] == "push,workflow_dispatch"
+      ])
+    )
+    error_message = "Non-production roles must accept only main-branch push/dispatch runs, with protected environment binding for apply."
   }
 }
