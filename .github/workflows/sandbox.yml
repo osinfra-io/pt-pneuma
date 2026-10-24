@@ -480,6 +480,28 @@ jobs:
       opentofu_plan_secret_args: >-
         -var=google_oauth_client_secret=${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET_SB }}
 
+  openbao_config:
+    name: "OpenBao Config"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@5254a9d2c8a482dc0c546735fb1c249d4946cfd9 # temporary test pin (unreleased)
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-b":')
+    needs: [openbao_us_east1_b, authentik_config, main]
+    with:
+      checkout_ref: ${{ github.ref }}
+      github_environment: "Sandbox OpenBao: us-east1-b"
+      openbao_address: https://openbao.sb.osinfra.io
+      openbao_jwt_apply_role: pt-pneuma-openbao-apply
+      openbao_jwt_audience: pt-pneuma-openbao
+      openbao_jwt_auth_mount: github-actions
+      openbao_jwt_plan_role: pt-pneuma-openbao-plan
+      service_account: pt-pneuma-github@pt-corpus-tfc9-sb.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-sb
+      opentofu_var_json: "{\"openbao_address\": \"https://openbao.sb.osinfra.io\"}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-b-openbao-config-sandbox
+      working_directory: regional/openbao-config
+      workload_identity_provider: projects/190688376851/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   istio_us_east1_b:
     name: "Istio: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@5089361dca1f89054e7517a3c4e335d4e0efbd54 # v0.7.0
