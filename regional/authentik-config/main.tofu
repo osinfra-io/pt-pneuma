@@ -16,7 +16,7 @@ module "authentication" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=142638a180c81fef46cb8424a39ccc180b0e1208" # v0.2.3
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=design/authentik-openbao-oidc" # TEMPORARY: replace with post-merge commit SHA
 
   depends_on = [terraform_data.browser_group_policy_validation]
 
@@ -30,6 +30,7 @@ module "authentik_config" {
   google_oauth_client_secret            = var.google_oauth_client_secret
   manage_default_authentication_stage   = local.manage_default_authentication_stage
   namespace                             = local.namespace
+  openbao_hostname                      = local.main.openbao_hostname
   redirect_uris                         = local.redirect_uris
 }
 

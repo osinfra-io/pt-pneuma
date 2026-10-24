@@ -21,7 +21,8 @@ override_data {
       authentik_secret_env = {
         AUTHENTIK_BOOTSTRAP_TOKEN = "mock-token"
       }
-      gateway_dns = {}
+      gateway_dns      = {}
+      openbao_hostname = "openbao.sb.osinfra.io"
     }
   }
 }
@@ -161,5 +162,14 @@ run "cloud_managed_application_groups" {
   assert {
     condition     = module.authentik_config.browser_group_policy_bindings["https://agentgateway.sb.osinfra.io"].groups == tolist(["pt-pneuma: agentgateway Admins"]) && output.cloud_inputs.redirect_uris[1].matching_mode == "strict" && output.cloud_inputs.redirect_uris[1].url == "https://agentgateway.sb.osinfra.io/outpost.goauthentik.io/callback"
     error_message = "The dedicated admin host must bind the managed group and its exact callback, without broadening existing team-host callback admission."
+  }
+
+  assert {
+    condition = (
+      output.openbao_oidc_client_id == "openbao" &&
+      output.openbao_oidc_issuer == "https://authentik.sb.osinfra.io/application/o/openbao/" &&
+      output.openbao_oidc_client_secret != ""
+    )
+    error_message = "The cloud config must expose the dedicated OpenBao OIDC client, provider issuer, and generated secret."
   }
 }
