@@ -393,7 +393,7 @@ jobs:
 
   openbao_config:
     name: "OpenBao Config"
-    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@313fc53f144194dd30194a62f2d04b61318c73bf # temporary test pin (unreleased)
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@efd342b48a3269fd4ae87f6c645e9c277ac5cb18 # temporary test pin (unreleased)
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-b":')
     needs: [openbao_us_east1_b, authentik_config, main]
     with:
