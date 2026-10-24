@@ -23,6 +23,23 @@ class AccessDiagnosticsTest(unittest.TestCase):
     def test_normal_requests_are_not_emitted(self):
         self.assertEqual(diagnostics.summarize_error({"request": "/callback?code=secret"}), [])
 
+    def test_oauth_rejections_are_reported_without_request_values(self):
+        for event in (
+            "Invalid grant_type for provider",
+            "Missing nonce for OpenID Request",
+            "The request is otherwise malformed",
+        ):
+            with self.subTest(event=event):
+                self.assertEqual(diagnostics.summarize_error({
+                    "event": event,
+                    "grant_type": "secret",
+                    "redirect_uri": "/callback?code=secret",
+                    "request": "secret",
+                }), [event])
+        self.assertEqual(diagnostics.summarize_error({
+            "event": "sensitive arbitrary event",
+        }), [])
+
 
 if __name__ == "__main__":
     unittest.main()

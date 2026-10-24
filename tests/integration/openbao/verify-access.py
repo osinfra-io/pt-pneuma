@@ -7,6 +7,7 @@ import socket
 import ssl
 import sys
 from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -86,6 +87,34 @@ def verify_oidc(root_token):
         or str(role.get("token_max_ttl")) != "3600"
     ):
         fail("OpenBao OIDC role is missing the expected claims, callbacks, or one-hour TTL")
+
+    for callback in sorted(CALLBACKS):
+        result = expect(
+            "", "POST", "auth/oidc/oidc/auth_url", {200},
+            {"role": "default", "redirect_uri": callback},
+        )
+        authorization_url = urlsplit(result.get("data", {}).get("auth_url", ""))
+        if (
+            authorization_url.scheme != "https"
+            or authorization_url.netloc != "authentik.localhost"
+            or authorization_url.path != "/application/o/authorize/"
+        ):
+            fail("OpenBao did not generate the expected Authentik authorization endpoint")
+        connection = LoopbackHTTPSConnection("authentik.localhost", timeout=15)
+        try:
+            connection.request("GET", f"{authorization_url.path}?{authorization_url.query}")
+            response = connection.getresponse()
+            location = urlsplit(response.getheader("Location", ""))
+            response.read()
+            if (
+                response.status != 302
+                or "error" in parse_qs(location.query)
+                or location.netloc not in ("", "authentik.localhost")
+                or not location.path.startswith("/if/flow/")
+            ):
+                fail("Authentik rejected the OpenBao authorization request before browser sign-in")
+        finally:
+            connection.close()
 
 
 def create_token(root_token, policy):

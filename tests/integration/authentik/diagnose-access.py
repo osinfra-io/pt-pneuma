@@ -7,6 +7,13 @@ import subprocess
 
 
 def summarize_error(record):
+    event = record.get("event")
+    if event in (
+        "Invalid grant_type for provider",
+        "Missing nonce for OpenID Request",
+        "The request is otherwise malformed",
+    ):
+        return [event]
     exception = record.get("exception")
     if not exception:
         return []
@@ -46,9 +53,9 @@ def main():
         if summary and summary not in summaries:
             summaries.append(summary)
     if not summaries:
-        raise SystemExit("No structured server traceback found in the bounded log window")
+        raise SystemExit("No structured server traceback or known OAuth rejection found in the bounded log window")
     for summary in summaries:
-        print("Server exception frames and types:")
+        print("Server exception frames, types, or OAuth rejection:")
         print("\n".join(summary))
 
 
