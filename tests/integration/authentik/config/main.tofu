@@ -29,6 +29,7 @@ module "authentik_config" {
   google_oauth_client_secret            = var.google_oauth_client_secret
   manage_default_authentication_stage   = true
   namespace                             = "authentik"
+  openbao_hostname                      = "openbao.localhost"
   outpost_authentik_url                 = "https://authentik.localhost"
 
   redirect_uris = [

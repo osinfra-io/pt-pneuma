@@ -16,6 +16,10 @@ assert_docker_desktop_kind_cluster || fail "Kubernetes is not backed by the Dock
 assert_local_gateway_stack_owner "${OWNER_NAME}" kube-system "${OWNER_VALUE}" ||
   fail "cluster ownership marker is missing or belongs to another owner"
 
+if [ -f "${WORK_DIR}/config.tfstate" ]; then
+  bash "${SCRIPT_DIR}/configure.sh" destroy
+fi
+
 for name in routing regional; do
   state_file="${WORK_DIR}/${name}.tfstate"
   [ -f "${state_file}" ] || continue
