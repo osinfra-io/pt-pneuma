@@ -249,6 +249,126 @@ run "github_actions_sandbox_roles_keep_pr_and_approval_bindings" {
   }
 }
 
+run "github_actions_plan_reads_team_acl_policies_read_only" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  assert {
+    condition = (
+      alltrue([
+        for team_key_prefix in ["ct-", "et-", "pt-", "st-"] :
+        strcontains(vault_policy.github_actions["plan"].policy, "path \"sys/policies/acl/${team_key_prefix}*\" {\n  capabilities = [\"read\"]\n}")
+      ]) &&
+      !strcontains(vault_policy.github_actions["plan"].policy, "\"create\"") &&
+      !strcontains(vault_policy.github_actions["plan"].policy, "\"delete\"") &&
+      !strcontains(vault_policy.github_actions["plan"].policy, "\"update\"")
+    )
+    error_message = "Plan must only read ACL policies for valid team-key prefixes."
+  }
+}
+
+run "github_actions_apply_manages_only_declared_team_acl_policies" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  assert {
+    condition = (
+      alltrue([
+        for key in keys(local.openbao_groups) :
+        strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/${replace(key, "/", "-")}\" {")
+      ]) &&
+      strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/pt-pneuma-openbao-apply\" {\n  capabilities = [\"create\", \"read\", \"update\", \"delete\"]\n}") &&
+      strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/pt-pneuma-openbao-plan\" {\n  capabilities = [\"create\", \"read\", \"update\", \"delete\"]\n}") &&
+      !strcontains(vault_policy.github_actions["apply"].policy, "sys/policies/acl/pt-pneuma-openbao-*") &&
+      !strcontains(vault_policy.github_actions["apply"].policy, "sys/policies/acl/pt-unrelated-openbao-secret-readers")
+    )
+    error_message = "Apply must manage only exact declared team ACL policy names and baseline workflow ACL policies."
+  }
+}
+
+run "team_policy_removal_keeps_apply_authorization" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  override_module {
+    target = module.core_helpers
+    outputs = {
+      env         = "sb"
+      environment = "sandbox"
+      repository  = "pt-pneuma"
+      team        = "pt-pneuma"
+      teams       = {}
+    }
+  }
+
+  assert {
+    condition = (
+      length(vault_policy.team) == 0 &&
+      strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/pt-pneuma-openbao-apply\" {\n  capabilities = [\"create\", \"read\", \"update\", \"delete\"]\n}") &&
+      strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/pt-pneuma-openbao-plan\" {\n  capabilities = [\"create\", \"read\", \"update\", \"delete\"]\n}") &&
+      !strcontains(vault_policy.github_actions["apply"].policy, "sys/policies/acl/pt-example-openbao-secret-readers")
+    )
+    error_message = "Apply authorization must remain during team policy cleanup while removed team ACL paths are pruned."
+  }
+}
+
+run "declared_group_changes_limit_apply_authorization_to_current_policies" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  override_module {
+    target = module.core_helpers
+    outputs = {
+      env         = "sb"
+      environment = "sandbox"
+      repository  = "pt-pneuma"
+      team        = "pt-pneuma"
+      teams = {
+        pt-example = {
+          authentik_groups = {
+            openbao-secret-writers = {
+              label = "OpenBao Secret Writers"
+              name  = "pt-example: OpenBao Secret Writers"
+            }
+          }
+        }
+        st-security = {
+          authentik_groups = {
+            openbao-secret-readers = {
+              label = "OpenBao Secret Readers"
+              name  = "st-security: OpenBao Secret Readers"
+            }
+          }
+        }
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      alltrue([
+        for key in keys(local.openbao_groups) :
+        strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/${replace(key, "/", "-")}\" {")
+      ]) &&
+      !strcontains(vault_policy.github_actions["apply"].policy, "sys/policies/acl/pt-example-openbao-secret-admins") &&
+      !strcontains(vault_policy.github_actions["apply"].policy, "sys/policies/acl/pt-other-openbao-secret-readers")
+    )
+    error_message = "Apply ACL policy paths must track only currently declared OpenBao groups."
+  }
+}
+
 run "github_actions_nonproduction_roles_use_main" {
   command = plan
 

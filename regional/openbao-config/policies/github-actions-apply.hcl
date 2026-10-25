@@ -79,7 +79,11 @@ path "sys/remount/status/*" {
   capabilities = ["read"]
 }
 
-path "sys/policies/acl/pt-pneuma-openbao-*" {
+path "sys/policies/acl/pt-pneuma-openbao-apply" {
+  capabilities = ["create", "read", "update", "delete"]
+}
+
+path "sys/policies/acl/pt-pneuma-openbao-plan" {
   capabilities = ["create", "read", "update", "delete"]
 }
 

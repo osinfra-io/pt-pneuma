@@ -111,7 +111,7 @@ resource "vault_policy" "github_actions" {
 }
 
 resource "vault_policy" "team" {
-  depends_on = [vault_mount.team_kv2]
+  depends_on = [vault_mount.team_kv2, vault_policy.github_actions]
   for_each   = local.team_policy_documents
 
   name   = replace(each.key, "/", "-")
