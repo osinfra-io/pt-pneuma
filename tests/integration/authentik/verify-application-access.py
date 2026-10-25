@@ -37,6 +37,13 @@ def verify(work):
             for instance in resource["instances"]
         ]
 
+    openbao_providers = objects("authentik_provider_oauth2", "openbao")
+    if len(openbao_providers) != 1:
+        raise ValueError("The local fixture requires its dedicated OpenBao OAuth provider")
+    openbao_provider = api(f"providers/oauth2/{openbao_providers[0]['id']}/")
+    if "authorization_code" not in openbao_provider.get("grant_types", []):
+        raise ValueError("The live OpenBao OAuth provider rejects authorization-code login")
+
     mappings = objects("authentik_property_mapping_source_oauth", "google_application_groups")
     proxies = objects("authentik_property_mapping_provider_scope", "google_proxy")
     if len(mappings) != 1 or len(proxies) != 1:

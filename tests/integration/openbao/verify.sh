@@ -75,4 +75,6 @@ expect_status 403 https://openbao.localhost/v1/sys/mounts
 expect_status 403 https://openbao.localhost/v1/sys/mounts \
   --header 'X-Vault-Token: forged'
 
-echo "OpenBao automated checks passed. Authenticated OpenBao access is a manual step; the initial root token and unseal key are in tests/integration/openbao/.work/openbao-init.json."
+python3 "${SCRIPT_DIR}/verify-access.py"
+
+echo "OpenBao automated checks passed. Google-backed Authentik UI and CLI sign-in remains a manual browser check."

@@ -48,6 +48,64 @@ openbao_status() {
   kubectl exec --namespace=openbao openbao-0 -- bao status -format=json 2>/dev/null || true
 }
 
+ensure_authentik_discovery_host_alias() {
+  local gateway_ip host_aliases patch pod_gateway_ip
+
+  gateway_ip="$(kubectl get service gateway-istio --namespace=istio-ingress \
+    --output=jsonpath='{.spec.clusterIP}')"
+  [ -n "${gateway_ip}" ] || fail "the local Istio gateway has no ClusterIP"
+
+  host_aliases="$(
+    kubectl get statefulset openbao --namespace=openbao --output=json |
+      jq -c --arg ip "${gateway_ip}" '
+        [
+          (.spec.template.spec.hostAliases // [])[]
+          | {
+              ip,
+              hostnames: [.hostnames[] | select(. != "authentik.localhost")]
+            }
+          | select(.hostnames | length > 0)
+        ] as $preserved
+        | if any($preserved[]; .ip == $ip) then
+            $preserved
+            | map(
+                if .ip == $ip then
+                  .hostnames = ((.hostnames + ["authentik.localhost"]) | unique)
+                else
+                  .
+                end
+              )
+          else
+            $preserved + [{ip: $ip, hostnames: ["authentik.localhost"]}]
+          end
+      '
+  )"
+  patch="$(jq -cn --argjson aliases "${host_aliases}" \
+    '{spec:{template:{spec:{hostAliases:$aliases}}}}')"
+  kubectl patch statefulset openbao --namespace=openbao \
+    --type=merge --patch "${patch}" >/dev/null
+
+  kubectl wait --namespace=openbao pod/openbao-0 \
+    --for=jsonpath='{.status.phase}'=Running --timeout=180s
+  pod_gateway_ip="$(
+    kubectl get pod openbao-0 --namespace=openbao --output=json |
+      jq -r '[.spec.hostAliases[]? | select(.hostnames | index("authentik.localhost")) | .ip][0] // ""'
+  )"
+
+  if [ "${pod_gateway_ip}" != "${gateway_ip}" ]; then
+    kubectl delete pod openbao-0 --namespace=openbao --wait=true --timeout=180s
+    for _ in $(seq 1 90); do
+      if kubectl get pod openbao-0 --namespace=openbao --ignore-not-found --output=name |
+        grep --quiet .; then
+        break
+      fi
+      sleep 2
+    done
+    kubectl wait --namespace=openbao pod/openbao-0 \
+      --for=jsonpath='{.status.phase}'=Running --timeout=180s
+  fi
+}
+
 # The initial root token and unseal key stay in the ignored .work directory.
 bootstrap_openbao() {
   local status
@@ -125,7 +183,9 @@ fi
 assert_state_or_absent routing 'module.openbao_local.kubernetes_manifest.openbao' httproute openbao openbao
 
 tofu_stage regional apply -auto-approve -input=false
+ensure_authentik_discovery_host_alias
 bootstrap_openbao
 tofu_stage routing apply -auto-approve -input=false
+bash "${SCRIPT_DIR}/configure.sh" apply
 
 "${SCRIPT_DIR}/verify.sh"

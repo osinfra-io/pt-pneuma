@@ -130,7 +130,13 @@ locals {
   authentik_workload_identity_member = "serviceAccount:${local.team_project_ids[module.core_helpers.team]}.svc.id.goog[${local.authentik_kubernetes_namespace}/${local.authentik_kubernetes_service_account}]"
 
   cloud_armor_method_enforcement_exception_expression = join(" || ", [
-    for scope in local.authentik_cloud_armor_method_enforcement_exceptions :
+    for scope in concat(local.authentik_cloud_armor_method_enforcement_exceptions, [
+      {
+        hostname    = local.openbao_hostname
+        methods     = ["DELETE", "LIST", "PATCH", "PUT"]
+        path_prefix = "/v1/"
+      }
+    ]) :
     "(has(request.headers['host']) && request.headers['host'] == ${jsonencode(scope.hostname)} && request.path.startsWith(${jsonencode(scope.path_prefix)}) && request.method.matches(${jsonencode(join("|", [for method in sort(tolist(scope.methods)) : "^${method}$"]))}))"
   ])
 

@@ -93,13 +93,13 @@ locals {
     "openbao.openbao.svc.cluster.local",
   ]
 
-  # OpenBao's global MultiClusterService spans every platform-managed OpenBao cluster.
+  # Zonal OpenBao instances have independent Raft data; the shared hostname must use us-east1-b.
   openbao_multi_cluster_service_clusters = [
     for cluster_name, cluster_config in local.main.gke_clusters :
     {
       link = "${regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]}/${cluster_name}"
     }
-    if cluster_config.team_key == module.core_helpers.team
+    if cluster_config.team_key == module.core_helpers.team && cluster_name == "pt-pneuma-us-east1-b"
   ]
 
   # Each cluster also gets a direct GKE Ingress endpoint, named with its zone prefix.
