@@ -249,6 +249,257 @@ run "github_actions_sandbox_roles_keep_pr_and_approval_bindings" {
   }
 }
 
+run "github_actions_plan_reads_team_acl_policies_read_only" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  assert {
+    condition = (
+      alltrue([
+        for team_key_prefix in ["ct-", "et-", "pt-", "st-"] :
+        strcontains(vault_policy.github_actions["plan"].policy, "path \"sys/policies/acl/${team_key_prefix}*\" {\n  capabilities = [\"read\"]\n}")
+      ]) &&
+      !strcontains(vault_policy.github_actions["plan"].policy, "\"create\"") &&
+      !strcontains(vault_policy.github_actions["plan"].policy, "\"delete\"") &&
+      !strcontains(vault_policy.github_actions["plan"].policy, "\"update\"")
+    )
+    error_message = "Plan must only read ACL policies for valid team-key prefixes."
+  }
+}
+
+run "populate_team_policy_state" {
+  command = apply
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  assert {
+    condition = alltrue([
+      for resource_keys in output.team_resource_keys :
+      toset(resource_keys) == toset([
+        "pt-example/openbao-secret-admins",
+        "pt-example/openbao-secret-readers",
+        "pt-example/openbao-secret-writers",
+        "pt-other/openbao-secret-readers",
+      ])
+    ])
+    error_message = "The cleanup regression must begin with populated policies, groups, and aliases in applied state."
+  }
+}
+
+run "github_actions_apply_manages_only_registered_team_acl_policies" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  assert {
+    condition = (
+      alltrue([
+        for path in concat(
+          [
+            "sys/policies/acl/pt-pneuma-openbao-apply",
+            "sys/policies/acl/pt-pneuma-openbao-plan",
+          ],
+          [
+            "sys/policies/acl/pt-example-openbao-secret-admins",
+            "sys/policies/acl/pt-example-openbao-secret-readers",
+            "sys/policies/acl/pt-example-openbao-secret-writers",
+            "sys/policies/acl/pt-other-openbao-secret-admins",
+            "sys/policies/acl/pt-other-openbao-secret-readers",
+            "sys/policies/acl/pt-other-openbao-secret-writers",
+          ],
+        ) :
+        strcontains(vault_policy.github_actions["apply"].policy, "path \"${path}\" {\n  capabilities = [\"create\", \"read\", \"update\", \"delete\"]\n}") ||
+        strcontains(vault_policy.github_actions["apply"].policy, "path \"${path}\" {\n  capabilities = [\"create\",\"read\",\"update\",\"delete\"]\n}")
+      ]) &&
+      alltrue([
+        for key in keys(local.openbao_groups) :
+        strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/${replace(key, "/", "-")}\" {")
+      ]) &&
+      !strcontains(vault_policy.github_actions["apply"].policy, "sys/policies/acl/pt-pneuma-openbao-*") &&
+      toset([
+        for path_line in split("\n", vault_policy.github_actions["apply"].policy) :
+        trimsuffix(trimprefix(trimspace(path_line), "path \""), "\" {")
+        if strcontains(trimspace(path_line), "path \"sys/policies/acl/")
+        ]) == toset([
+        "sys/policies/acl/pt-pneuma-openbao-apply",
+        "sys/policies/acl/pt-pneuma-openbao-plan",
+        "sys/policies/acl/pt-example-openbao-secret-admins",
+        "sys/policies/acl/pt-example-openbao-secret-readers",
+        "sys/policies/acl/pt-example-openbao-secret-writers",
+        "sys/policies/acl/pt-other-openbao-secret-admins",
+        "sys/policies/acl/pt-other-openbao-secret-readers",
+        "sys/policies/acl/pt-other-openbao-secret-writers",
+      ])
+    )
+    error_message = "Apply must manage only the three reserved ACL policy names per registered Logos team and baseline workflow ACL policies."
+  }
+}
+
+run "team_policy_removal_keeps_apply_authorization" {
+  command = apply
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  variables {
+    previous_apply_policy       = run.populate_team_policy_state.apply_policy
+    previous_team_resource_keys = run.populate_team_policy_state.team_resource_keys
+  }
+
+  override_module {
+    target = module.core_helpers
+    outputs = {
+      env         = "sb"
+      environment = "sandbox"
+      repository  = "pt-pneuma"
+      team        = "pt-pneuma"
+      teams = {
+        pt-example = { authentik_groups = {} }
+        pt-other   = { authentik_groups = {} }
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      length(vault_policy.team) == 0 &&
+      length(vault_identity_group.team) == 0 &&
+      length(vault_identity_group_alias.team) == 0 &&
+      strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/pt-pneuma-openbao-apply\" {\n  capabilities = [\"create\", \"read\", \"update\", \"delete\"]\n}") &&
+      strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/pt-pneuma-openbao-plan\" {\n  capabilities = [\"create\", \"read\", \"update\", \"delete\"]\n}") &&
+      vault_policy.github_actions["apply"].policy == var.previous_apply_policy &&
+      alltrue([
+        for resource_keys in var.previous_team_resource_keys :
+        length(resource_keys) == 4
+      ])
+    )
+    error_message = "Removing all group declarations must destroy previously applied aliases, groups, and policies without narrowing the cleanup ACL while team keys remain registered."
+  }
+}
+
+run "team_registry_removal_prunes_authorization_after_cleanup" {
+  command = apply
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  variables {
+    previous_team_resource_keys = run.team_policy_removal_keeps_apply_authorization.team_resource_keys
+  }
+
+  override_module {
+    target = module.core_helpers
+    outputs = {
+      env         = "sb"
+      environment = "sandbox"
+      repository  = "pt-pneuma"
+      team        = "pt-pneuma"
+      teams       = {}
+    }
+  }
+
+  assert {
+    condition = (
+      alltrue([
+        for resource_keys in var.previous_team_resource_keys :
+        length(resource_keys) == 0
+      ]) &&
+      length(vault_policy.team) == 0 &&
+      length(vault_identity_group.team) == 0 &&
+      length(vault_identity_group_alias.team) == 0 &&
+      !strcontains(vault_policy.github_actions["apply"].policy, "-openbao-secret-")
+    )
+    error_message = "Only after group cleanup may registry removal prune the reserved team ACL paths."
+  }
+}
+
+run "declared_group_changes_keep_reserved_registered_team_paths" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  override_module {
+    target = module.core_helpers
+    outputs = {
+      env         = "sb"
+      environment = "sandbox"
+      repository  = "pt-pneuma"
+      team        = "pt-pneuma"
+      teams = {
+        pt-example = {
+          authentik_groups = {
+            openbao-secret-writers = {
+              label = "OpenBao Secret Writers"
+              name  = "pt-example: OpenBao Secret Writers"
+            }
+          }
+        }
+        st-security = {
+          authentik_groups = {
+            openbao-secret-readers = {
+              label = "OpenBao Secret Readers"
+              name  = "st-security: OpenBao Secret Readers"
+            }
+          }
+        }
+      }
+    }
+  }
+
+  assert {
+    condition = (
+      alltrue([
+        for path in concat(
+          [
+            "sys/policies/acl/pt-pneuma-openbao-apply",
+            "sys/policies/acl/pt-pneuma-openbao-plan",
+          ],
+          [
+            "sys/policies/acl/pt-example-openbao-secret-admins",
+            "sys/policies/acl/pt-example-openbao-secret-readers",
+            "sys/policies/acl/pt-example-openbao-secret-writers",
+            "sys/policies/acl/st-security-openbao-secret-admins",
+            "sys/policies/acl/st-security-openbao-secret-readers",
+            "sys/policies/acl/st-security-openbao-secret-writers",
+          ],
+        ) :
+        strcontains(vault_policy.github_actions["apply"].policy, "path \"${path}\" {\n  capabilities = [\"create\", \"read\", \"update\", \"delete\"]\n}") ||
+        strcontains(vault_policy.github_actions["apply"].policy, "path \"${path}\" {\n  capabilities = [\"create\",\"read\",\"update\",\"delete\"]\n}")
+      ]) &&
+      alltrue([
+        for key in keys(local.openbao_groups) :
+        strcontains(vault_policy.github_actions["apply"].policy, "path \"sys/policies/acl/${replace(key, "/", "-")}\" {")
+      ]) &&
+      toset([
+        for path_line in split("\n", vault_policy.github_actions["apply"].policy) :
+        trimsuffix(trimprefix(trimspace(path_line), "path \""), "\" {")
+        if strcontains(trimspace(path_line), "path \"sys/policies/acl/")
+        ]) == toset([
+        "sys/policies/acl/pt-pneuma-openbao-apply",
+        "sys/policies/acl/pt-pneuma-openbao-plan",
+        "sys/policies/acl/pt-example-openbao-secret-admins",
+        "sys/policies/acl/pt-example-openbao-secret-readers",
+        "sys/policies/acl/pt-example-openbao-secret-writers",
+        "sys/policies/acl/st-security-openbao-secret-admins",
+        "sys/policies/acl/st-security-openbao-secret-readers",
+        "sys/policies/acl/st-security-openbao-secret-writers",
+      ])
+    )
+    error_message = "Group changes must retain all three reserved ACL paths for each registered team, excluding unregistered teams and unrelated policies."
+  }
+}
+
 run "github_actions_nonproduction_roles_use_main" {
   command = plan
 

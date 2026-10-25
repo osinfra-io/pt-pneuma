@@ -66,7 +66,19 @@ path "auth/oidc/role/default" {
   capabilities = ["read"]
 }
 
-path "sys/policies/acl/pt-pneuma-openbao-*" {
+path "sys/policies/acl/ct-*" {
+  capabilities = ["read"]
+}
+
+path "sys/policies/acl/et-*" {
+  capabilities = ["read"]
+}
+
+path "sys/policies/acl/pt-*" {
+  capabilities = ["read"]
+}
+
+path "sys/policies/acl/st-*" {
   capabilities = ["read"]
 }
 

@@ -4,6 +4,17 @@
 locals {
   authentik_config = data.terraform_remote_state.authentik_config.outputs
 
+  github_actions_apply_policy = join("\n\n", compact([
+    file("${path.module}/policies/github-actions-apply.hcl"),
+    join("\n\n", [
+      for policy_name in local.openbao_policy_names : format(
+        "path \"sys/policies/acl/%s\" {\n  capabilities = %s\n}",
+        policy_name,
+        jsonencode(["create", "read", "update", "delete"]),
+      )
+    ]),
+  ]))
+
   github_actions_bound_claims = {
     event_name          = module.core_helpers.env == "sb" ? "pull_request" : "push,workflow_dispatch"
     ref                 = module.core_helpers.env == "sb" ? "refs/pull/*/merge" : "refs/heads/main"
@@ -22,7 +33,7 @@ locals {
   github_actions_roles = {
     for access in ["apply", "plan"] : access => {
       import_id   = "auth/github-actions/role/pt-pneuma-openbao-${access}"
-      policy      = file("${path.module}/policies/github-actions-${access}.hcl")
+      policy      = access == "apply" ? local.github_actions_apply_policy : file("${path.module}/policies/github-actions-plan.hcl")
       policy_name = "pt-pneuma-openbao-${access}"
       subject     = access == "apply" ? "repo:osinfra-io/pt-pneuma:environment:${local.github_actions_environment} OpenBao%3A us-east1-b" : local.github_actions_plan_subject
     }
@@ -46,6 +57,12 @@ locals {
       if contains(local.openbao_group_keys, group_key)
     }
   ]...)
+
+  openbao_policy_names = sort(flatten([
+    for team_key in keys(module.core_helpers.teams) : [
+      for group_key in local.openbao_group_keys : "${team_key}-${group_key}"
+    ]
+  ]))
 
   state_bucket = "${module.core_helpers.repository}-state-${module.core_helpers.env}"
 
