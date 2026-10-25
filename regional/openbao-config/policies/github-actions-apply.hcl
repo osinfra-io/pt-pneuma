@@ -14,6 +14,10 @@ path "sys/auth/oidc/*" {
   capabilities = ["read", "update", "sudo"]
 }
 
+path "sys/mounts/auth/oidc" {
+  capabilities = ["read"]
+}
+
 path "sys/mounts/auth/oidc/tune" {
   capabilities = ["read", "update"]
 }
@@ -24,6 +28,10 @@ path "sys/auth/github-actions" {
 
 path "sys/auth/github-actions/*" {
   capabilities = ["read", "update", "sudo"]
+}
+
+path "sys/mounts/auth/github-actions" {
+  capabilities = ["read"]
 }
 
 path "sys/mounts/auth/github-actions/tune" {

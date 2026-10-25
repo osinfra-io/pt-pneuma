@@ -229,6 +229,16 @@ run "github_actions_sandbox_roles_keep_pr_and_approval_bindings" {
     )
     error_message = "Plan must read the imported authentication configuration without write access; apply must manage its GitHub roles."
   }
+
+  assert {
+    condition = alltrue(flatten([
+      for policy in vault_policy.github_actions : [
+        for backend in ["github-actions", "oidc"] :
+        strcontains(policy.policy, "path \"sys/mounts/auth/${backend}\" {\n  capabilities = [\"read\"]\n}")
+      ]
+    ]))
+    error_message = "Both workflow policies must allow the provider to inspect each managed authentication mount during import and refresh."
+  }
 }
 
 run "github_actions_nonproduction_roles_use_main" {
