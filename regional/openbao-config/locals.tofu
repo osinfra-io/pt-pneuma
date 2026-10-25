@@ -24,7 +24,7 @@ locals {
       import_id   = "auth/github-actions/role/pt-pneuma-openbao-${access}"
       policy      = file("${path.module}/policies/github-actions-${access}.hcl")
       policy_name = "pt-pneuma-openbao-${access}"
-      subject     = access == "apply" ? "repo:osinfra-io/pt-pneuma:environment:${local.github_actions_environment} OpenBao: us-east1-b" : local.github_actions_plan_subject
+      subject     = access == "apply" ? "repo:osinfra-io/pt-pneuma:environment:${local.github_actions_environment} OpenBao%3A us-east1-b" : local.github_actions_plan_subject
     }
   }
 

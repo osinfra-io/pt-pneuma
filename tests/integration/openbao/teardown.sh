@@ -16,20 +16,29 @@ assert_docker_desktop_kind_cluster || fail "Kubernetes is not backed by the Dock
 assert_local_gateway_stack_owner "${OWNER_NAME}" kube-system "${OWNER_VALUE}" ||
   fail "cluster ownership marker is missing or belongs to another owner"
 
-if [ -f "${WORK_DIR}/config.tfstate" ]; then
-  bash "${SCRIPT_DIR}/configure.sh" destroy
-fi
-
 for name in routing regional; do
   state_file="${WORK_DIR}/${name}.tfstate"
   [ -f "${state_file}" ] || continue
   tofu_stage "${name}" init \
     -reconfigure \
     -backend-config="path=${state_file}" -input=false
+  if [ "${name}" = regional ]; then
+    namespace="$(kubectl get namespace openbao --ignore-not-found --output=name)"
+    if [ -n "${namespace}" ]; then
+      tofu_stage regional state list |
+        grep --fixed-strings --line-regexp --quiet kubernetes_namespace_v1.openbao ||
+        fail "OpenBao namespace is not tracked in fixture state; refusing teardown"
+    fi
+  fi
   tofu_stage "${name}" destroy -auto-approve -input=false
 done
 
-# The namespace deletion removed the data volumes, so the old root token and unseal key are invalid.
-rm -f "${WORK_DIR}/openbao-init.json"
+namespace="$(kubectl get namespace openbao --ignore-not-found --output=name)"
+[ -z "${namespace}" ] ||
+  fail "OpenBao namespace still exists; retaining configuration state and initialization keys"
+
+# Removing the namespace also removes the data volumes and invalidates the configuration state.
+rm -f "${WORK_DIR}/config.tfstate" "${WORK_DIR}/config.tfstate.backup" \
+  "${WORK_DIR}/openbao-init.json"
 
 echo "OpenBao-owned resources, data volumes, and local initialization keys were removed. The shared ownership marker was not deleted."

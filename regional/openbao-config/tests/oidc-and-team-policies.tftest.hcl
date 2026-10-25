@@ -202,7 +202,7 @@ run "github_actions_sandbox_roles_keep_pr_and_approval_bindings" {
       vault_jwt_auth_backend.github_actions.path == "github-actions" &&
       vault_jwt_auth_backend.github_actions.bound_issuer == "https://token.actions.githubusercontent.com" &&
       vault_jwt_auth_backend_role.github_actions["plan"].bound_subject == "repo:osinfra-io/pt-pneuma:pull_request" &&
-      vault_jwt_auth_backend_role.github_actions["apply"].bound_subject == "repo:osinfra-io/pt-pneuma:environment:Sandbox OpenBao: us-east1-b" &&
+      vault_jwt_auth_backend_role.github_actions["apply"].bound_subject == "repo:osinfra-io/pt-pneuma:environment:Sandbox OpenBao%3A us-east1-b" &&
       alltrue([
         for access, role in vault_jwt_auth_backend_role.github_actions :
         role.bound_claims["ref"] == "refs/pull/*/merge" &&
@@ -262,7 +262,7 @@ run "github_actions_nonproduction_roles_use_main" {
   assert {
     condition = (
       vault_jwt_auth_backend_role.github_actions["plan"].bound_subject == "repo:osinfra-io/pt-pneuma:ref:refs/heads/main" &&
-      vault_jwt_auth_backend_role.github_actions["apply"].bound_subject == "repo:osinfra-io/pt-pneuma:environment:Non-Production OpenBao: us-east1-b" &&
+      vault_jwt_auth_backend_role.github_actions["apply"].bound_subject == "repo:osinfra-io/pt-pneuma:environment:Non-Production OpenBao%3A us-east1-b" &&
       alltrue([
         for role in vault_jwt_auth_backend_role.github_actions :
         role.bound_claims["ref"] == "refs/heads/main" &&

@@ -65,7 +65,7 @@ done
 for access in plan apply; do
   subject="$plan_subject"
   if [[ "$access" == apply ]]; then
-    subject="repo:osinfra-io/pt-pneuma:environment:$environment"
+    subject="repo:osinfra-io/pt-pneuma:environment:${environment//:/%3A}"
   fi
   jq -n \
     --arg subject "$subject" \
