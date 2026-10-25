@@ -69,7 +69,7 @@ run "reader_is_limited_to_read_and_list" {
 
   assert {
     condition = (
-      strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "path \"team-kv/data/pt-example/*\"") &&
+      strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "path \"team-kv2/data/pt-example/*\"") &&
       strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "\"read\"") &&
       strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "\"list\"") &&
       !strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "\"create\"") &&
@@ -91,9 +91,9 @@ run "writer_cannot_delete_or_manage_versions" {
       strcontains(local.team_policy_documents["pt-example/openbao-secret-writers"], "\"create\"") &&
       strcontains(local.team_policy_documents["pt-example/openbao-secret-writers"], "\"update\"") &&
       !strcontains(local.team_policy_documents["pt-example/openbao-secret-writers"], "\"delete\"") &&
-      !strcontains(local.team_policy_documents["pt-example/openbao-secret-writers"], "team-kv/delete/") &&
-      !strcontains(local.team_policy_documents["pt-example/openbao-secret-writers"], "team-kv/undelete/") &&
-      !strcontains(local.team_policy_documents["pt-example/openbao-secret-writers"], "team-kv/destroy/")
+      !strcontains(local.team_policy_documents["pt-example/openbao-secret-writers"], "team-kv2/delete/") &&
+      !strcontains(local.team_policy_documents["pt-example/openbao-secret-writers"], "team-kv2/undelete/") &&
+      !strcontains(local.team_policy_documents["pt-example/openbao-secret-writers"], "team-kv2/destroy/")
     )
     error_message = "Writers must create and update without deleting data, metadata, or versions."
   }
@@ -108,8 +108,8 @@ run "admin_and_all_roles_stay_inside_team_prefix" {
 
   assert {
     condition = (
-      strcontains(local.team_policy_documents["pt-example/openbao-secret-admins"], "team-kv/data/pt-example/*") &&
-      strcontains(local.team_policy_documents["pt-example/openbao-secret-admins"], "team-kv/metadata/pt-example/*") &&
+      strcontains(local.team_policy_documents["pt-example/openbao-secret-admins"], "team-kv2/data/pt-example/*") &&
+      strcontains(local.team_policy_documents["pt-example/openbao-secret-admins"], "team-kv2/metadata/pt-example/*") &&
       !strcontains(local.team_policy_documents["pt-example/openbao-secret-admins"], "pt-other") &&
       !strcontains(local.team_policy_documents["pt-example/openbao-secret-admins"], "sys/")
     )
@@ -125,12 +125,12 @@ run "admin_and_all_roles_stay_inside_team_prefix" {
         ]) && alltrue([
         for path in local.team_policy_paths[key] :
         contains([
-          "team-kv/data/${group.team_key}/*",
-          "team-kv/metadata/${group.team_key}/*",
-          "team-kv/metadata/${group.team_key}",
-          "team-kv/delete/${group.team_key}/*",
-          "team-kv/destroy/${group.team_key}/*",
-          "team-kv/undelete/${group.team_key}/*",
+          "team-kv2/data/${group.team_key}/*",
+          "team-kv2/metadata/${group.team_key}/*",
+          "team-kv2/metadata/${group.team_key}",
+          "team-kv2/delete/${group.team_key}/*",
+          "team-kv2/destroy/${group.team_key}/*",
+          "team-kv2/undelete/${group.team_key}/*",
         ], path.path)
       ]) && !strcontains(local.team_policy_documents[key], "sys/")
     ])
@@ -173,7 +173,7 @@ run "oidc_uses_group_claim_and_exact_callbacks_without_team_token_policies" {
   }
 }
 
-run "team_kv_mount_is_version_two" {
+run "team_kv2_mount_is_version_two" {
   command = plan
 
   module {
@@ -182,9 +182,9 @@ run "team_kv_mount_is_version_two" {
 
   assert {
     condition = (
-      vault_mount.team_kv.path == "team-kv" &&
-      vault_mount.team_kv.type == "kv" &&
-      vault_mount.team_kv.options["version"] == "2"
+      vault_mount.team_kv2.path == "team-kv2" &&
+      vault_mount.team_kv2.type == "kv" &&
+      vault_mount.team_kv2.options["version"] == "2"
     )
     error_message = "Team secrets must use the dedicated KV v2 mount."
   }

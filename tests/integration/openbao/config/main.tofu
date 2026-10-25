@@ -56,12 +56,12 @@ resource "vault_jwt_auth_backend_role" "oidc" {
 # OpenBao Mount Resource
 # https://search.opentofu.org/provider/hashicorp/vault/latest/docs/resources/mount
 
-resource "vault_mount" "team_kv" {
+resource "vault_mount" "team_kv2" {
   options = {
     version = "2"
   }
 
-  path = "team-kv"
+  path = "team-kv2"
   type = "kv"
 }
 
@@ -69,7 +69,7 @@ resource "vault_mount" "team_kv" {
 # https://search.opentofu.org/provider/hashicorp/vault/latest/docs/resources/policy
 
 resource "vault_policy" "team" {
-  depends_on = [vault_mount.team_kv]
+  depends_on = [vault_mount.team_kv2]
   for_each   = local.team_policy_documents
 
   name   = local.team_policy_names[each.key]

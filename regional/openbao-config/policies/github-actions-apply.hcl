@@ -54,11 +54,11 @@ path "auth/oidc/role/default" {
   capabilities = ["create", "read", "update", "delete"]
 }
 
-path "sys/mounts/team-kv" {
+path "sys/mounts/team-kv2" {
   capabilities = ["create", "read", "update", "delete", "sudo"]
 }
 
-path "sys/mounts/team-kv/*" {
+path "sys/mounts/team-kv2/*" {
   capabilities = ["read", "update"]
 }
 

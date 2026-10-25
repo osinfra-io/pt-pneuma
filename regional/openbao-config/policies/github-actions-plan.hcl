@@ -46,11 +46,11 @@ path "auth/github-actions/role/pt-pneuma-openbao-*" {
   capabilities = ["read"]
 }
 
-path "sys/mounts/team-kv" {
+path "sys/mounts/team-kv2" {
   capabilities = ["read"]
 }
 
-path "sys/mounts/team-kv/*" {
+path "sys/mounts/team-kv2/*" {
   capabilities = ["read"]
 }
 

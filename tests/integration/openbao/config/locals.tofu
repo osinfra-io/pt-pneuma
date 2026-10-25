@@ -39,29 +39,29 @@ locals {
       [
         {
           capabilities = group.access == "readers" ? ["read"] : group.access == "writers" ? ["create", "read", "update"] : ["create", "delete", "read", "update"]
-          path         = "team-kv/data/${group.team_key}/*"
+          path         = "team-kv2/data/${group.team_key}/*"
         },
         {
           capabilities = group.access == "admins" ? ["create", "delete", "list", "read", "update"] : ["list", "read"]
-          path         = "team-kv/metadata/${group.team_key}/*"
+          path         = "team-kv2/metadata/${group.team_key}/*"
         },
         {
           capabilities = ["list", "read"]
-          path         = "team-kv/metadata/${group.team_key}"
+          path         = "team-kv2/metadata/${group.team_key}"
         },
       ],
       group.access == "admins" ? [
         {
           capabilities = ["update"]
-          path         = "team-kv/delete/${group.team_key}/*"
+          path         = "team-kv2/delete/${group.team_key}/*"
         },
         {
           capabilities = ["update"]
-          path         = "team-kv/destroy/${group.team_key}/*"
+          path         = "team-kv2/destroy/${group.team_key}/*"
         },
         {
           capabilities = ["update"]
-          path         = "team-kv/undelete/${group.team_key}/*"
+          path         = "team-kv2/undelete/${group.team_key}/*"
         },
       ] : [],
     )

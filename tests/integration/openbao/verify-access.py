@@ -135,45 +135,45 @@ def verify(root_token):
     verify_oidc(root_token)
 
     mounts = expect(root_token, "GET", "sys/mounts", {200}).get("data", {})
-    team_mount = mounts.get("team-kv/", {})
+    team_mount = mounts.get("team-kv2/", {})
     if team_mount.get("type") != "kv" or team_mount.get("options", {}).get("version") != "2":
-        fail("The team-kv KV v2 mount is not configured")
+        fail("The team-kv2 KV v2 mount is not configured")
 
     for policy in POLICIES.values():
         expect(root_token, "GET", f"sys/policies/acl/{policy}", {200})
 
-    expect(root_token, "POST", f"team-kv/data/{TEAM_PATH}", {200}, {"data": {"value": "fixture"}})
-    expect(root_token, "POST", f"team-kv/data/{OTHER_TEAM_PATH}", {200}, {"data": {"value": "fixture"}})
+    expect(root_token, "POST", f"team-kv2/data/{TEAM_PATH}", {200}, {"data": {"value": "fixture"}})
+    expect(root_token, "POST", f"team-kv2/data/{OTHER_TEAM_PATH}", {200}, {"data": {"value": "fixture"}})
 
     tokens = {}
     try:
         tokens = {access: create_token(root_token, policy) for access, policy in POLICIES.items()}
 
-        expect(tokens["reader"], "GET", f"team-kv/data/{TEAM_PATH}", {200})
-        expect(tokens["reader"], "GET", "team-kv/metadata/pt-pneuma?list=true", {200})
-        expect(tokens["reader"], "POST", f"team-kv/data/{TEAM_PATH}", {403}, {"data": {"value": "denied"}})
-        expect(tokens["reader"], "GET", f"team-kv/data/{OTHER_TEAM_PATH}", {403})
+        expect(tokens["reader"], "GET", f"team-kv2/data/{TEAM_PATH}", {200})
+        expect(tokens["reader"], "GET", "team-kv2/metadata/pt-pneuma?list=true", {200})
+        expect(tokens["reader"], "POST", f"team-kv2/data/{TEAM_PATH}", {403}, {"data": {"value": "denied"}})
+        expect(tokens["reader"], "GET", f"team-kv2/data/{OTHER_TEAM_PATH}", {403})
 
-        writer_path = f"team-kv/data/{TEAM_PATH}-writer"
+        writer_path = f"team-kv2/data/{TEAM_PATH}-writer"
         expect(tokens["writer"], "POST", writer_path, {200}, {"data": {"value": "created"}})
         expect(tokens["writer"], "POST", writer_path, {200}, {"data": {"value": "updated"}})
-        expect(tokens["writer"], "POST", f"team-kv/data/{OTHER_TEAM_PATH}", {403}, {"data": {"value": "denied"}})
+        expect(tokens["writer"], "POST", f"team-kv2/data/{OTHER_TEAM_PATH}", {403}, {"data": {"value": "denied"}})
         for method, suffix, body in (
-            ("DELETE", f"team-kv/data/{TEAM_PATH}-writer", None),
-            ("DELETE", f"team-kv/metadata/{TEAM_PATH}-writer", None),
-            ("POST", f"team-kv/delete/{TEAM_PATH}-writer", {"versions": [1]}),
-            ("POST", f"team-kv/undelete/{TEAM_PATH}-writer", {"versions": [1]}),
-            ("POST", f"team-kv/destroy/{TEAM_PATH}-writer", {"versions": [1]}),
+            ("DELETE", f"team-kv2/data/{TEAM_PATH}-writer", None),
+            ("DELETE", f"team-kv2/metadata/{TEAM_PATH}-writer", None),
+            ("POST", f"team-kv2/delete/{TEAM_PATH}-writer", {"versions": [1]}),
+            ("POST", f"team-kv2/undelete/{TEAM_PATH}-writer", {"versions": [1]}),
+            ("POST", f"team-kv2/destroy/{TEAM_PATH}-writer", {"versions": [1]}),
         ):
             expect(tokens["writer"], method, suffix, {403}, body)
 
-        admin_path = f"team-kv/data/{TEAM_PATH}-admin"
+        admin_path = f"team-kv2/data/{TEAM_PATH}-admin"
         expect(root_token, "POST", admin_path, {200}, {"data": {"value": "admin"}})
-        expect(tokens["admin"], "POST", f"team-kv/delete/{TEAM_PATH}-admin", {200, 204}, {"versions": [1]})
-        expect(tokens["admin"], "POST", f"team-kv/undelete/{TEAM_PATH}-admin", {200, 204}, {"versions": [1]})
-        expect(tokens["admin"], "POST", f"team-kv/destroy/{TEAM_PATH}-admin", {200, 204}, {"versions": [1]})
-        expect(tokens["admin"], "POST", f"team-kv/data/{OTHER_TEAM_PATH}", {403}, {"data": {"value": "denied"}})
-        expect(tokens["admin"], "POST", f"team-kv/destroy/{OTHER_TEAM_PATH}", {403}, {"versions": [1]})
+        expect(tokens["admin"], "POST", f"team-kv2/delete/{TEAM_PATH}-admin", {200, 204}, {"versions": [1]})
+        expect(tokens["admin"], "POST", f"team-kv2/undelete/{TEAM_PATH}-admin", {200, 204}, {"versions": [1]})
+        expect(tokens["admin"], "POST", f"team-kv2/destroy/{TEAM_PATH}-admin", {200, 204}, {"versions": [1]})
+        expect(tokens["admin"], "POST", f"team-kv2/data/{OTHER_TEAM_PATH}", {403}, {"data": {"value": "denied"}})
+        expect(tokens["admin"], "POST", f"team-kv2/destroy/{OTHER_TEAM_PATH}", {403}, {"versions": [1]})
     finally:
         for token in tokens.values():
             api(token, "POST", "auth/token/revoke-self")
@@ -183,7 +183,7 @@ def verify(root_token):
             f"{TEAM_PATH}-admin",
             OTHER_TEAM_PATH,
         ):
-            api(root_token, "DELETE", f"team-kv/metadata/{path}")
+            api(root_token, "DELETE", f"team-kv2/metadata/{path}")
 
 
 if __name__ == "__main__":
