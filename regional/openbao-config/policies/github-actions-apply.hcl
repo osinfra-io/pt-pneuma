@@ -55,11 +55,28 @@ path "auth/oidc/role/default" {
 }
 
 path "sys/mounts/team-kv2" {
+  capabilities = ["read"]
+}
+
+path "sys/mounts/kv2" {
   capabilities = ["create", "read", "update", "delete", "sudo"]
 }
 
-path "sys/mounts/team-kv2/*" {
+path "sys/mounts/kv2/*" {
   capabilities = ["read", "update"]
+}
+
+path "sys/remount" {
+  capabilities = ["update", "sudo"]
+
+  allowed_parameters = {
+    "from" = ["team-kv2", "team-kv2/"]
+    "to"   = ["kv2", "kv2/"]
+  }
+}
+
+path "sys/remount/status/*" {
+  capabilities = ["read"]
 }
 
 path "sys/policies/acl/pt-pneuma-openbao-*" {

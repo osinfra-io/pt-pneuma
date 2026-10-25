@@ -50,7 +50,11 @@ path "sys/mounts/team-kv2" {
   capabilities = ["read"]
 }
 
-path "sys/mounts/team-kv2/*" {
+path "sys/mounts/kv2" {
+  capabilities = ["read"]
+}
+
+path "sys/mounts/kv2/*" {
   capabilities = ["read"]
 }
 

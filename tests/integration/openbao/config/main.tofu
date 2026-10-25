@@ -61,7 +61,7 @@ resource "vault_mount" "team_kv2" {
     version = "2"
   }
 
-  path = "team-kv2"
+  path = "kv2"
   type = "kv"
 }
 

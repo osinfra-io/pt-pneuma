@@ -90,11 +90,13 @@ resource "vault_jwt_auth_backend_role" "oidc" {
 # https://search.opentofu.org/provider/hashicorp/vault/latest/docs/resources/mount
 
 resource "vault_mount" "team_kv2" {
+  depends_on = [vault_policy.github_actions]
+
   options = {
     version = "2"
   }
 
-  path = "team-kv2"
+  path = "kv2"
   type = "kv"
 }
 
