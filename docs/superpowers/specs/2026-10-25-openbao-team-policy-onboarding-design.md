@@ -13,7 +13,8 @@ policies.
 - Preserve `<team-key>-openbao-secret-readers`, `...-writers`, and
   `...-admins`, along with existing KV v2 mount paths and policy contents.
 - Keep plan access read-only and derive protected-apply write access only from
-  exact team policy names declared in Logos.
+  three exact reserved OpenBao policy names for every currently registered
+  Logos team key, including teams without declared OpenBao groups.
 - Keep bootstrap's canonical baseline policy and declarative OpenTofu policy
   composition aligned.
 - Register teams through Nomos Helpers PRs when OpenBao groups are declared,
@@ -50,8 +51,8 @@ policies.
    and policy generation. OpenBao ACL path syntax cannot suffix-match policy
    names, so plan receives read-only access to team-prefixed ACL policy paths,
    while apply receives write access only to the exact OpenBao policy names
-   derived from the declared team groups. Explicit Terraform dependencies keep
-   that authorization in place until removed policies are cleaned up. This
+   derived from all currently registered Logos team keys. Remove group
+   declarations and reconcile before removing the team key from Logos. This
    preserves names and data-driven onboarding without granting write access to
    unrelated team policies.
 2. **Add explicit per-team OpenBao enrollment.** Add a new team-schema field
@@ -67,28 +68,40 @@ policy read-only for names beginning with the four valid team-key type prefixes
 (`pt-`, `st-`, `ct-`, and `et-`). This remains available to plan deletion after
 a team's declaration has been removed, but can read other team-prefixed ACL
 policies. In the declarative workspace, derive the exact policy names from
-`module.core_helpers.teams` and the declared OpenBao group keys, and add those
+`module.core_helpers.teams` and the three fixed OpenBao group keys, and add those
 exact names to the apply policy with `create`, `read`, `update`, and `delete`.
 The canonical apply policy file continues to provide the bootstrap permission
 to update its own policy; the declarative workspace composes that baseline with
-only the current Logos-derived team policy names before managing team ACLs.
+only those current Logos-derived reserved policy names before managing team ACLs.
 This lets the first authorized apply extend its own policy before it creates
 team policies. Leave other authentication, mount, identity, and secret
 capabilities unchanged.
 
 Make generated team ACL policies depend on the canonical GitHub Actions policy
 resources as well as the KV mount. On addition or policy changes, the apply
-authorization is updated before team policies are managed. On removal,
-dependent team ACL policies are destroyed before the apply authorization is
-narrowed; existing identity alias and group references continue to order
-alias, group, then policy cleanup.
+authorization is updated before team policies are managed. Dependencies do not
+prevent an in-place ACL update from narrowing access during policy deletion.
+Removal therefore requires two stages: first remove OpenBao group declarations
+while retaining the registered Logos team key, and apply Pneuma to delete the
+aliases, groups, and policies. The apply ACL remains unchanged through this
+cleanup. Only after verifying cleanup in each environment may the team key and
+its Helpers registration be removed and Pneuma reconciled again to prune ACL
+paths. Existing identity references order alias, group, then policy cleanup.
+
+Tradeoff: while a team remains registered, approved workflows may manage all
+three reserved policy paths even when none of its OpenBao groups are declared.
+No arbitrary unrelated policy paths are writable, and no separate registry or
+schema field is introduced. Removing the team key together with its group
+declarations is unsupported and can revoke cleanup permission prematurely.
 
 Expand the OpenBao configuration tests to assert two teams retain their current
 policy names and team-only paths; plan can only read ACL policies under the
 `pt-`, `st-`, `ct-`, and `et-` team prefixes; apply can manage only exact
-declared OpenBao policy names and cannot manage unrelated ACL policies; and
-removing a team's declarations removes its alias, group, and policies while
-retaining apply authorization through cleanup. Verify declarative apply policy
+reserved OpenBao policy names and cannot manage unrelated ACL policies; and
+applied populated state loses its aliases, groups, and policies after removing
+group declarations while retaining an identical apply ACL. Apply a second
+stage without the team keys to verify the reserved ACL paths are pruned only
+after cleanup. Verify declarative apply policy
 composition retains the canonical bootstrap baseline. Include group changes
 and empty environment memberships in the onboarding coverage.
 

@@ -58,9 +58,11 @@ locals {
     }
   ]...)
 
-  openbao_policy_names = sort([
-    for key in keys(local.openbao_groups) : replace(key, "/", "-")
-  ])
+  openbao_policy_names = sort(flatten([
+    for team_key in keys(module.core_helpers.teams) : [
+      for group_key in local.openbao_group_keys : "${team_key}-${group_key}"
+    ]
+  ]))
 
   state_bucket = "${module.core_helpers.repository}-state-${module.core_helpers.env}"
 

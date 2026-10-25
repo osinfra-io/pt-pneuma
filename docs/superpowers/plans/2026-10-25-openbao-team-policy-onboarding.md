@@ -4,7 +4,7 @@
 
 **Goal:** Enable Logos-declared OpenBao teams to be registered and reconciled without GKE/projects while keeping protected-apply policy writes narrowly authorized.
 
-**Architecture:** Derive exact team ACL policy write paths from the OpenBao groups in `module.core_helpers.teams`; keep plan access read-only under valid team-key prefixes so removal plans can refresh deleted-team policies. Reuse the existing Nomos Helpers PR and make OpenBao consume the canonical shared helpers file, then document the onboarding and cleanup behavior.
+**Architecture:** Derive three exact reserved team ACL policy write paths per currently registered team key in `module.core_helpers.teams`, independently of group declarations. Remove group declarations and apply cleanup before removing the team key and Helpers registration. Keep plan access read-only under valid team-key prefixes so removal plans can refresh deleted-team policies. Reuse the existing Nomos Helpers PR and canonical shared helpers file.
 
 **Tech Stack:** OpenTofu, OpenBao ACL policies, HCL tests, GitHub Copilot agent Markdown, promptfoo evaluations, Docusaurus Markdown.
 
@@ -13,7 +13,8 @@
 ## Global Constraints
 
 - Preserve `<team-key>-openbao-secret-readers`, `...-writers`, and `...-admins`, along with existing KV v2 mount paths and policy contents.
-- Plan access is read-only for ACL policy names beginning with `pt-`, `st-`, `ct-`, and `et-`; apply write access is limited to exact OpenBao policy names derived from Logos declarations.
+- Plan access is read-only for ACL policy names beginning with `pt-`, `st-`, `ct-`, and `et-`; apply write access is limited to the three exact reserved OpenBao policy names for each registered Logos team key, even without declared groups.
+- Deprovision in two stages: remove OpenBao group declarations and reconcile while keeping the Logos team key registered; verify cleanup in each environment before removing the team key/Helpers registration and reconciling again. Dependencies alone do not retain authorization across an in-place ACL narrowing.
 - Do not introduce a new team-schema opt-in or MCP renderer behavior.
 - Do not grant arbitrary ACL policy administration or change protected apply approvals.
 - Use the existing MCP `open_team_helpers_pr` tool for helpers registration; do not hand-write team `.tfvars`.
@@ -22,8 +23,8 @@
 ## Review Focus
 
 - **Read-only boundary:** plan can read team-prefixed policies but never create/update/delete them; pin the four prefixes and read-only capabilities in `github-actions_plan_reads_team_acl_policies_read_only`.
-- **Write boundary:** apply can manage exact declared OpenBao policy names for two teams, not an unrelated ACL policy; pin in `github_actions_apply_manages_only_declared_team_acl_policies`.
-- **Removal ordering:** removed groups/policies remain authorized through cleanup before apply access is narrowed; pin the generated apply policy plus resource dependency and verify the removal plan in `team_policy_removal_keeps_apply_authorization`.
+- **Write boundary:** apply can manage only three reserved OpenBao policy names per registered team plus the baseline workflow policies, not unrelated ACL policies; pin the entire ACL path set in `github_actions_apply_manages_only_registered_team_acl_policies`.
+- **Removal lifecycle:** apply populated policy/group/alias state, then remove group declarations while retaining registered team keys; verify resources are absent and the applied ACL is unchanged in `team_policy_removal_keeps_apply_authorization`. Remove registry keys in a subsequent apply to verify ACL pruning after cleanup. Mocked providers exercise state transitions, not live server enforcement.
 - **OpenBao-only enrollment:** empty environment membership lists and no GKE/projects still invoke the Helpers PR; assert in the existing confirmed-onboarding promptfoo case.
 - **Helpers drift:** OpenBao reads the same helpers content the MCP tool updates; verify the relative symlink resolves to `shared/helpers.tofu` and is not a duplicate file.
 
@@ -40,17 +41,17 @@
 
 **Interfaces:**
 - Consumes: `local.openbao_groups`, keyed by `"${team_key}/${group_key}"`, and `local.github_actions_roles`, which load the canonical policy files.
-- Produces: The plan ACL permits only `read` for `pt-*`, `st-*`, `ct-*`, and `et-*` policy paths. The declarative apply ACL composes the checked-in bootstrap policy with exact `sys/policies/acl/<team-key>-openbao-secret-<role>` paths for the currently declared groups.
+- Produces: The plan ACL permits only `read` for `pt-*`, `st-*`, `ct-*`, and `et-*` policy paths. The declarative apply ACL composes the checked-in bootstrap policy with exact `sys/policies/acl/<team-key>-openbao-secret-<role>` paths for admins/readers/writers for every registered team key.
 
-- [ ] **Step 1: Add failing policy-boundary tests.** Add tests named `github_actions_plan_reads_team_acl_policies_read_only` and `github_actions_apply_manages_only_declared_team_acl_policies`. Assert plan has only `read` on each of the four team-type prefixes; apply policy contains exact ACL paths for two declared teams and all their declared roles; and an undeclared/unrelated ACL policy path is absent.
+- [ ] **Step 1: Add failing policy-boundary tests.** Add tests named `github_actions_plan_reads_team_acl_policies_read_only` and `github_actions_apply_manages_only_registered_team_acl_policies`. Assert plan has only `read` on each prefix; apply has exactly the baseline policies plus three reserved paths per registered team, including roles without declared groups; unrelated paths are absent.
 - [ ] **Step 2: Run the OpenBao configuration tests to confirm the new assertions fail.**
 
 Run from `pneuma/pt-pneuma/regional/openbao-config`: `tofu test`
 
 Expected: the new policy assertions fail against the current Pneuma-only ACL scope.
 
-- [ ] **Step 3: Implement canonical and derived ACL policy composition.** Keep plan's four team-prefix ACL rules read-only. Narrow the checked-in apply baseline to the exact `pt-pneuma-openbao-plan` and `pt-pneuma-openbao-apply` ACL policies; then compose exact team ACL paths from `local.openbao_groups` into the declarative apply policy. Preserve the checked-in policy files as the bootstrap source.
-- [ ] **Step 4: Add explicit ACL lifecycle ordering and team/group-change coverage.** Make `vault_policy.team` depend on both `vault_mount.team_kv2` and `vault_policy.github_actions`. Add `team_policy_removal_keeps_apply_authorization` to cover removal of aliases, groups, and policies while the apply policy still grants the deleting run access. Add a declared-group change case proving only the currently declared OpenBao policy names receive apply ACL paths.
+- [ ] **Step 3: Implement canonical and derived ACL policy composition.** Keep plan's four team-prefix ACL rules read-only. Narrow the checked-in apply baseline to the exact `pt-pneuma-openbao-plan` and `pt-pneuma-openbao-apply` ACL policies; compose three reserved paths per `module.core_helpers.teams` key using the fixed `local.openbao_group_keys`. Preserve the checked-in policy files as the bootstrap source.
+- [ ] **Step 4: Add staged lifecycle and group-change coverage.** Keep existing resource dependencies for additions, without relying on them to delay in-place ACL narrowing. Apply populated policies/groups/aliases; remove group declarations with team keys retained; assert all team resources are gone and the apply ACL matches the previously applied ACL exactly. Apply registry removal afterward to verify ACL pruning. Assert group changes leave three reserved paths per registered team, with no unrelated ACL paths.
 - [ ] **Step 5: Run formatting and OpenBao tests.**
 
 Run from `pneuma/pt-pneuma/regional/openbao-config`: `tofu fmt -check && tofu test`
@@ -106,7 +107,7 @@ Expected: all checks succeed.
 - Consumes: The completed authorization lifecycle, Nomos Helpers PR behavior, and the existing Logos team/group declaration model.
 - Produces: The operator page explains OpenBao-only onboarding, empty memberships, the authorization boundaries, and safe team-policy cleanup.
 
-- [ ] **Step 1: Update the OpenBao team-access and operator-bootstrap sections.** Explain that Logos declarations are the team source of truth, the Nomos Helpers PR registers teams even without GKE/projects, empty membership lists are valid, plan reads are bounded/read-only, apply writes only exact declared team policy names, and policy authorization remains until removal cleanup completes.
+- [ ] **Step 1: Update the OpenBao team-access and operator-bootstrap sections.** Explain Logos/Nomos registration without GKE/projects, valid empty memberships, bounded read-only plans, three reserved writable policy paths per registered team, and mandatory staged deprovisioning. State the retained-path tradeoff and require cleanup verification before removing a team key.
 - [ ] **Step 2: Review the rendered Markdown changes for consistency with the implementation.** Preserve existing endpoint, mount, policy-name, and protected-approval instructions.
 
 ### Task 5: Run repository validation
