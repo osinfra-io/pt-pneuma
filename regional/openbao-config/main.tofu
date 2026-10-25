@@ -27,7 +27,12 @@ resource "vault_jwt_auth_backend" "github_actions" {
   bound_issuer       = "https://token.actions.githubusercontent.com"
   oidc_discovery_url = "https://token.actions.githubusercontent.com"
   path               = "github-actions"
-  type               = "jwt"
+
+  tune {
+    listing_visibility = "hidden"
+  }
+
+  type = "jwt"
 }
 
 resource "vault_jwt_auth_backend" "oidc" {
@@ -36,7 +41,12 @@ resource "vault_jwt_auth_backend" "oidc" {
   oidc_client_secret = local.authentik_config.openbao_oidc_client_secret
   oidc_discovery_url = local.authentik_config.openbao_oidc_issuer
   path               = "oidc"
-  type               = "oidc"
+
+  tune {
+    listing_visibility = "unauth"
+  }
+
+  type = "oidc"
 }
 
 # OpenBao JWT Authentication Backend Role Resource

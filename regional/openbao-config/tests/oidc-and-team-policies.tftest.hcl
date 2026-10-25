@@ -147,6 +147,14 @@ run "oidc_uses_group_claim_and_exact_callbacks_without_team_token_policies" {
 
   assert {
     condition = (
+      try(one(vault_jwt_auth_backend.oidc.tune).listing_visibility, null) == "unauth" &&
+      try(one(vault_jwt_auth_backend.github_actions.tune).listing_visibility, null) == "hidden"
+    )
+    error_message = "The login page must advertise OIDC without advertising GitHub Actions authentication."
+  }
+
+  assert {
+    condition = (
       vault_jwt_auth_backend.oidc.oidc_client_id == "openbao" &&
       vault_jwt_auth_backend.oidc.oidc_discovery_url == "https://authentik.example/application/o/openbao/" &&
       vault_jwt_auth_backend_role.oidc.user_claim == "sub" &&
