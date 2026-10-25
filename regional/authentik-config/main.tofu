@@ -16,7 +16,7 @@ module "authentication" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=design/authentik-openbao-oidc" # TEMPORARY: replace with post-merge commit SHA
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=316b7af40ddb4a9eb4081db2008717c8a1e95b31" # v0.2.4
 
   depends_on = [terraform_data.browser_group_policy_validation]
 
