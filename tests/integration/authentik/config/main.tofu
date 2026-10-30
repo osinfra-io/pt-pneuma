@@ -14,14 +14,14 @@ module "authentik_config" {
     agentgateway = {
       groups     = ["pt-pneuma: agentgateway Admins"]
       host       = "https://agentgateway.localhost"
-      icon       = "https://docs.osinfra.io/img/applications/agentgateway.svg"
+      icon       = "https://docs.osinfra.io/img/authentik/applications/agentgateway.svg"
       launch_url = "https://agentgateway.localhost/ui/"
       name       = "agentgateway"
     }
     development = {
       groups     = ["all"]
       host       = "https://dev.localhost"
-      icon       = "https://docs.osinfra.io/img/applications/istio.svg"
+      icon       = "https://docs.osinfra.io/img/authentik/applications/istio.svg"
       launch_url = "https://dev.localhost/istio-test/auth"
       name       = "Istio"
     }
@@ -37,7 +37,7 @@ module "authentik_config" {
   google_oauth_client_secret            = var.google_oauth_client_secret
   manage_default_authentication_stage   = true
   namespace                             = "authentik"
-  openbao_application_icon              = "https://docs.osinfra.io/img/applications/openbao.svg"
+  openbao_application_icon              = "https://docs.osinfra.io/img/authentik/applications/openbao.svg"
   openbao_hostname                      = "openbao.localhost"
   outpost_authentik_url                 = "https://authentik.localhost"
   superuser_group_keys                  = ["pt-pneuma/authentik-admins"]

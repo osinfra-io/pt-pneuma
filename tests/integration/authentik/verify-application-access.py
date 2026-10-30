@@ -46,9 +46,9 @@ def verify(work):
         "Istio": "https://dev.localhost/istio-test/auth",
     }
     expected_icons = {
-        "agentgateway": "https://docs.osinfra.io/img/applications/agentgateway.svg",
-        "Istio": "https://docs.osinfra.io/img/applications/istio.svg",
-        "OpenBao": "https://docs.osinfra.io/img/applications/openbao.svg",
+        "agentgateway": "https://docs.osinfra.io/img/authentik/applications/agentgateway.svg",
+        "Istio": "https://docs.osinfra.io/img/authentik/applications/istio.svg",
+        "OpenBao": "https://docs.osinfra.io/img/authentik/applications/openbao.svg",
     }
     if {application["name"] for application in applications} != set(expected_launches):
         raise ValueError("Browser applications do not have the expected descriptive names")
