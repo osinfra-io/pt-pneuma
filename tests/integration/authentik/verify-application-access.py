@@ -48,6 +48,11 @@ def verify(work):
     proxies = objects("authentik_property_mapping_provider_scope", "google_proxy")
     if len(mappings) != 1 or len(proxies) != 1:
         raise ValueError("Local application mappings must be present in the applied configuration")
+    browser_providers = objects("authentik_provider_proxy", "browser")
+    if not browser_providers or any(
+        provider.get("access_token_validity") != "minutes=10" for provider in browser_providers
+    ):
+        raise ValueError("Applied browser proxy provider state must bound cached claims to ten minutes")
     for info in [
         {"email": "test@example.com", "verified_email": True},
         {"email": "test@example.com", "email_verified": True},
@@ -94,6 +99,7 @@ def verify(work):
         if sorted(map(str, actual["users"])) != sorted(map(str, expected["users"])):
             raise ValueError("Application memberships differ from applied configuration")
     print("Live Authentik evaluator verified native/OIDC email fields, unverified denial, source-independent header denial, and application groups.")
+    print("Applied state confirms browser proxy providers use ten-minute claim validity.")
     print("These dry-run checks do not establish real Google browser sign-in or session revocation.")
 
 

@@ -2,7 +2,7 @@
 # https://opentofu.org/docs/language/values/outputs
 
 output "application_group_members" {
-  description = "Exact group names and selected emails consumed by the post-auth request guard."
+  description = "Exact managed group names and selected environment emails for Authentik membership validation."
   value       = local.application_group_members
 }
 

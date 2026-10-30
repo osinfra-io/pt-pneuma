@@ -261,7 +261,7 @@ datadog:
   codeLocations:
   - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
     paths:
-    - regional/istio/test/**
+    - regional/istio/test-workload/**
 ---
 apiVersion: v3
 kind: service

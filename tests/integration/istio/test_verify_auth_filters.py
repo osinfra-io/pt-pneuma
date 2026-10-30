@@ -26,23 +26,27 @@ class FilterOrderTest(unittest.TestCase):
 
     def test_real_listener_nesting(self):
         self.assertEqual(verifier.check_filter_order({
-            "configs": [{"listeners": [{"http_filters": [self.strip, self.auth, self.guard]}]}],
+            "configs": [{"listeners": [{"http_filters": [self.strip, self.auth]}]}],
         }), 1)
 
     def test_wrong_order_and_duplicates_fail(self):
         for filters in [
-            [self.strip, self.guard, self.auth],
-            [self.guard, self.auth, self.strip],
-            [self.auth, self.guard],
-            [self.strip, self.auth, self.auth, self.guard],
+            [self.auth, self.strip],
+            [self.auth],
+            [self.strip, self.auth, self.auth],
+            [self.strip, self.strip, self.auth],
         ]:
             with self.subTest(filters=filters), self.assertRaises(ValueError):
                 verifier.check_filter_order({"http_filters": filters})
 
-    def test_no_guard_is_not_proof(self):
+    def test_missing_auth_is_not_proof(self):
         self.assertEqual(verifier.check_filter_order({
-            "http_filters": [self.strip, self.auth],
+            "http_filters": [self.strip],
         }), 0)
+
+    def test_retired_guard_fails(self):
+        with self.assertRaises(ValueError):
+            verifier.check_filter_order({"http_filters": [self.strip, self.auth, self.guard]})
 
     def test_envoy_normalized_source_code(self):
         guard = {
@@ -56,8 +60,10 @@ class FilterOrderTest(unittest.TestCase):
             "typed_config": {"inline_code": "handle:headers():remove(key)"},
         }
         self.assertEqual(verifier.check_filter_order({
-            "http_filters": [strip, self.auth, guard],
+            "http_filters": [strip, self.auth],
         }), 1)
+        with self.assertRaises(ValueError):
+            verifier.check_filter_order({"http_filters": [strip, self.auth, guard]})
 
 
 if __name__ == "__main__":

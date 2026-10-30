@@ -23,9 +23,13 @@ locals {
     for host in distinct([for item in local.browser_group_policy_items : item.host]) : host => {
       groups = distinct(flatten([
         for item in local.browser_group_policy_items :
-        item.host == host ? item.groups : []
+        item.host == host ? item.required_groups : []
       ]))
       host = host
+      roles = distinct(flatten([
+        for item in local.browser_group_policy_items :
+        item.host == host ? item.required_roles : []
+      ]))
     }
     }, module.core_helpers.environment == "sandbox" ? {
     "https://${local.agentgateway_hostname}" = {
@@ -50,11 +54,9 @@ locals {
             "https://${local.dns_zone[cluster_name]}",
             "https://${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${local.dns_zone[cluster_name]}",
             ] : {
-            groups = distinct(concat(
-              try(policy.required_groups, []),
-              try(policy.required_roles, []),
-            ))
-            host = host
+            host            = host
+            required_groups = try(policy.required_groups, [])
+            required_roles  = try(policy.required_roles, [])
             requirements = jsonencode({
               required_groups = sort(try(policy.required_groups, []))
               required_roles  = sort(try(policy.required_roles, []))

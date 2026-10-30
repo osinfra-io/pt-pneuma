@@ -31,10 +31,12 @@ def check_filter_order(value):
         if name == "envoy.filters.http.lua" and "Declared application access denied" in code:
             guard.append(index)
     if guard:
-        if len(strip) != 1 or len(auth) != 1 or len(guard) != 1:
-            raise ValueError("Managed listener requires exactly one strip, auth, and guard filter")
-        if not strip[0] < auth[0] < guard[0]:
-            raise ValueError("Managed authorization must follow stripping and successful ext_authz")
+        raise ValueError("Retired application authorization Lua filter is still installed")
+    if auth:
+        if len(strip) != 1 or len(auth) != 1:
+            raise ValueError("Authenticated listener requires exactly one strip and ext_authz filter")
+        if not strip[0] < auth[0]:
+            raise ValueError("Identity stripping must precede ext_authz")
         checked += 1
     for key, child in value.items():
         if key != "http_filters":
@@ -75,10 +77,10 @@ def main():
             ))
             counts.append(check_filter_order(config))
         if all(counts):
-            print("Live gateway filter order verified: identity stripping -> ext_authz -> application authorization.")
+            print("Live gateway filter order verified: identity stripping -> Authentik ext_authz; no application authorization Lua.")
             return
         if time.monotonic() >= deadline:
-            raise SystemExit("Timed out waiting for application authorization in every ingress gateway")
+            raise SystemExit("Timed out waiting for identity stripping and ext_authz in every ingress gateway")
         time.sleep(2)
 
 
