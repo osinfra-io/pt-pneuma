@@ -16,7 +16,7 @@ module "authentication" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=b34baf55904f1b4cc8937dac6d343fa35c93d28c" # v0.2.5
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=767d640e718668f0bfd28c3dac679702d4ee4291" # v0.2.6
 
   depends_on = [terraform_data.browser_group_policy_validation]
 
@@ -26,12 +26,14 @@ module "authentik_config" {
   default_authentication_source_uuids   = local.default_authentication_source_uuids
   default_authentication_stage_settings = module.authentication.default_authentication_stage_settings
   external_host                         = local.external_host
+  google_internal_domains               = ["osinfra.io"]
   google_oauth_client_id                = var.google_oauth_client_id
   google_oauth_client_secret            = var.google_oauth_client_secret
   manage_default_authentication_stage   = local.manage_default_authentication_stage
   namespace                             = local.namespace
   openbao_hostname                      = local.main.openbao_hostname
   redirect_uris                         = local.redirect_uris
+  superuser_group_keys                  = local.authentik_superuser_group_keys
 }
 
 # Team Application Access Module (osinfra.io)

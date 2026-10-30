@@ -37,12 +37,60 @@ def verify(work):
             for instance in resource["instances"]
         ]
 
+    if api("core/applications/?slug=development-oidc")["results"]:
+        raise ValueError("The unused Development OIDC application must not exist in the local fixture")
+
+    applications = objects("authentik_application", "browser")
+    expected_launches = {
+        "agentgateway": "https://agentgateway.localhost/ui/",
+        "Istio": "https://dev.localhost/istio-test/auth",
+    }
+    expected_icons = {
+        "agentgateway": "https://docs.osinfra.io/img/authentik/applications/agentgateway.svg",
+        "Istio": "https://docs.osinfra.io/img/authentik/applications/istio.svg",
+        "OpenBao": "https://docs.osinfra.io/img/authentik/applications/openbao.svg",
+    }
+    if {application["name"] for application in applications} != set(expected_launches):
+        raise ValueError("Browser applications do not have the expected descriptive names")
+    for application in applications:
+        actual = api(f"core/applications/{application['slug']}/")
+        if (
+            actual["name"] != application["name"]
+            or actual["meta_launch_url"] != expected_launches[application["name"]]
+            or actual["meta_icon"] != expected_icons[application["name"]]
+        ):
+            raise ValueError("Browser application name, icon, or launch URL differs from the intended configuration")
+
+    if api("core/applications/openbao/")["meta_icon"] != expected_icons["OpenBao"]:
+        raise ValueError("The OpenBao application must use the docs-hosted icon")
+
     openbao_providers = objects("authentik_provider_oauth2", "openbao")
     if len(openbao_providers) != 1:
         raise ValueError("The local fixture requires its dedicated OpenBao OAuth provider")
     openbao_provider = api(f"providers/oauth2/{openbao_providers[0]['id']}/")
     if "authorization_code" not in openbao_provider.get("grant_types", []):
         raise ValueError("The live OpenBao OAuth provider rejects authorization-code login")
+
+    identities = objects("authentik_property_mapping_source_oauth", "google_username")
+    if len(identities) != 1:
+        raise ValueError("The Google identity mapping must be present in applied configuration")
+    for info, expected_type in [
+        ({"email": "member@osinfra.io", "hd": "osinfra.io", "verified_email": True}, "internal"),
+        ({"email": "member@osinfra.io", "hd": "osinfra.io", "email_verified": True}, "internal"),
+        ({"email": "member@osinfra.io", "verified_email": True}, "external"),
+        ({"email": "member@example.com", "hd": "example.com", "verified_email": True}, "external"),
+        ({"email": "member@example.com", "hd": "osinfra.io", "verified_email": True}, "external"),
+        ({"email": "member@osinfra.io", "hd": "osinfra.io"}, "external"),
+        ({"email": "member@osinfra.io", "hd": "osinfra.io", "verified_email": "true"}, "external"),
+        ({"email": "member@osinfra.io", "hd": "osinfra.io", "email_verified": True, "verified_email": False}, "external"),
+    ]:
+        result = api(
+            f"propertymappings/all/{identities[0]['id']}/test/", {"context": {"info": info}},
+        )
+        if not result["successful"] or json.loads(result["result"]) != {
+            "username": info["email"], "type": expected_type,
+        }:
+            raise ValueError("Google user classification must require a verified matching Workspace domain")
 
     mappings = objects("authentik_property_mapping_source_oauth", "google_application_groups")
     proxies = objects("authentik_property_mapping_provider_scope", "google_proxy")
@@ -94,8 +142,8 @@ def verify(work):
 
     for expected in objects("authentik_group", "application"):
         actual = api(f"core/groups/{expected['id']}/")
-        if actual["is_superuser"] or actual["name"] != expected["name"]:
-            raise ValueError("Application group name or administrative status differs from the declaration")
+        if actual["is_superuser"] != expected["is_superuser"] or actual["name"] != expected["name"]:
+            raise ValueError("Application group name or administrative status differs from applied configuration")
         if sorted(map(str, actual["users"])) != sorted(map(str, expected["users"])):
             raise ValueError("Application memberships differ from applied configuration")
     print("Live Authentik evaluator verified native/OIDC email fields, unverified denial, source-independent header denial, and application groups.")
