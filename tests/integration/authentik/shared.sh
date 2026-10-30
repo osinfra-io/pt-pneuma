@@ -25,6 +25,13 @@ local_tofu() {
   TF_DATA_DIR="${WORK_DIR}/${stage}/providers" tofu -chdir="${LOCAL_DIR}/${stage}" "$@"
 }
 
+apply_local_config() {
+  local_tofu config apply -input=false -auto-approve \
+    -state="${WORK_DIR}/config/terraform.tfstate" \
+    -var-file="${LOCAL_DIR}/../../../../../logos/pt-logos/teams/pt-pneuma.tfvars" \
+    -var-file="${WORK_DIR}/config/bootstrap.tfvars.json" "$@"
+}
+
 start_admin_forward() {
   kubectl --context="${KUBE_CONTEXT}" port-forward --namespace=authentik \
     --address=127.0.0.1 service/authentik-server 19443:443 \

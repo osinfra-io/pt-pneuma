@@ -41,14 +41,10 @@ The local fixture uses the same host-level authorization as the cloud: `agentgat
 To verify membership changes without regenerating gateway configuration, sign in at `https://agentgateway.localhost/ui/` with a declared member, then apply only the Authentik configuration with the revocation flag:
 
 ```bash
-tofu -chdir=tests/integration/authentik/config apply -auto-approve \
-  -state=../../.work/config/terraform.tfstate \
-  -var-file=../../../../../../logos/pt-logos/teams/pt-pneuma.tfvars \
-  -var-file=../../.work/config/bootstrap.tfvars.json \
-  -var=revoke_application_access=true
+bash tests/integration/authentik/set-application-access.sh revoke
 ```
 
-The existing session can retain its cached authorization for up to ten minutes plus one second. A fresh session should be denied immediately; diagnostic access at `dev.localhost` is unaffected. Restore the declared memberships by rerunning the same command with `-var=revoke_application_access=false`; neither apply changes gateway configuration. This expiry bound is derived from outpost session handling and still requires live browser verification.
+The helper checks fixture ownership, opens a temporary loopback admin port-forward, and uses the same provider directory, state, and variable files as setup. The existing session can retain its cached authorization for up to ten minutes plus one second. A fresh session should be denied immediately; diagnostic access at `dev.localhost` is unaffected. Restore the declared memberships with `bash tests/integration/authentik/set-application-access.sh restore`; neither apply changes gateway configuration. This expiry bound is derived from outpost session handling and still requires live browser verification.
 
 See the `local-integration-testing` skill for cluster ownership and manual Google sign-in requirements.
 

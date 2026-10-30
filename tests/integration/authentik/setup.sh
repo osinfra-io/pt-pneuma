@@ -109,8 +109,5 @@ with (work / "config/bootstrap.tfvars.json").open("w") as stream:
 PY
 
 local_tofu config init -input=false
-local_tofu config apply -input=false -auto-approve \
-  -state="${WORK_DIR}/config/terraform.tfstate" \
-  -var-file="${LOCAL_DIR}/../../../../../logos/pt-logos/teams/pt-pneuma.tfvars" \
-  -var-file="${WORK_DIR}/config/bootstrap.tfvars.json"
+apply_local_config
 echo "Authentik configured in Kubernetes. Browser verification remains pending."
