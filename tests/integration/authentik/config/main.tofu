@@ -12,12 +12,18 @@ module "authentik_config" {
 
   browser_group_policy_bindings = {
     agentgateway = {
-      groups = ["pt-pneuma: agentgateway Admins"]
-      host   = "https://agentgateway.localhost"
+      groups     = ["pt-pneuma: agentgateway Admins"]
+      host       = "https://agentgateway.localhost"
+      icon       = "https://docs.osinfra.io/img/applications/agentgateway.svg"
+      launch_url = "https://agentgateway.localhost/ui/"
+      name       = "agentgateway"
     }
     development = {
-      groups = ["all"]
-      host   = "https://dev.localhost"
+      groups     = ["all"]
+      host       = "https://dev.localhost"
+      icon       = "https://docs.osinfra.io/img/applications/istio.svg"
+      launch_url = "https://dev.localhost/istio-test/auth"
+      name       = "Istio"
     }
   }
 
@@ -25,11 +31,13 @@ module "authentik_config" {
 
   default_authentication_stage_settings = module.authentication.default_authentication_stage_settings
   external_host                         = "https://dev.localhost"
+  gateway_oidc_enabled                  = false
   google_internal_domains               = ["osinfra.io"]
   google_oauth_client_id                = var.google_oauth_client_id
   google_oauth_client_secret            = var.google_oauth_client_secret
   manage_default_authentication_stage   = true
   namespace                             = "authentik"
+  openbao_application_icon              = "https://docs.osinfra.io/img/applications/openbao.svg"
   openbao_hostname                      = "openbao.localhost"
   outpost_authentik_url                 = "https://authentik.localhost"
   superuser_group_keys                  = ["pt-pneuma/authentik-admins"]

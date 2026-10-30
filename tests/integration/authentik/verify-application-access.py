@@ -37,6 +37,33 @@ def verify(work):
             for instance in resource["instances"]
         ]
 
+    if api("core/applications/?slug=development-oidc")["results"]:
+        raise ValueError("The unused Development OIDC application must not exist in the local fixture")
+
+    applications = objects("authentik_application", "browser")
+    expected_launches = {
+        "agentgateway": "https://agentgateway.localhost/ui/",
+        "Istio": "https://dev.localhost/istio-test/auth",
+    }
+    expected_icons = {
+        "agentgateway": "https://docs.osinfra.io/img/applications/agentgateway.svg",
+        "Istio": "https://docs.osinfra.io/img/applications/istio.svg",
+        "OpenBao": "https://docs.osinfra.io/img/applications/openbao.svg",
+    }
+    if {application["name"] for application in applications} != set(expected_launches):
+        raise ValueError("Browser applications do not have the expected descriptive names")
+    for application in applications:
+        actual = api(f"core/applications/{application['slug']}/")
+        if (
+            actual["name"] != application["name"]
+            or actual["meta_launch_url"] != expected_launches[application["name"]]
+            or actual["meta_icon"] != expected_icons[application["name"]]
+        ):
+            raise ValueError("Browser application name, icon, or launch URL differs from the intended configuration")
+
+    if api("core/applications/openbao/")["meta_icon"] != expected_icons["OpenBao"]:
+        raise ValueError("The OpenBao application must use the docs-hosted icon")
+
     openbao_providers = objects("authentik_provider_oauth2", "openbao")
     if len(openbao_providers) != 1:
         raise ValueError("The local fixture requires its dedicated OpenBao OAuth provider")
