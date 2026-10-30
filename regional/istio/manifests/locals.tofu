@@ -183,19 +183,6 @@ locals {
     cluster_name => local.regions[cluster_name] == "us-east1" ? "us-east4" : "us-east1"
   }
 
-  # Auth policies generated from the Logos route_auth_policies contract. The gateway
-  # cluster enforces every team's external route because all ingress enters through
-  # the platform gateway data plane.
-  gateway_auth_application_access_filter_manifests = merge({}, [
-    for cluster_name, renderer in module.gateway_auth : {
-      for key, manifest in renderer.browser_authorization_filter_manifests :
-      "${cluster_name}/${key}" => {
-        cluster_name = cluster_name
-        manifest     = manifest
-      }
-    }
-  ]...)
-
   gateway_auth_authentik_issuer_urls = {
     for cluster_name in keys(local.gateway_clusters) :
     cluster_name => try(

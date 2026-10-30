@@ -11,5 +11,4 @@ ensure_auth_resources_safe
 
 mkdir -p "${WORK_DIR}"
 tofu_init "${LOCAL_DIR}/browser-auth" browser-auth
-tofu -chdir="${LOCAL_DIR}/browser-auth" apply -auto-approve \
-  -var-file="${LOCAL_DIR}/../../../../../logos/pt-logos/teams/pt-pneuma.tfvars"
+tofu -chdir="${LOCAL_DIR}/browser-auth" apply -auto-approve

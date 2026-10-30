@@ -1,23 +1,6 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
-variable "application_group_members" {
-  default     = {}
-  description = "Current environment's declared Google emails keyed by exact team-qualified group name. Managed browser requirements are checked per request after forward-auth, independently of cached group claims."
-  type        = map(list(string))
-
-  validation {
-    condition = alltrue([
-      for name, members in var.application_group_members :
-      can(regex("^[a-z]+-[a-z0-9-]+: [A-Za-z][A-Za-z0-9]*( [A-Za-z0-9]+)*$", name)) &&
-      length(members) == length(distinct(members)) && alltrue([
-        for email in members : can(regex("^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9-]+(\\.[a-z0-9-]+)+$", email))
-      ])
-    ])
-    error_message = "Application memberships require unique lowercase emails and exact team-qualified group names."
-  }
-}
-
 variable "extension_provider_name" {
   default     = "authentik"
   description = "Name shared by the mesh extension provider and browser CUSTOM policies."
@@ -72,7 +55,7 @@ variable "outpost_service_port" {
 
 variable "policies" {
   default     = {}
-  description = "Resolved host/route intent keyed by stable policy identity (including the cluster prefix in Pneuma). Browser groups/roles are enforced by Authentik application bindings, not CUSTOM policy JWT claims."
+  description = "Resolved host/route intent keyed by stable policy identity (including the cluster prefix in Pneuma). Browser authorization uses host-scoped Authentik application bindings, not CUSTOM policy JWT claims."
 
   type = map(object({
     audiences       = optional(list(string), [])
@@ -85,13 +68,16 @@ variable "policies" {
   }))
 
   validation {
-    condition = alltrue(flatten([
-      for policy in values(var.policies) : [
-        for name in concat(policy.required_groups, policy.required_roles) :
-        !strcontains(name, ": ") || contains(keys(var.application_group_members), name)
-      ] if policy.mode == "browser"
-    ]))
-    error_message = "Every team-qualified browser requirement must resolve to a declared application membership list, including empty lists."
+    condition = alltrue([
+      for host in distinct([for policy in values(var.policies) : policy.host if policy.mode == "browser"]) :
+      length(distinct([
+        for policy in values(var.policies) : jsonencode({
+          required_groups = sort(policy.required_groups)
+          required_roles  = sort(policy.required_roles)
+        }) if policy.mode == "browser" && policy.host == host
+      ])) == 1
+    ])
+    error_message = "Browser routes sharing a host must declare identical required_groups and required_roles for host-scoped Authentik authorization."
   }
 
   validation {
@@ -104,12 +90,9 @@ variable "policies" {
         for name in concat(policy.required_groups, policy.required_roles) :
         can(regex("^[!-~]+( [!-~]+)*$", name)) && !strcontains(name, "|") && !strcontains(name, ",")
       ])
-      if policy.mode == "browser" && anytrue([
-        for name in concat(policy.required_groups, policy.required_roles) :
-        contains(keys(var.application_group_members), name)
-      ])
+      if policy.mode == "browser" && length(concat(policy.required_groups, policy.required_roles)) > 0
     ])
-    error_message = "Managed browser policies require lowercase literal hosts, unencoded paths, and unambiguous ASCII group names."
+    error_message = "Browser route authorization requires lowercase literal hosts, unencoded paths, and unambiguous ASCII group names."
   }
 
   validation {

@@ -12,7 +12,7 @@ module "authentik_config" {
 
   browser_group_policy_bindings = {
     agentgateway = {
-      groups = ["all"]
+      groups = ["pt-pneuma: agentgateway Admins"]
       host   = "https://agentgateway.localhost"
     }
     development = {

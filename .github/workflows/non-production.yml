@@ -323,7 +323,7 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-test-non-production
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      working_directory: regional/istio/test
+      working_directory: regional/istio/test-workload
       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-
@@ -345,7 +345,7 @@ jobs:
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-test-non-production
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
-      working_directory: regional/istio/test
+      working_directory: regional/istio/test-workload
       workload_identity_provider: projects/640681940147/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-

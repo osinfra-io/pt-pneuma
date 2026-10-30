@@ -13,9 +13,7 @@ done
 
 if [ -f "${WORK_DIR}/browser-auth.tfstate" ]; then
   tofu_init "${LOCAL_DIR}/browser-auth" browser-auth
-  tofu -chdir="${LOCAL_DIR}/browser-auth" destroy -auto-approve \
-    -var-file="${LOCAL_DIR}/../../../../../logos/pt-logos/teams/pt-pneuma.tfvars" \
-    -lock-timeout=60s
+  tofu -chdir="${LOCAL_DIR}/browser-auth" destroy -auto-approve -lock-timeout=60s
 fi
 
 delete_owned_resource httproute authentik authentik

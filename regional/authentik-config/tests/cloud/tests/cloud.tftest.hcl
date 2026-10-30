@@ -108,6 +108,25 @@ run "cloud_managed_application_groups" {
   command = apply
 
   override_data {
+    target = data.terraform_remote_state.main
+    values = {
+      outputs = {
+        authentik_base_url             = "https://authentik.sb.osinfra.io"
+        authentik_kubernetes_namespace = "authentik"
+        authentik_secret_env = {
+          AUTHENTIK_BOOTSTRAP_TOKEN = "mock-token"
+        }
+        gateway_dns = {
+          pt-pneuma = {
+            "pneuma.sb.osinfra.io" = {}
+          }
+        }
+        openbao_hostname = "openbao.sb.osinfra.io"
+      }
+    }
+  }
+
+  override_data {
     target = module.authentik_config.data.authentik_users.google
     values = {
       users = []
@@ -115,6 +134,12 @@ run "cloud_managed_application_groups" {
   }
 
   variables {
+    clusters = {
+      pt-pneuma-us-east1-b = {
+        project_id = "mock-project"
+        team_key   = "pt-pneuma"
+      }
+    }
     google_oauth_client_id     = "mock-client"
     google_oauth_client_secret = "mock-secret"
   }
@@ -139,6 +164,19 @@ run "cloud_managed_application_groups" {
               }
             }
           }
+          platform_managed_project = {
+            kubernetes_engine_namespaces = {
+              diagnostic = {
+                route_auth_policies = {
+                  diagnostic = {
+                    mode            = "browser"
+                    required_groups = ["all"]
+                    required_roles  = ["pt-pneuma: agentgateway Admins"]
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -147,6 +185,15 @@ run "cloud_managed_application_groups" {
   assert {
     condition     = module.team_access.application_groups["pt-pneuma/agentgateway-admins"].members == tolist(["sandbox@example.com"])
     error_message = "The cloud Authentik consumer must select only the current environment's declared members."
+  }
+
+  assert {
+    condition = alltrue([
+      for host in ["https://pneuma.sb.osinfra.io", "https://us-east1-b.pneuma.sb.osinfra.io"] :
+      toset(local.browser_group_policy_bindings[host].groups) == toset(["all"]) &&
+      toset(local.browser_group_policy_bindings[host].roles) == toset(["pt-pneuma: agentgateway Admins"])
+    ])
+    error_message = "The cloud adapter must preserve separate group and role lists for Authentik AND enforcement on both hosts."
   }
 
   assert {

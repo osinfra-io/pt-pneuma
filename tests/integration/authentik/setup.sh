@@ -63,7 +63,7 @@ kubectl --context="${KUBE_CONTEXT}" rollout status deployment/authentik-server -
 kubectl --context="${KUBE_CONTEXT}" rollout status deployment/authentik-worker --namespace=authentik --timeout=300s
 start_admin_forward
 
-python3 - "${WORK_DIR}" <<'PY'
+python3 - "${WORK_DIR}" "${LOCAL_DIR}" <<'PY'
 import json
 import ssl
 import sys
@@ -71,6 +71,9 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
+
+sys.path.insert(0, sys.argv[2])
+import bootstrap
 
 work = Path(sys.argv[1])
 token = json.loads((work / "runtime/credentials.tfvars.json").read_text())["secret_env"]["AUTHENTIK_BOOTSTRAP_TOKEN"]
@@ -83,16 +86,21 @@ def get(path):
         return json.load(response)
 
 deadline = time.monotonic() + 300
+missing_scopes = bootstrap.DEFAULT_SCOPE_MAPPINGS
 while True:
     try:
         outposts = get("/api/v3/outposts/instances/?managed=goauthentik.io%2Foutposts%2Fembedded")["results"]
         flows = get("/api/v3/flows/instances/?slug=default-authentication-flow")["results"]
         stages = get("/api/v3/stages/identification/?name=default-authentication-identification")["results"]
-        if len(outposts) == 1 and len(flows) == 1 and len(stages) == 1:
+        scope_mappings = get("/api/v3/propertymappings/provider/scope/?page_size=100")["results"]
+        missing_scopes = bootstrap.missing_default_scope_mappings(scope_mappings)
+        if len(outposts) == 1 and len(flows) == 1 and len(stages) == 1 and not missing_scopes:
             break
     except (urllib.error.URLError, TimeoutError, ValueError, KeyError) as error:
         print(f"Waiting for Authentik bootstrap ({type(error).__name__}).", file=sys.stderr)
     if time.monotonic() >= deadline:
+        if missing_scopes:
+            raise SystemExit(f"Timed out waiting for built-in OAuth scope mappings: {', '.join(sorted(missing_scopes))}.")
         raise SystemExit("Timed out waiting for built-in Authentik objects; inspect server/worker logs.")
     time.sleep(5)
 
@@ -101,8 +109,5 @@ with (work / "config/bootstrap.tfvars.json").open("w") as stream:
 PY
 
 local_tofu config init -input=false
-local_tofu config apply -input=false -auto-approve \
-  -state="${WORK_DIR}/config/terraform.tfstate" \
-  -var-file="${LOCAL_DIR}/../../../../../logos/pt-logos/teams/pt-pneuma.tfvars" \
-  -var-file="${WORK_DIR}/config/bootstrap.tfvars.json"
+apply_local_config
 echo "Authentik configured in Kubernetes. Browser verification remains pending."

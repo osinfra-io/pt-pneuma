@@ -868,7 +868,7 @@ jobs:
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-b\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-istio-test-production
-      working_directory: regional/istio/test
+      working_directory: regional/istio/test-workload
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-
@@ -890,7 +890,7 @@ jobs:
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-c\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-c-istio-test-production
-      working_directory: regional/istio/test
+      working_directory: regional/istio/test-workload
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-
@@ -912,7 +912,7 @@ jobs:
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-d\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-d-istio-test-production
-      working_directory: regional/istio/test
+      working_directory: regional/istio/test-workload
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-
@@ -934,7 +934,7 @@ jobs:
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-a\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-a-istio-test-production
-      working_directory: regional/istio/test
+      working_directory: regional/istio/test-workload
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-
@@ -956,7 +956,7 @@ jobs:
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-b\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-b-istio-test-production
-      working_directory: regional/istio/test
+      working_directory: regional/istio/test-workload
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-
@@ -978,7 +978,7 @@ jobs:
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-c\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east4-c-istio-test-production
-      working_directory: regional/istio/test
+      working_directory: regional/istio/test-workload
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-

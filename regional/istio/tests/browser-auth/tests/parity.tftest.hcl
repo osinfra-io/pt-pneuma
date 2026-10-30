@@ -52,11 +52,6 @@ run "production_parity" {
   command = plan
 
   assert {
-    condition     = length(module.legacy_manifests.application_access_filters) == 0
-    error_message = "Legacy browser routes must not acquire a managed-access guard or require new identity headers."
-  }
-
-  assert {
     condition     = length(module.legacy_manifests.custom_manifests) == 2 && jsonencode(module.shared.custom_authorization_policy_manifests) == jsonencode(module.legacy_manifests.custom_manifests)
     error_message = "Shared CUSTOM rendering must equal the real production global/zonal browser manifests."
   }
@@ -126,6 +121,7 @@ run "managed_cloud_adapter" {
     outputs = {
       env         = "sb"
       environment = "sandbox"
+      repository  = "pt-pneuma"
       team        = "pt-pneuma"
       teams = {
         pt-pneuma = {
@@ -162,21 +158,6 @@ run "managed_cloud_adapter" {
         }
       }
     }
-  }
-
-  assert {
-    condition     = module.legacy_manifests.application_group_members["pt-pneuma: agentgateway Admins"] == tolist(["sandbox@example.com"])
-    error_message = "The cloud gateway must consume the selected environment's core-helper memberships."
-  }
-
-  assert {
-    condition     = length(module.legacy_manifests.application_access_filters) == 1 && module.legacy_manifests.application_access_filters["pt-pneuma-us-east1-b/application_access"].cluster_name == "pt-pneuma-us-east1-b"
-    error_message = "Each gateway cluster must own its managed-access filter under a stable cluster key."
-  }
-
-  assert {
-    condition     = module.legacy_manifests.application_access_filters["pt-pneuma-us-east1-b/application_access"].manifest.spec.configPatches[0].patch.operation == "INSERT_AFTER"
-    error_message = "Cloud managed-access enforcement must run after successful forward-auth."
   }
 
   assert {
