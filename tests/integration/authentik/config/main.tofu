@@ -25,12 +25,14 @@ module "authentik_config" {
 
   default_authentication_stage_settings = module.authentication.default_authentication_stage_settings
   external_host                         = "https://dev.localhost"
+  google_internal_domains               = ["osinfra.io"]
   google_oauth_client_id                = var.google_oauth_client_id
   google_oauth_client_secret            = var.google_oauth_client_secret
   manage_default_authentication_stage   = true
   namespace                             = "authentik"
   openbao_hostname                      = "openbao.localhost"
   outpost_authentik_url                 = "https://authentik.localhost"
+  superuser_group_keys                  = ["pt-pneuma/authentik-admins"]
 
   redirect_uris = [
     {

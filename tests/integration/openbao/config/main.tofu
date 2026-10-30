@@ -30,7 +30,12 @@ resource "vault_jwt_auth_backend" "oidc" {
   oidc_discovery_ca_pem = var.authentik_discovery_ca_pem
   oidc_discovery_url    = var.authentik_issuer_url
   path                  = "oidc"
-  type                  = "oidc"
+
+  tune {
+    listing_visibility = "unauth"
+  }
+
+  type = "oidc"
 }
 
 # OpenBao JWT Authentication Backend Role Resource

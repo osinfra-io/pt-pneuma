@@ -31,12 +31,18 @@ Google-backed OIDC sign-in is a separate manual developer check and is not cover
 2. Use the CLI callback flow with a browser-enabled terminal:
 
    ```bash
-   BAO_ADDR=https://openbao.localhost bao login -method=oidc -path=oidc role=default
+   BAO_CACERT="$PWD/tests/integration/istio/.work/gateway-localhost.crt" \
+   BAO_ADDR=https://openbao.localhost \
+   bao login -method=oidc -path=oidc role=default
    ```
 
 3. Verify team-scoped access with an Authentik user whose local team group membership is configured. The automated policy checks do not prove that Google sign-in or group claims work end to end. Report the browser/CLI check separately and only after observing it.
 
 The local fixture uses the same host-level authorization as the cloud: `agentgateway.localhost` requires the managed agentgateway Admins group, while `dev.localhost` uses the baseline `all` group. No post-auth authorization Lua is deployed; only identity-header stripping remains.
+
+Google users are classified as internal only when their verified email and Google Workspace `hd` claim both match `osinfra.io`; other Google users remain external. Existing accounts receive the classification on their next Google sign-in. Internal status permits access to the authentik user interface, but administrative permissions still require the declared authentik Admins group.
+
+The shared `gateway-auth` module always exempts standard health and readiness paths, so removing `/istio-test/health` from `public_paths` does not make that endpoint protected. For configuration-parity checks, use a metadata endpoint such as `https://dev.localhost/istio-test/metadata/cluster-name` with the HTTP verifier's `--expect-status` mode.
 
 To verify membership changes without regenerating gateway configuration, sign in at `https://agentgateway.localhost/ui/` with a declared member, then apply only the Authentik configuration with the revocation flag:
 

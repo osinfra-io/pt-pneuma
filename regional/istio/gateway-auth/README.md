@@ -12,7 +12,7 @@ The extension provider fails closed. The header filter removes client `x-authent
 
 Managed application group memberships are assigned in Authentik from verified Google identities by the Authentik configuration module. The gateway does not independently authorize email headers. The inbound header-stripping filter remains to prevent client-supplied identity headers reaching upstream applications.
 
-The embedded outpost caches authenticated claims in its session store. Authentik 2026.8.3 uses the proxy provider's `access_token_validity` as the session lifetime; the provider is explicitly configured for ten minutes, with a maximum cache lifetime of ten minutes plus one second. A new session sees current membership; an existing session can retain a removed group until that bound expires. Membership changes update Authentik configuration only and do not require a gateway redeployment.
+The embedded outpost caches authenticated claims in its session store. Authentik 2026.8.5 uses the proxy provider's `access_token_validity` as the session lifetime; the provider is explicitly configured for ten minutes, with a maximum cache lifetime of ten minutes plus one second. A new session sees current membership; an existing session can retain a removed group until that bound expires. Membership changes update Authentik configuration only and do not require a gateway redeployment.
 
 The `team-access` child selects explicit environment lists from either Logos declarations or core-helper outputs for Authentik configuration. It creates no users, resources, or credentials. Cloud consumers and local fixtures both use host-scoped Authentik policies.
 

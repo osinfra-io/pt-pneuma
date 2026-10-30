@@ -163,6 +163,15 @@ run "cloud_managed_application_groups" {
                 production = ["production@example.com"]
               }
             }
+            authentik-admins = {
+              description = "Authentik instance administration"
+              name        = "pt-pneuma: authentik Admins"
+              members = {
+                sandbox        = ["brett@osinfra.io"]
+                non-production = ["brett@osinfra.io"]
+                production     = ["brett@osinfra.io"]
+              }
+            }
           }
           platform_managed_project = {
             kubernetes_engine_namespaces = {
@@ -199,6 +208,11 @@ run "cloud_managed_application_groups" {
   assert {
     condition     = module.authentik_config.application_groups["pt-pneuma/agentgateway-admins"].name == "pt-pneuma: agentgateway Admins" && !module.authentik_config.application_groups["pt-pneuma/agentgateway-admins"].is_superuser
     error_message = "The pinned module must create the owning team's named application group without Authentik superuser privileges."
+  }
+
+  assert {
+    condition     = module.authentik_config.application_groups["pt-pneuma/authentik-admins"].name == "pt-pneuma: authentik Admins" && module.authentik_config.application_groups["pt-pneuma/authentik-admins"].is_superuser
+    error_message = "Only Pneuma's explicitly configured authentik Admins group receives global superuser privileges."
   }
 
   assert {

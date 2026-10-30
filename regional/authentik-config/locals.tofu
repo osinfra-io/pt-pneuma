@@ -19,6 +19,11 @@ locals {
 
   authentik_url = local.main.authentik_base_url
 
+  authentik_superuser_group_keys = [
+    for key in keys(module.team_access.application_groups) :
+    key if key == "pt-pneuma/authentik-admins"
+  ]
+
   browser_group_policy_bindings = merge({
     for host in distinct([for item in local.browser_group_policy_items : item.host]) : host => {
       groups = distinct(flatten([

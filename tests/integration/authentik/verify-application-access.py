@@ -44,6 +44,27 @@ def verify(work):
     if "authorization_code" not in openbao_provider.get("grant_types", []):
         raise ValueError("The live OpenBao OAuth provider rejects authorization-code login")
 
+    identities = objects("authentik_property_mapping_source_oauth", "google_username")
+    if len(identities) != 1:
+        raise ValueError("The Google identity mapping must be present in applied configuration")
+    for info, expected_type in [
+        ({"email": "member@osinfra.io", "hd": "osinfra.io", "verified_email": True}, "internal"),
+        ({"email": "member@osinfra.io", "hd": "osinfra.io", "email_verified": True}, "internal"),
+        ({"email": "member@osinfra.io", "verified_email": True}, "external"),
+        ({"email": "member@example.com", "hd": "example.com", "verified_email": True}, "external"),
+        ({"email": "member@example.com", "hd": "osinfra.io", "verified_email": True}, "external"),
+        ({"email": "member@osinfra.io", "hd": "osinfra.io"}, "external"),
+        ({"email": "member@osinfra.io", "hd": "osinfra.io", "verified_email": "true"}, "external"),
+        ({"email": "member@osinfra.io", "hd": "osinfra.io", "email_verified": True, "verified_email": False}, "external"),
+    ]:
+        result = api(
+            f"propertymappings/all/{identities[0]['id']}/test/", {"context": {"info": info}},
+        )
+        if not result["successful"] or json.loads(result["result"]) != {
+            "username": info["email"], "type": expected_type,
+        }:
+            raise ValueError("Google user classification must require a verified matching Workspace domain")
+
     mappings = objects("authentik_property_mapping_source_oauth", "google_application_groups")
     proxies = objects("authentik_property_mapping_provider_scope", "google_proxy")
     if len(mappings) != 1 or len(proxies) != 1:
@@ -94,8 +115,8 @@ def verify(work):
 
     for expected in objects("authentik_group", "application"):
         actual = api(f"core/groups/{expected['id']}/")
-        if actual["is_superuser"] or actual["name"] != expected["name"]:
-            raise ValueError("Application group name or administrative status differs from the declaration")
+        if actual["is_superuser"] != expected["is_superuser"] or actual["name"] != expected["name"]:
+            raise ValueError("Application group name or administrative status differs from applied configuration")
         if sorted(map(str, actual["users"])) != sorted(map(str, expected["users"])):
             raise ValueError("Application memberships differ from applied configuration")
     print("Live Authentik evaluator verified native/OIDC email fields, unverified denial, source-independent header denial, and application groups.")

@@ -75,9 +75,15 @@ def verify_oidc(root_token):
     if (
         config.get("oidc_discovery_url") != AUTHENTIK_ISSUER
         or config.get("oidc_client_id") != "openbao"
+        or config.get("default_role") != "default"
         or not config.get("oidc_discovery_ca_pem")
     ):
-        fail("OpenBao OIDC issuer, client ID, or discovery CA does not match the local Authentik provider")
+        fail("OpenBao OIDC issuer, client ID, default role, or discovery CA does not match the local Authentik provider")
+
+    mounts = expect(root_token, "GET", "sys/auth", {200}).get("data", {})
+    oidc_mount = mounts.get("oidc/", {})
+    if oidc_mount.get("config", {}).get("listing_visibility") != "unauth":
+        fail("OpenBao OIDC auth mount is not visible to unauthenticated UI users")
 
     role = expect(root_token, "GET", "auth/oidc/role/default", {200}).get("data", {})
     if (
