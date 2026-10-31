@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-readonly LOCAL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCAL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly LOCAL_DIR
 readonly WORK_DIR="${LOCAL_DIR}/.work"
 readonly KUBE_CONTEXT="docker-desktop"
 

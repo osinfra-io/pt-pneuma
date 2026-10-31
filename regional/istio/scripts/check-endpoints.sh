@@ -125,7 +125,7 @@ for RECORD in "${RECORDS[@]}"; do
     fi
   else
     # Extract the zone prefix (everything before .{base_domain}).
-    ZONE="${HOST%.${BASE_DOMAIN}}"
+    ZONE="${HOST%."${BASE_DOMAIN}"}"
     URL="https://${HOST}/istio-test/metadata/cluster-name"
 
     echo "── ${URL} ──"

@@ -165,12 +165,17 @@ assert_runtime_state_safe "${runtime_test_state}"
 
 (
   calls=""
+  # Test doubles invoked by the dynamically sourced setup fragment below.
+  # shellcheck disable=SC2329
   tofu_init() { calls+="init "; }
+  # shellcheck disable=SC2329
   assert_runtime_state_safe() { calls+="state-check "; }
+  # shellcheck disable=SC2329
   ensure_owned_resource() {
     [ "$*" = "namespace istio-system default" ] || exit 1
     calls+="owner-check "
   }
+  # shellcheck disable=SC2329
   kube() {
     [ "$*" = "apply --filename=-" ] || exit 1
     manifest="$(cat)" || exit 1
@@ -178,6 +183,7 @@ assert_runtime_state_safe "${runtime_test_state}"
     grep -Fq "name: istio-system" <<<"${manifest}" || exit 1
     calls+="owned-namespace "
   }
+  # shellcheck disable=SC2329
   tofu() {
     [ "${calls}" = "init state-check owner-check owned-namespace " ] || exit 1
     return 1

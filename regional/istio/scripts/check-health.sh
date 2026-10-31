@@ -125,7 +125,7 @@ fi
 
 # Sort cluster names for consistent output.
 
-IFS=$'\n' CLUSTER_NAMES=($(sort <<<"${CLUSTER_NAMES[*]}")); unset IFS
+mapfile -t CLUSTER_NAMES < <(printf '%s\n' "${CLUSTER_NAMES[@]}" | sort)
 
 echo -e "${GRAY}Found ${#CLUSTER_NAMES[@]} cluster(s): ${CLUSTER_NAMES[*]}${RESET}"
 echo
@@ -174,7 +174,7 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
   mapfile -t NAMESPACES < <(echo "${ns_output}" | tr ' ' '\n' | sort)
 
   # Collect analyze output for all namespaces.
-  > "${ANALYZE_OUTPUT}"
+  : > "${ANALYZE_OUTPUT}"
 
   for NS in "${NAMESPACES[@]}"; do
     skip=false
@@ -201,7 +201,9 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
       # Extract code and resource.
       code=$(echo "${line}" | grep -oP '\[IST\d+\]' || echo "")
       resource=$(echo "${line}" | grep -oP '\([^)]+\)' | head -1 || echo "")
-      msg=$(echo "${line}" | sed 's/^Error \[IST[0-9]*\] \[[^]]*\] ([^)]*) //')
+      # Strip the structured prefix with a regular expression, not a glob.
+      # shellcheck disable=SC2001
+      msg=$(sed 's/^Error \[IST[0-9]*\] \[[^]]*\] ([^)]*) //' <<<"${line}")
       echo -e "  ${GRAY}${code}${RESET} ${resource}"
       wrap_text "    " "${msg}"
     done
@@ -215,7 +217,8 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
     for line in "${WARNINGS[@]}"; do
       code=$(echo "${line}" | grep -oP '\[IST\d+\]' || echo "")
       resource=$(echo "${line}" | grep -oP '\([^)]+\)' | head -1 || echo "")
-      msg=$(echo "${line}" | sed 's/^Warning \[IST[0-9]*\] \[[^]]*\] ([^)]*) //')
+      # shellcheck disable=SC2001
+      msg=$(sed 's/^Warning \[IST[0-9]*\] \[[^]]*\] ([^)]*) //' <<<"${line}")
       echo -e "  ${GRAY}${code}${RESET} ${resource}"
       wrap_text "    " "${msg}"
     done
@@ -230,7 +233,8 @@ for NAME in "${CLUSTER_NAMES[@]}"; do
       for line in "${INFOS[@]}"; do
         code=$(echo "${line}" | grep -oP '\[IST\d+\]' || echo "")
         resource=$(echo "${line}" | grep -oP '\([^)]+\)' | head -1 || echo "")
-        msg=$(echo "${line}" | sed 's/^Info \[IST[0-9]*\] \[[^]]*\] ([^)]*) //')
+        # shellcheck disable=SC2001
+        msg=$(sed 's/^Info \[IST[0-9]*\] \[[^]]*\] ([^)]*) //' <<<"${line}")
         echo -e "  ${GRAY}${code}${RESET} ${resource}"
         wrap_text "    " "${msg}"
       done

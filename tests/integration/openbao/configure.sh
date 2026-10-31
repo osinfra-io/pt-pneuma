@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 readonly WORK_DIR="${SCRIPT_DIR}/.work"
 readonly AUTHENTIK_DIR="${SCRIPT_DIR}/../authentik"
 readonly AUTHENTIK_STATE="${AUTHENTIK_DIR}/.work/config/terraform.tfstate"

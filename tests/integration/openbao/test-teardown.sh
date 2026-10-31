@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly TEST_DIR="$(mktemp -d)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEST_DIR="$(mktemp -d)"
+readonly SCRIPT_DIR TEST_DIR
 trap 'rm -f "${TEST_DIR}/openbao/.work/"* "${TEST_DIR}/openbao/"*.sh "${TEST_DIR}/shared/cluster.sh" "${TEST_DIR}/output"; rmdir "${TEST_DIR}/openbao/.work" "${TEST_DIR}/openbao" "${TEST_DIR}/shared" "${TEST_DIR}"' EXIT
 
 mkdir -p "${TEST_DIR}/openbao/.work" "${TEST_DIR}/shared"

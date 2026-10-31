@@ -109,5 +109,7 @@ with (work / "config/bootstrap.tfvars.json").open("w") as stream:
 PY
 
 local_tofu config init -input=false
+# No additional OpenTofu arguments are needed during initial setup.
+# shellcheck disable=SC2119
 apply_local_config
 echo "Authentik configured in Kubernetes. Browser verification remains pending."

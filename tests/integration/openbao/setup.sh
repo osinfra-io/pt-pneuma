@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 readonly WORK_DIR="${SCRIPT_DIR}/.work"
 readonly OWNER_NAME="local-gateway-stack-owner"
 readonly INIT_FILE="${WORK_DIR}/openbao-init.json"
@@ -139,6 +140,8 @@ bootstrap_openbao() {
     fail "OpenBao is initialized but ${INIT_FILE} is missing; run tests/integration/openbao/teardown.sh to start fresh"
 
   if [ "$(jq -r '.sealed' <<<"${status}")" = "true" ]; then
+    # Expand the key only inside the container.
+    # shellcheck disable=SC2016
     jq -r '.unseal_keys_b64[0]' "${INIT_FILE}" |
       kubectl exec --stdin --namespace=openbao openbao-0 -- sh -c 'read -r key && bao operator unseal "${key}"' >/dev/null
   fi

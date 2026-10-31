@@ -20,6 +20,12 @@ repos:
       - id: trailing-whitespace
       - id: check-symlinks
 
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: a6564f5d57444e123433a5c9af733e3975c77229  # frozen: v0.11.0.1-1
+    hooks:
+      - id: shellcheck
+        args: ["-x"]
+
   - repo: https://github.com/osinfra-io/pt-techne-pre-commit-hooks
     rev: 532fe5510ff7cf28413136620aff270bb4d0905b  # frozen: v0.2.7
     hooks:
