@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-agentgateway
 
 module "kubernetes_agentgateway_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-agentgateway//regional/manifests?ref=0304a4eb6038e8e7b47c504beb8dc5df0ca72f91" # v0.2.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-agentgateway//regional/manifests?ref=6f15a7fcf9fa1a05979905b60a122a066e8b4c4d" # v0.2.1
 
   for_each = local.agentgateway_clusters
 
