@@ -24,7 +24,7 @@ POLICIES = {
     "admin": "pt-pneuma-openbao-secret-admins",
 }
 TEAM_PATH = "pt-pneuma/integration-verification"
-OTHER_TEAM_PATH = "pt-example/integration-verification"
+OTHER_TEAM_PATH = "pt-arche/integration-verification"
 
 TLS_CONTEXT = ssl._create_unverified_context()
 
@@ -145,6 +145,20 @@ def verify(root_token):
     if team_mount.get("type") != "kv" or team_mount.get("options", {}).get("version") != "2":
         fail("The kv2 KV v2 mount is not configured")
 
+    logos_teams_dir = SCRIPT_DIR.parents[4] / "logos" / "pt-logos" / "teams"
+    team_keys = {team_file.stem for team_file in logos_teams_dir.glob("*.tfvars")}
+    if "pt-pneuma" not in team_keys:
+        fail("The Logos team declarations must include pt-pneuma for the local OpenBao policy checks")
+    for team_key in team_keys:
+        readme = expect(root_token, "GET", f"kv2/data/{team_key}/README", {200}).get("data", {}).get("data", {}).get("README", "")
+        if (
+            not isinstance(readme, str)
+            or "bao login -method=oidc -path=oidc role=default" not in readme
+            or f"bao kv get kv2/{team_key}/README" not in readme
+            or f"bao kv put kv2/{team_key}/my-secret" not in readme
+        ):
+            fail(f"The {team_key} README secret is missing its OpenBao usage instructions")
+
     for policy in POLICIES.values():
         expect(root_token, "GET", f"sys/policies/acl/{policy}", {200})
 
@@ -156,8 +170,15 @@ def verify(root_token):
         tokens = {access: create_token(root_token, policy) for access, policy in POLICIES.items()}
 
         expect(tokens["reader"], "GET", f"kv2/data/{TEAM_PATH}", {200})
-        expect(tokens["reader"], "GET", "kv2/metadata/pt-pneuma?list=true", {200})
+        expect(tokens["reader"], "GET", "kv2/data/pt-pneuma/README", {200})
+        team_list = expect(tokens["reader"], "GET", "kv2/metadata?list=true", {200}).get("data", {}).get("keys", [])
+        if set(team_list) != {f"{team_key}/" for team_key in team_keys}:
+            fail(
+                "The reader's top-level team listing does not match the registered local teams "
+                f"(found: {sorted(team_list)})"
+            )
         expect(tokens["reader"], "POST", f"kv2/data/{TEAM_PATH}", {403}, {"data": {"value": "denied"}})
+        expect(tokens["reader"], "GET", "kv2/data/pt-arche/README", {403})
         expect(tokens["reader"], "GET", f"kv2/data/{OTHER_TEAM_PATH}", {403})
 
         writer_path = f"kv2/data/{TEAM_PATH}-writer"

@@ -13,6 +13,24 @@ locals {
         jsonencode(["create", "read", "update", "delete"]),
       )
     ]),
+    join("\n\n", [
+      for team_key in keys(module.core_helpers.teams) : format(
+        "path \"kv2/data/%s/README\" {\n  capabilities = %s\n}",
+        team_key,
+        jsonencode(["create", "read", "update", "delete"]),
+      )
+    ]),
+  ]))
+
+  github_actions_plan_policy = join("\n\n", compact([
+    file("${path.module}/policies/github-actions-plan.hcl"),
+    join("\n\n", [
+      for team_key in keys(module.core_helpers.teams) : format(
+        "path \"kv2/data/%s/README\" {\n  capabilities = %s\n}",
+        team_key,
+        jsonencode(["read"]),
+      )
+    ]),
   ]))
 
   github_actions_bound_claims = {
@@ -33,7 +51,7 @@ locals {
   github_actions_roles = {
     for access in ["apply", "plan"] : access => {
       import_id   = "auth/github-actions/role/pt-pneuma-openbao-${access}"
-      policy      = access == "apply" ? local.github_actions_apply_policy : file("${path.module}/policies/github-actions-plan.hcl")
+      policy      = access == "apply" ? local.github_actions_apply_policy : local.github_actions_plan_policy
       policy_name = "pt-pneuma-openbao-${access}"
       subject     = access == "apply" ? "repo:osinfra-io/pt-pneuma:environment:${local.github_actions_environment} OpenBao%3A us-east1-b" : local.github_actions_plan_subject
     }
@@ -64,6 +82,40 @@ locals {
     ]
   ]))
 
+  team_readme_content = {
+    for team_key in keys(module.core_helpers.teams) : team_key => <<-EOT
+      # OpenBao team secrets
+
+      Use the environment's supported OpenBao endpoint and sign in with your Google-backed account:
+
+      ```bash
+      export BAO_ADDR=https://${local.main.openbao_hostname}
+      bao login -method=oidc -path=oidc role=default
+      ```
+
+      Your team prefix is `${team_key}`. Team prefixes are visible to all OpenBao team members, but
+      secret data remains restricted to your own team. List team prefixes, list your secrets, and
+      read this guide with:
+
+      ```bash
+      bao kv list kv2
+      bao kv list kv2/${team_key}
+      bao kv get kv2/${team_key}/README
+      ```
+
+      Create or update a secret under your team prefix with:
+
+      ```bash
+      bao kv put kv2/${team_key}/my-secret example=value
+      ```
+
+      Team access is granted through the `openbao-secret-readers`, `openbao-secret-writers`,
+      and `openbao-secret-admins` groups. Readers can list and read; writers can create and update;
+      admins can also manage secret metadata and versions. Do not store credentials in source
+      repositories or CI settings.
+    EOT
+  }
+
   state_bucket = "${module.core_helpers.repository}-state-${module.core_helpers.env}"
 
   team_policy_documents = {
@@ -79,6 +131,10 @@ locals {
   team_policy_paths = {
     for key, group in local.openbao_groups : key => concat(
       [
+        {
+          capabilities = ["list"]
+          path         = "kv2/metadata"
+        },
         {
           capabilities = group.access == "readers" ? ["read"] : group.access == "writers" ? ["create", "read", "update"] : ["create", "delete", "read", "update"]
           path         = "kv2/data/${group.team_key}/*"

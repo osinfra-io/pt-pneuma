@@ -86,6 +86,19 @@ resource "vault_jwt_auth_backend_role" "oidc" {
   user_claim      = "sub"
 }
 
+# OpenBao KV Secret v2 Resource
+# https://search.opentofu.org/provider/hashicorp/vault/latest/docs/resources/kv_secret_v2
+
+resource "vault_kv_secret_v2" "team_readme" {
+  for_each = module.core_helpers.teams
+
+  data_json = jsonencode({
+    README = local.team_readme_content[each.key]
+  })
+  mount = vault_mount.team_kv2.path
+  name  = "${each.key}/README"
+}
+
 # OpenBao Mount Resource
 # https://search.opentofu.org/provider/hashicorp/vault/latest/docs/resources/mount
 
