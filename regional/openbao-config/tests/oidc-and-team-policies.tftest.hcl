@@ -72,10 +72,11 @@ run "reader_is_limited_to_read_and_list" {
       strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "path \"kv2/data/pt-example/*\"") &&
       strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "\"read\"") &&
       strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "\"list\"") &&
+      strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "path \"kv2/metadata\"") &&
       !strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "\"create\"") &&
       !strcontains(local.team_policy_documents["pt-example/openbao-secret-readers"], "\"delete\"")
     )
-    error_message = "Readers must only read and list secrets inside their own team prefix."
+    error_message = "Readers may list team prefixes but can only read secrets inside their own team prefix."
   }
 }
 
@@ -122,9 +123,12 @@ run "admin_and_all_roles_stay_inside_team_prefix" {
       alltrue([
         for other_team_key in keys(module.core_helpers.teams) :
         group.team_key == other_team_key || !strcontains(local.team_policy_documents[key], other_team_key)
-        ]) && alltrue([
+      ]) &&
+      strcontains(local.team_policy_documents[key], "path \"kv2/metadata\" {\n  capabilities = [\"list\"]\n}") &&
+      alltrue([
         for path in local.team_policy_paths[key] :
         contains([
+          "kv2/metadata",
           "kv2/data/${group.team_key}/*",
           "kv2/metadata/${group.team_key}/*",
           "kv2/metadata/${group.team_key}",
@@ -134,7 +138,7 @@ run "admin_and_all_roles_stay_inside_team_prefix" {
         ], path.path)
       ]) && !strcontains(local.team_policy_documents[key], "sys/")
     ])
-    error_message = "Every policy must stay on its owner's team-key paths and exclude other teams and OpenBao system endpoints."
+    error_message = "Every policy may list the top-level team prefixes, but must keep secret access on its owner's paths and exclude OpenBao system endpoints."
   }
 }
 
@@ -195,6 +199,42 @@ run "team_kv2_mount_is_version_two" {
       vault_mount.team_kv2.options["version"] == "2"
     )
     error_message = "Team secrets must use the dedicated KV v2 mount."
+  }
+}
+
+run "create_team_readme_secrets_for_registered_teams" {
+  command = plan
+
+  module {
+    source = "./tests/fixtures"
+  }
+
+  assert {
+    condition = (
+      toset(keys(vault_kv_secret_v2.team_readme)) == toset(keys(module.core_helpers.teams)) &&
+      alltrue([
+        for team_key in keys(module.core_helpers.teams) :
+        vault_kv_secret_v2.team_readme[team_key].mount == "kv2" &&
+        vault_kv_secret_v2.team_readme[team_key].name == "${team_key}/README" &&
+        strcontains(
+          jsondecode(vault_kv_secret_v2.team_readme[team_key].data_json).README,
+          "export BAO_ADDR=https://${local.main.openbao_hostname}",
+        ) &&
+        !strcontains(
+          jsondecode(vault_kv_secret_v2.team_readme[team_key].data_json).README,
+          "BAO_CACERT",
+        ) &&
+        strcontains(
+          jsondecode(vault_kv_secret_v2.team_readme[team_key].data_json).README,
+          "bao kv get kv2/${team_key}/README",
+        ) &&
+        strcontains(
+          jsondecode(vault_kv_secret_v2.team_readme[team_key].data_json).README,
+          "bao kv put kv2/${team_key}/my-secret",
+        )
+      ])
+    )
+    error_message = "Every registered team must get an environment-specific README secret with scoped commands and standard TLS."
   }
 }
 

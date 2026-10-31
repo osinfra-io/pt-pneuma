@@ -23,7 +23,7 @@ tests/integration/verify.sh
 tests/integration/teardown.sh        # deletes local users and database data
 ```
 
-Component scripts can be rerun individually (for example `tests/integration/authentik/setup.sh`) while iterating. The OpenBao setup applies its fixture-owned OIDC and KV v2 configuration using the local Authentik outputs and credentials under `.work/`. Automated verification checks the OIDC settings, reader/writer/admin capabilities, and cross-team denial; it uses short-lived test tokens and never prints them.
+Component scripts can be rerun individually (for example `tests/integration/authentik/setup.sh`) while iterating. The OpenBao setup applies its fixture-owned OIDC and KV v2 configuration using the local Authentik outputs and credentials under `.work/`. It seeds a README under each registered platform-team prefix and lets every team role list the top-level team names; secret values remain team-scoped. Automated verification checks the OIDC settings, reader/writer/admin capabilities, top-level team listing, and cross-team denial; it uses short-lived test tokens and never prints them.
 
 Google-backed OIDC sign-in is a separate manual developer check and is not covered by the automated verifier:
 
