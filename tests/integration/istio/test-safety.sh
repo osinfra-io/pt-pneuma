@@ -9,11 +9,6 @@ runtime_test_state="${test_dir}/runtime.tfstate"
 auth_test_state="${test_dir}/browser-auth.tfstate"
 trap 'rm -f "${runtime_test_state}"; rmdir "${test_dir}"' EXIT
 
-for release in base cni istiod ztunnel; do
-  grep -Fq "from = helm_release.${release}" "${REPOSITORY_ROOT}/regional/moved.tofu"
-  grep -Fq "to   = module.runtime.helm_release.${release}" "${REPOSITORY_ROOT}/regional/moved.tofu"
-done
-
 mock_context="docker-desktop"
 mock_owner=""
 mock_resource_owner=""

@@ -5,9 +5,6 @@ set -euo pipefail
 LOCAL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLATFORM_GROUP_ROOT="$(cd "${LOCAL_DIR}/../../../../.." && pwd)"
 readonly LOCAL_DIR PLATFORM_GROUP_ROOT
-# Used by scripts sourcing this library.
-# shellcheck disable=SC2034
-readonly REPOSITORY_ROOT="${PLATFORM_GROUP_ROOT}/arche/pt-arche-kubernetes-istio"
 readonly WORK_DIR="${LOCAL_DIR}/.work"
 
 source "${LOCAL_DIR}/../shared/owner.sh"
