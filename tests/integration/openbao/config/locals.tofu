@@ -21,13 +21,8 @@ locals {
   }
 
   team_keys = toset([
-    "pt-arche",
-    "pt-corpus",
-    "pt-ekklesia",
-    "pt-logos",
-    "pt-pneuma",
-    "pt-techne",
-    "st-ethos",
+    for team_file in fileset("${path.module}/../../../../../../logos/pt-logos/teams", "*.tfvars") :
+    trimsuffix(team_file, ".tfvars")
   ])
 
   team_readme_content = <<-EOT

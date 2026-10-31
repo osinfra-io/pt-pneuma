@@ -145,15 +145,10 @@ def verify(root_token):
     if team_mount.get("type") != "kv" or team_mount.get("options", {}).get("version") != "2":
         fail("The kv2 KV v2 mount is not configured")
 
-    team_keys = {
-        "pt-arche",
-        "pt-corpus",
-        "pt-ekklesia",
-        "pt-logos",
-        "pt-pneuma",
-        "pt-techne",
-        "st-ethos",
-    }
+    logos_teams_dir = SCRIPT_DIR.parents[4] / "logos" / "pt-logos" / "teams"
+    team_keys = {team_file.stem for team_file in logos_teams_dir.glob("*.tfvars")}
+    if "pt-pneuma" not in team_keys:
+        fail("The Logos team declarations must include pt-pneuma for the local OpenBao policy checks")
     for team_key in team_keys:
         readme = expect(root_token, "GET", f"kv2/data/{team_key}/README", {200}).get("data", {}).get("data", {}).get("README", "")
         if (
