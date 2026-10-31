@@ -13,6 +13,24 @@ locals {
         jsonencode(["create", "read", "update", "delete"]),
       )
     ]),
+    join("\n\n", [
+      for team_key in keys(module.core_helpers.teams) : format(
+        "path \"kv2/data/%s/README\" {\n  capabilities = %s\n}",
+        team_key,
+        jsonencode(["create", "read", "update", "delete"]),
+      )
+    ]),
+  ]))
+
+  github_actions_plan_policy = join("\n\n", compact([
+    file("${path.module}/policies/github-actions-plan.hcl"),
+    join("\n\n", [
+      for team_key in keys(module.core_helpers.teams) : format(
+        "path \"kv2/data/%s/README\" {\n  capabilities = %s\n}",
+        team_key,
+        jsonencode(["read"]),
+      )
+    ]),
   ]))
 
   github_actions_bound_claims = {
@@ -33,7 +51,7 @@ locals {
   github_actions_roles = {
     for access in ["apply", "plan"] : access => {
       import_id   = "auth/github-actions/role/pt-pneuma-openbao-${access}"
-      policy      = access == "apply" ? local.github_actions_apply_policy : file("${path.module}/policies/github-actions-plan.hcl")
+      policy      = access == "apply" ? local.github_actions_apply_policy : local.github_actions_plan_policy
       policy_name = "pt-pneuma-openbao-${access}"
       subject     = access == "apply" ? "repo:osinfra-io/pt-pneuma:environment:${local.github_actions_environment} OpenBao%3A us-east1-b" : local.github_actions_plan_subject
     }
