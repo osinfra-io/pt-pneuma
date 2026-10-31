@@ -20,6 +20,8 @@ plan.out
 *.gz
 *.tgz
 *.tar
+__pycache__/
+*.py[cod]
 
 # Local integration test generated state
 tests/integration/**/.work/
