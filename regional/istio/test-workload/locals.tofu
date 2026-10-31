@@ -122,14 +122,6 @@ locals {
     }
   } : {}
 
-  # The pneuma gateway cluster in this zone (the platform team's own cluster). All external
-  # ingress terminates here, so peer teams' istio-test backends must be resolvable locally.
-  gateway_cluster = one([
-    for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name
-    if cluster_config.team_key == module.core_helpers.team
-  ])
-
   # GKE clusters in this zone — the subset that actually receives the istio-test harness.
   # The zone is parsed from the workspace name (static context safe).
   gke_clusters = {
@@ -137,8 +129,6 @@ locals {
     cluster_name => cluster_config
     if endswith(cluster_name, "-${local.zone}")
   }
-
-  kubernetes_project = data.terraform_remote_state.main.outputs.project_id
 
   # Namespace per cluster — team-prefixed for every team, including pneuma (e.g.
   # "pt-pneuma-istio-test"). Each team's istio-test workload is isolated in its own namespace, so
