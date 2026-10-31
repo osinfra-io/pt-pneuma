@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly TEST_DIR="$(mktemp -d)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEST_DIR="$(mktemp -d)"
+readonly SCRIPT_DIR TEST_DIR
 trap 'rm -f "${TEST_DIR}/output"; rmdir "${TEST_DIR}"' EXIT
 
 kubectl() {
@@ -21,8 +22,9 @@ bash "${SCRIPT_DIR}/retain-crds.sh" </dev/null >"${TEST_DIR}/output"
 grep -v '^---$' "${TEST_DIR}/output" |
   jq --slurp --exit-status 'length == 2 and all(.[]; .metadata.annotations["helm.sh/resource-policy"] == "keep")' >/dev/null
 
-for MOCK_OUTPUT in '{"kind":"Deployment"}' '' 'invalid json'; do
-  export MOCK_OUTPUT
+invalid_outputs=('{"kind":"Deployment"}' '' 'invalid json')
+for invalid_output in "${invalid_outputs[@]}"; do
+  export MOCK_OUTPUT="${invalid_output}"
   if bash "${SCRIPT_DIR}/retain-crds.sh" </dev/null >"${TEST_DIR}/output" 2>/dev/null; then
     echo "Expected invalid renderer output to fail" >&2
     exit 1

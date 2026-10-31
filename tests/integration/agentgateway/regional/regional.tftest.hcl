@@ -29,10 +29,6 @@ run "cloud_crd_lifecycle_unchanged" {
 run "local_crd_retention" {
   command = plan
 
-  module {
-    source = "./"
-  }
-
   assert {
     condition     = local.crds_postrender.binary_path == "bash" && endswith(local.crds_postrender.args[0], "/tests/integration/agentgateway/retain-crds.sh")
     error_message = "The local CRD chart must retain every CRD without invoking a live Kubernetes patch."

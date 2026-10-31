@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-readonly LOCAL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly PLATFORM_GROUP_ROOT="$(cd "${LOCAL_DIR}/../../../../.." && pwd)"
-readonly REPOSITORY_ROOT="${PLATFORM_GROUP_ROOT}/arche/pt-arche-kubernetes-istio"
+LOCAL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLATFORM_GROUP_ROOT="$(cd "${LOCAL_DIR}/../../../../.." && pwd)"
+readonly LOCAL_DIR PLATFORM_GROUP_ROOT
 readonly WORK_DIR="${LOCAL_DIR}/.work"
 
 source "${LOCAL_DIR}/../shared/owner.sh"
@@ -187,13 +187,11 @@ resolve_istio_test_context() {
     return
   fi
 
-  local candidate
-  for candidate in "${PLATFORM_GROUP_ROOT}/pneuma/pt-pneuma-istio-test"; do
-    if [ -f "${candidate}/Dockerfile" ]; then
-      printf '%s\n' "${candidate}"
-      return
-    fi
-  done
+  local candidate="${PLATFORM_GROUP_ROOT}/pneuma/pt-pneuma-istio-test"
+  if [ -f "${candidate}/Dockerfile" ]; then
+    printf '%s\n' "${candidate}"
+    return
+  fi
 
   die "Could not find pt-pneuma-istio-test; set ISTIO_TEST_CONTEXT to its checkout"
 }

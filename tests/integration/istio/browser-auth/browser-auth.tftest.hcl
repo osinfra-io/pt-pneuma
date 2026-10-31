@@ -6,10 +6,6 @@ mock_provider "kubernetes" {}
 run "diagnostic_and_agentgateway_browser_policies" {
   command = apply
 
-  module {
-    source = "./"
-  }
-
   assert {
     condition     = contains(keys(module.browser_auth.custom_authorization_policy_manifests), "diagnostic") && contains(keys(module.browser_auth.custom_authorization_policy_manifests), "agentgateway")
     error_message = "Both the diagnostic and agentgateway hosts must receive shared-rendered browser policies."

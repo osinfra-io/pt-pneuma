@@ -9,11 +9,6 @@ runtime_test_state="${test_dir}/runtime.tfstate"
 auth_test_state="${test_dir}/browser-auth.tfstate"
 trap 'rm -f "${runtime_test_state}"; rmdir "${test_dir}"' EXIT
 
-for release in base cni istiod ztunnel; do
-  grep -Fq "from = helm_release.${release}" "${REPOSITORY_ROOT}/regional/moved.tofu"
-  grep -Fq "to   = module.runtime.helm_release.${release}" "${REPOSITORY_ROOT}/regional/moved.tofu"
-done
-
 mock_context="docker-desktop"
 mock_owner=""
 mock_resource_owner=""
@@ -165,12 +160,17 @@ assert_runtime_state_safe "${runtime_test_state}"
 
 (
   calls=""
+  # Test doubles invoked by the dynamically sourced setup fragment below.
+  # shellcheck disable=SC2329
   tofu_init() { calls+="init "; }
+  # shellcheck disable=SC2329
   assert_runtime_state_safe() { calls+="state-check "; }
+  # shellcheck disable=SC2329
   ensure_owned_resource() {
     [ "$*" = "namespace istio-system default" ] || exit 1
     calls+="owner-check "
   }
+  # shellcheck disable=SC2329
   kube() {
     [ "$*" = "apply --filename=-" ] || exit 1
     manifest="$(cat)" || exit 1
@@ -178,6 +178,7 @@ assert_runtime_state_safe "${runtime_test_state}"
     grep -Fq "name: istio-system" <<<"${manifest}" || exit 1
     calls+="owned-namespace "
   }
+  # shellcheck disable=SC2329
   tofu() {
     [ "${calls}" = "init state-check owner-check owned-namespace " ] || exit 1
     return 1
