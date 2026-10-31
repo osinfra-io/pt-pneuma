@@ -15,7 +15,7 @@ module "gateway_auth" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=7831ee5471de8bdac9915641a9fcd64807f5a13e" # v0.9.5
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=99410b0a8783160fbc65132804f857372ee82cc1" # v0.9.6
 
   depends_on = [
     kubernetes_namespace_v1.istio_test_gateway_stub,
