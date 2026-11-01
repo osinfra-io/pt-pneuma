@@ -3,5 +3,5 @@
 
 moved {
   from = authentik_brand.development
-  to   = module.authentication.authentik_brand.sandbox["sandbox"]
+  to   = module.authentication.authentik_brand.this
 }

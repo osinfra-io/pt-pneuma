@@ -85,6 +85,9 @@ kube patch deployment istio-test \
   --type=strategic \
   --patch "{\"spec\":{\"template\":{\"spec\":{\"hostAliases\":[{\"ip\":\"${metadata_mock_ip}\",\"hostnames\":[\"metadata.google.internal\"]}]}}}}"
 
+# The image tag is constant, so restart to pick up a rebuilt local image.
+kube rollout restart deployment/istio-test --namespace=istio-test
+
 kube rollout status daemonset/istio-cni-node --namespace=istio-system --timeout=180s
 kube rollout status daemonset/ztunnel --namespace=istio-system --timeout=180s
 kube rollout status deployment/metadata-mock --namespace=istio-test --timeout=120s

@@ -60,9 +60,29 @@ def verify(work):
             or actual["meta_icon"] != expected_icons[application["name"]]
         ):
             raise ValueError("Browser application name, icon, or launch URL differs from the intended configuration")
+        if actual["meta_hide"]:
+            raise ValueError("Local browser applications must be visible on the application dashboard")
 
-    if api("core/applications/openbao/")["meta_icon"] != expected_icons["OpenBao"]:
-        raise ValueError("The OpenBao application must use the docs-hosted icon")
+    openbao = api("core/applications/openbao/")
+    if openbao["meta_icon"] != expected_icons["OpenBao"] or openbao["meta_hide"]:
+        raise ValueError("The OpenBao application must use the docs-hosted icon and be visible on the dashboard")
+
+    browser_policies = objects("authentik_policy_expression", "browser_access")
+    expected_policy_names = {
+        "agentgateway-browser-access",
+        "local-development-browser-access",
+    }
+    if {policy["name"] for policy in browser_policies} != expected_policy_names:
+        raise ValueError("Browser access policy names differ from the expected kebab-case names")
+    for policy in browser_policies:
+        if api(f"policies/all/{policy['id']}/")["name"] != policy["name"]:
+            raise ValueError("A live browser access policy name differs from applied configuration")
+
+    sso_policies = objects("authentik_policy_expression", "google_authentication_sso")
+    if len(sso_policies) != 1 or sso_policies[0]["name"] != "google-source-authentication-require-sso":
+        raise ValueError("The Google SSO policy name differs from the expected kebab-case name")
+    if api(f"policies/all/{sso_policies[0]['id']}/")["name"] != sso_policies[0]["name"]:
+        raise ValueError("The live Google SSO policy name differs from applied configuration")
 
     openbao_providers = objects("authentik_provider_oauth2", "openbao")
     if len(openbao_providers) != 1:

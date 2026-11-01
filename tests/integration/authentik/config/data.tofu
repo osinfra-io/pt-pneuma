@@ -1,3 +1,10 @@
+# Authentik Brand
+# https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/data-sources/brand
+
+data "authentik_brand" "built_in" {
+  domain = module.authentication.built_in_brand_domain
+}
+
 # Authentik Expression Policy
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/data-sources/policy_expression
 

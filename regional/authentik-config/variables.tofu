@@ -23,8 +23,3 @@ variable "google_oauth_client_secret" {
   sensitive   = true
   type        = string
 }
-
-variable "sandbox_authentication_enabled" {
-  description = "Enable the sandbox-specific Authentik authentication flow and brand"
-  type        = bool
-}

@@ -12,6 +12,13 @@ data "terraform_remote_state" "main" {
   workspace = "main-${module.core_helpers.environment}"
 }
 
+# Authentik Brand Data Source
+# https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/data-sources/brand
+
+data "authentik_brand" "built_in" {
+  domain = module.authentication.built_in_brand_domain
+}
+
 # Authentik Outpost Data Source
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/data-sources/outpost
 
@@ -22,8 +29,8 @@ data "authentik_outpost" "embedded" {
 # Authentik Expression Policy Data Source
 # https://registry.terraform.io/providers/goauthentik/authentik/latest/docs/data-sources/policy_expression
 
-data "authentik_policy_expression" "sandbox_authentication_stage_policies" {
-  for_each = var.sandbox_authentication_enabled ? module.authentication.authentication_stage_policies : {}
+data "authentik_policy_expression" "authentication_stage_policies" {
+  for_each = module.authentication.authentication_stage_policies
 
   name = each.value.policy_name
 }
@@ -37,8 +44,8 @@ data "authentik_stage" "default_authentication_identification" {
   name = module.authentik_config.default_authentication_identification_stage_name
 }
 
-data "authentik_stage" "sandbox_authentication_stages" {
-  for_each = var.sandbox_authentication_enabled ? module.authentication.authentication_stages : {}
+data "authentik_stage" "authentication_stages" {
+  for_each = module.authentication.authentication_stages
 
   name = each.value.name
 }

@@ -127,6 +127,8 @@ locals {
   # Authentik strips the final newline; normalize it to avoid perpetual in-place updates.
   brand_custom_css_api = chomp(local.brand_custom_css)
 
+  built_in_brand_domain = "authentik-default"
+
   default_authentication_stage_settings = {
     captcha_stage             = null
     case_insensitive_matching = true
@@ -141,10 +143,4 @@ locals {
     user_fields               = ["email", "username"]
     webauthn_stage            = null
   }
-
-  enabled_stage_policies = var.enabled ? local.authentication_stage_policies : {}
-  enabled_stages         = var.enabled ? local.authentication_stages : {}
-
-  # Retain the cloud instance key so whole-resource moved blocks preserve existing state.
-  instances = var.enabled ? toset(["sandbox"]) : toset([])
 }

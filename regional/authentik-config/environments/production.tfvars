@@ -1,3 +1,1 @@
 google_oauth_client_id = "1034747809275-gf313g2sdtkia1hkhqrt0ajdg3uogbmi.apps.googleusercontent.com"
-
-sandbox_authentication_enabled = false

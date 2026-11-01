@@ -45,8 +45,9 @@ variable "teams" {
   description = "Actual Logos team declaration passed by the owning local setup script."
   type = map(object({
     authentik_groups = optional(map(object({
-      description = string
-      label       = string
+      description = optional(string)
+      label       = optional(string)
+      name        = optional(string)
       members = optional(object({
         non-production = optional(list(string), [])
         production     = optional(list(string), [])

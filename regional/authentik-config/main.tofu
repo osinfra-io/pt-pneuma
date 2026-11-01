@@ -4,10 +4,9 @@
 module "authentication" {
   source = "./authentication"
 
-  brand_domain = local.sandbox_brand_domain
-  brand_title  = local.sandbox_brand_title
-  enabled      = var.sandbox_authentication_enabled
-  flow_title   = local.sandbox_flow_title
+  brand_domain = local.authentik_brand_domain
+  brand_title  = local.authentik_brand_title
+  flow_title   = local.authentik_flow_title
   policy_ids   = local.authentication_policy_ids
   stage_ids    = local.authentication_stage_ids
 }

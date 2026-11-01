@@ -2,6 +2,11 @@
 # https://opentofu.org/docs/language/import
 
 import {
+  id = data.authentik_brand.built_in.id
+  to = module.authentication.authentik_brand.built_in
+}
+
+import {
   id = var.embedded_outpost_id
   to = module.authentik_config.authentik_outpost.embedded
 }
