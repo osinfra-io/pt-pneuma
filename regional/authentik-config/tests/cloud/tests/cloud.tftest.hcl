@@ -47,7 +47,7 @@ run "cloud_sandbox_root" {
   }
 
   assert {
-    condition     = output.cloud_inputs.external_host == "https://pneuma.sb.osinfra.io" && output.cloud_inputs.namespace == "authentik" && output.cloud_inputs.manage_default_authentication_stage && output.cloud_inputs.default_authentication_source_uuids == []
+    condition     = output.cloud_inputs.dns_zone_name == "pneuma.sb.osinfra.io" && output.cloud_inputs.namespace == "authentik" && output.cloud_inputs.manage_default_authentication_stage && output.cloud_inputs.default_authentication_source_uuids == []
     error_message = "Extraction must not change cloud host/namespace discovery or default-stage management."
   }
 
@@ -70,7 +70,7 @@ run "cloud_nonproduction_authentication" {
   }
 
   assert {
-    condition     = output.cloud_inputs.external_host == "https://pneuma.nonprod.osinfra.io"
+    condition     = output.cloud_inputs.dns_zone_name == "pneuma.nonprod.osinfra.io"
     error_message = "Non-production host discovery must remain unchanged."
   }
 }
@@ -88,7 +88,7 @@ run "cloud_production_authentication" {
   }
 
   assert {
-    condition     = output.cloud_inputs.external_host == "https://pneuma.osinfra.io"
+    condition     = output.cloud_inputs.dns_zone_name == "pneuma.osinfra.io"
     error_message = "Production host discovery must remain unchanged."
   }
 }

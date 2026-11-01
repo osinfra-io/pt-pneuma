@@ -15,7 +15,7 @@ module "authentication" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "authentik_config" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=bd81e9ba75b72f2f803c96241198642743fa984a" # v0.2.8
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional/config?ref=4b52f588ae3dec20bb20c4547d3d7a4d55abaced" # v0.2.9
 
   depends_on = [terraform_data.browser_group_policy_validation]
 
@@ -24,7 +24,6 @@ module "authentik_config" {
   browser_group_policy_bindings         = local.browser_group_policy_bindings
   default_authentication_source_uuids   = local.default_authentication_source_uuids
   default_authentication_stage_settings = module.authentication.default_authentication_stage_settings
-  external_host                         = local.external_host
   google_internal_domains               = ["osinfra.io"]
   google_oauth_client_id                = var.google_oauth_client_id
   google_oauth_client_secret            = var.google_oauth_client_secret
