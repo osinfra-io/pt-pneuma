@@ -23,6 +23,12 @@ variable "datadog_app_key" {
   type        = string
 }
 
+variable "datadog_enable" {
+  default     = false
+  description = "Platform kill switch for the Datadog operator on all clusters. Enabled only in environments whose tfvars set it to true (production), to avoid host costs."
+  type        = bool
+}
+
 variable "kubernetes_datadog_operator_limits_cpu" {
   default     = "200m"
   description = "The CPU limit for the Datadog operator"
