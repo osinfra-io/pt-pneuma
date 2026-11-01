@@ -4,12 +4,8 @@
 locals {
   artifact_registry = "us-docker.pkg.dev/pt-corpus-tf16-prod/${module.core_helpers.team}-virtual"
 
-  # Clusters in this zone whose owning team has opted in to platform-managed Datadog.
-  datadog_clusters = {
-    for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config
-    if try(module.core_helpers.teams[cluster_config.team_key].enable_platform_managed_datadog, false)
-  }
+  # Clusters in this zone that receive Datadog; empty when the kill switch is off.
+  datadog_clusters = var.datadog_enable ? local.gke_clusters : {}
 
   # GKE clusters in this zone — the subset that actually receives the add-on.
   # The zone is parsed from the workspace name (static context safe).
