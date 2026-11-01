@@ -8,7 +8,7 @@ Authentik applications and their access policies authenticate and authorize brow
 
 The checked-out Arche Authentik configuration enforces OR within groups and roles, AND between those lists, and linked verified Google identity for team-qualified requirements. Its expression policies disable policy-result caching. Release that module and update Pneuma's pinned Authentik configuration source before deploying this gateway change; the older per-group bindings do not provide equivalent enforcement. Apply the Authentik migration before removing the gateway guard.
 
-The extension provider fails closed. The header filter removes client `x-authentik-*` headers before ext_authz supplies trusted identity. Both outputs must be deployed together.
+The extension provider fails closed. The header filter removes client `x-authentik-*` headers before ext_authz supplies trusted identity. Both outputs must be deployed together. Only an explicit allow-list of identity and `meta-*` headers reaches upstream applications; the user token (`x-authentik-jwt`) and its JWKS URL are never forwarded.
 
 Managed application group memberships are assigned in Authentik from verified Google identities by the Authentik configuration module. The gateway does not independently authorize email headers. The inbound header-stripping filter remains to prevent client-supplied identity headers reaching upstream applications.
 

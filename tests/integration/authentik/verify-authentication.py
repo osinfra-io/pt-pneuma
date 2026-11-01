@@ -16,7 +16,7 @@ def verify_password_flow(context):
         urllib.request.HTTPSHandler(context=context),
         urllib.request.HTTPCookieProcessor(cookies),
     )
-    url = "https://127.0.0.1:19443/api/v3/flows/executor/sandbox-authentication-flow/"
+    url = "https://127.0.0.1:19443/api/v3/flows/executor/osinfra-authentication-flow/"
 
     def execute(payload=None):
         headers = {"Host": "authentik.localhost"}
@@ -100,9 +100,12 @@ def verify(work):
         if not (shared or identification) or kind not in endpoints:
             continue
         endpoint, fields = endpoints[kind]
+        built_in_brand = kind == "authentik_brand" and resource["name"] == "built_in"
+        if built_in_brand:
+            fields = ("default", "domain")
         for instance in resource["instances"]:
             expected = instance["attributes"]
-            if kind == "authentik_brand":
+            if kind == "authentik_brand" and not built_in_brand:
                 selected_brand = expected
             if kind == "authentik_flow":
                 selected_flow = expected
@@ -128,7 +131,7 @@ def verify(work):
                     raise ValueError(f"{kind}.{field} differs from applied shared configuration")
             counts[kind] += 1
     if counts != {
-        "authentik_brand": 1,
+        "authentik_brand": 2,
         "authentik_flow": 1,
         "authentik_flow_stage_binding": 4,
         "authentik_policy_binding": 2,

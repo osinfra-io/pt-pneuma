@@ -11,9 +11,14 @@ output "authentication_stages" {
   value       = local.authentication_stages
 }
 
-output "brands" {
-  description = "Managed authentication brands keyed by the preserved cloud instance key"
-  value       = authentik_brand.sandbox
+output "brand" {
+  description = "Managed authentication brand"
+  value       = authentik_brand.this
+}
+
+output "built_in_brand_domain" {
+  description = "Domain of the built-in Authentik brand that callers import"
+  value       = local.built_in_brand_domain
 }
 
 output "default_authentication_stage_settings" {
@@ -21,17 +26,17 @@ output "default_authentication_stage_settings" {
   value       = local.default_authentication_stage_settings
 }
 
-output "flows" {
-  description = "Managed custom authentication flows keyed by the preserved cloud instance key"
-  value       = authentik_flow.sandbox_authentication
+output "flow" {
+  description = "Managed custom authentication flow"
+  value       = authentik_flow.authentication
 }
 
 output "policy_bindings" {
   description = "Conditional authentication policy bindings keyed by stage"
-  value       = authentik_policy_binding.sandbox_authentication_stage_policies
+  value       = authentik_policy_binding.authentication_stage_policies
 }
 
 output "stage_bindings" {
   description = "Authentication stage bindings keyed by stage"
-  value       = authentik_flow_stage_binding.sandbox_authentication_stages
+  value       = authentik_flow_stage_binding.authentication_stages
 }

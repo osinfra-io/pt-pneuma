@@ -1,6 +1,12 @@
 # Import
 # https://opentofu.org/docs/language/import
 
+# The built-in brand ships as the default; managing it lets the osinfra.io brand become the default.
+import {
+  id = data.authentik_brand.built_in.id
+  to = module.authentication.authentik_brand.built_in
+}
+
 # The embedded outpost ships with Authentik, so we import it (rather than create it) to assign
 # the gateway proxy provider. This makes each regional authentik-server serve forward-auth
 # locally for Istio ext_authz without a managed outpost deployment.

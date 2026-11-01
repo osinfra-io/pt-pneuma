@@ -27,25 +27,21 @@ override_data {
   }
 }
 
-variables {
-  sandbox_authentication_enabled = true
-}
-
 run "cloud_sandbox_root" {
   command = apply
 
   assert {
-    condition     = module.authentication.brands["sandbox"].domain == "authentik.sb.osinfra.io" && module.authentication.brands["sandbox"].branding_title == "osinfra.io | Sandbox" && module.authentication.flows["sandbox"].slug == "sandbox-authentication-flow" && module.authentication.flows["sandbox"].title == "Welcome to osinfra.io sandbox!"
-    error_message = "The cloud root must pass the original sandbox identities and titles."
+    condition     = module.authentication.brand.domain == "authentik.sb.osinfra.io" && module.authentication.brand.branding_title == "osinfra.io | Sandbox" && module.authentication.flow.slug == "osinfra-authentication-flow" && module.authentication.flow.title == "Welcome to osinfra.io sandbox!"
+    error_message = "The cloud root must derive the brand domain and titles from the environment."
   }
 
   assert {
     condition = alltrue([
       for key, binding in module.authentication.stage_bindings :
-      binding.stage == data.authentik_stage.sandbox_authentication_stages[key].id
+      binding.stage == data.authentik_stage.authentication_stages[key].id
       ]) && alltrue([
       for key, binding in module.authentication.policy_bindings :
-      binding.policy == data.authentik_policy_expression.sandbox_authentication_stage_policies[key].id
+      binding.policy == data.authentik_policy_expression.authentication_stage_policies[key].id
     ])
     error_message = "The cloud root must pass its discovered stage and expression-policy IDs."
   }
@@ -61,22 +57,16 @@ run "cloud_sandbox_root" {
   }
 }
 
-run "cloud_nonproduction_custom_authentication_disabled" {
+run "cloud_nonproduction_authentication" {
   command = apply
 
   variables {
-    sandbox_authentication_enabled = false
-    test_env                       = "nonprod"
+    test_env = "nonprod"
   }
 
   assert {
-    condition     = length(module.authentication.brands) == 0 && length(module.authentication.flows) == 0 && length(module.authentication.stage_bindings) == 0 && length(module.authentication.policy_bindings) == 0 && length(data.authentik_stage.sandbox_authentication_stages) == 0 && length(data.authentik_policy_expression.sandbox_authentication_stage_policies) == 0
-    error_message = "Disabled cloud environments must not discover or create custom sandbox authentication objects."
-  }
-
-  assert {
-    condition     = output.cloud_inputs.manage_default_authentication_stage && module.authentication.default_authentication_stage_settings.password_stage == null && module.authentication.default_authentication_stage_settings.case_insensitive_matching
-    error_message = "The existing shared identification stage must remain managed when the custom flow is disabled."
+    condition     = module.authentication.brand.domain == "authentik.nonprod.osinfra.io" && module.authentication.brand.branding_title == "osinfra.io | Non-Production" && module.authentication.flow.title == "Welcome to osinfra.io non-production!"
+    error_message = "Non-production must brand its own Authentik host."
   }
 
   assert {
@@ -85,22 +75,21 @@ run "cloud_nonproduction_custom_authentication_disabled" {
   }
 }
 
-run "cloud_production_custom_authentication_disabled" {
+run "cloud_production_authentication" {
   command = apply
 
   variables {
-    sandbox_authentication_enabled = false
-    test_env                       = "prod"
+    test_env = "prod"
   }
 
   assert {
-    condition     = length(module.authentication.brands) == 0 && length(module.authentication.flows) == 0 && length(module.authentication.stage_bindings) == 0 && length(module.authentication.policy_bindings) == 0 && length(data.authentik_stage.sandbox_authentication_stages) == 0 && length(data.authentik_policy_expression.sandbox_authentication_stage_policies) == 0
-    error_message = "Production must not discover or create custom sandbox authentication objects."
+    condition     = module.authentication.brand.domain == "authentik.osinfra.io" && module.authentication.brand.branding_title == "osinfra.io" && module.authentication.flow.title == "Welcome to osinfra.io!"
+    error_message = "Production must brand the Authentik host without an environment segment."
   }
 
   assert {
-    condition     = output.cloud_inputs.external_host == "https://pneuma.osinfra.io" && output.cloud_inputs.manage_default_authentication_stage && module.authentication.default_authentication_stage_settings.password_stage == null
-    error_message = "Production host discovery and identification-stage management must remain unchanged."
+    condition     = output.cloud_inputs.external_host == "https://pneuma.osinfra.io"
+    error_message = "Production host discovery must remain unchanged."
   }
 }
 

@@ -12,18 +12,20 @@ module "authentik_config" {
 
   browser_group_policy_bindings = {
     agentgateway = {
-      groups     = ["pt-pneuma: agentgateway Admins"]
-      host       = "https://agentgateway.localhost"
-      icon       = "https://docs.osinfra.io/img/authentik/applications/agentgateway.svg"
-      launch_url = "https://agentgateway.localhost/ui/"
-      name       = "agentgateway"
+      groups      = ["pt-pneuma: agentgateway Admins"]
+      host        = "https://agentgateway.localhost"
+      icon        = "https://docs.osinfra.io/img/authentik/applications/agentgateway.svg"
+      launch_url  = "https://agentgateway.localhost/ui/"
+      name        = "agentgateway"
+      policy_name = "agentgateway-browser-access"
     }
     development = {
-      groups     = ["all"]
-      host       = "https://dev.localhost"
-      icon       = "https://docs.osinfra.io/img/authentik/applications/istio.svg"
-      launch_url = "https://dev.localhost/istio-test/auth"
-      name       = "Istio"
+      groups      = ["all"]
+      host        = "https://dev.localhost"
+      icon        = "https://docs.osinfra.io/img/authentik/applications/istio.svg"
+      launch_url  = "https://dev.localhost/istio-test/auth"
+      name        = "Istio"
+      policy_name = "local-development-browser-access"
     }
   }
 
@@ -70,5 +72,5 @@ module "team_access" {
   source = "../../../../regional/istio/gateway-auth/team-access"
 
   environment = "sandbox"
-  teams       = var.teams
+  teams       = local.team_access_teams
 }

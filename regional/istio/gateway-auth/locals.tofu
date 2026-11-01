@@ -74,7 +74,17 @@ locals {
 
       headersToUpstreamOnAllow = [
         "set-cookie",
-        "x-authentik-*",
+        "x-authentik-email",
+        "x-authentik-entitlements",
+        "x-authentik-groups",
+        "x-authentik-meta-app",
+        "x-authentik-meta-outpost",
+        "x-authentik-meta-provider",
+        "x-authentik-meta-version",
+        "x-authentik-name",
+        "x-authentik-osinfra-google-email",
+        "x-authentik-uid",
+        "x-authentik-username",
       ]
 
       includeRequestHeadersInCheck = [

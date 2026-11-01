@@ -2,15 +2,19 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  agentgateway_hostname = "agentgateway.${module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"}"
+  agentgateway_hostname = "agentgateway.${local.public_dns_domain}"
 
   authentication_policy_ids = {
-    for key, policy in data.authentik_policy_expression.sandbox_authentication_stage_policies : key => policy.id
+    for key, policy in data.authentik_policy_expression.authentication_stage_policies : key => policy.id
   }
 
   authentication_stage_ids = {
-    for key, stage in data.authentik_stage.sandbox_authentication_stages : key => stage.id
+    for key, stage in data.authentik_stage.authentication_stages : key => stage.id
   }
+
+  authentik_brand_domain = "authentik.${local.public_dns_domain}"
+  authentik_brand_title  = module.core_helpers.env == "prod" ? "osinfra.io" : "osinfra.io | ${title(module.core_helpers.environment)}"
+  authentik_flow_title   = module.core_helpers.env == "prod" ? "Welcome to osinfra.io!" : "Welcome to osinfra.io ${module.core_helpers.environment}!"
 
   # One logical Authentik service: the bootstrap token and public base URL are created once in
   # the main workspace and shared by every regional instance, so this workspace configures the
@@ -30,7 +34,12 @@ locals {
         for item in local.browser_group_policy_items :
         item.host == host ? item.required_groups : []
       ]))
-      host = host
+      hidden      = !anytrue([for item in local.browser_group_policy_items : item.global if item.host == host])
+      host        = host
+      icon        = "https://docs.osinfra.io/img/authentik/applications/istio.svg"
+      launch_url  = "${host}/istio-test/auth"
+      name        = "Istio"
+      policy_name = "${[for item in local.browser_group_policy_items : item.team_key if item.host == host][0]}-browser-access"
       roles = distinct(flatten([
         for item in local.browser_group_policy_items :
         item.host == host ? item.required_roles : []
@@ -38,8 +47,9 @@ locals {
     }
     }, module.core_helpers.environment == "sandbox" ? {
     "https://${local.agentgateway_hostname}" = {
-      groups = ["${module.core_helpers.team}: agentgateway Admins"]
-      host   = "https://${local.agentgateway_hostname}"
+      groups      = ["${module.core_helpers.team}: agentgateway Admins"]
+      host        = "https://${local.agentgateway_hostname}"
+      policy_name = "agentgateway-browser-access"
     }
   } : {})
 
@@ -53,19 +63,21 @@ locals {
 
   browser_group_policy_items = flatten([
     for cluster_name, cluster_config in var.clusters : flatten([
-      for ns_name, ns in try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {}) : [
-        for route_name, policy in try(ns.route_auth_policies, {}) : [
+      for ns in values(try(module.core_helpers.teams[cluster_config.team_key].platform_managed_project.kubernetes_engine_namespaces, {})) : [
+        for policy in values(try(ns.route_auth_policies, {})) : [
           for host in [
-            "https://${local.dns_zone[cluster_name]}",
-            "https://${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${local.dns_zone[cluster_name]}",
+            { global = true, url = "https://${local.dns_zone[cluster_name]}" },
+            { global = false, url = "https://${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${local.dns_zone[cluster_name]}" },
             ] : {
-            host            = host
+            global          = host.global
+            host            = host.url
             required_groups = try(policy.required_groups, [])
             required_roles  = try(policy.required_roles, [])
             requirements = jsonencode({
               required_groups = sort(try(policy.required_groups, []))
               required_roles  = sort(try(policy.required_roles, []))
             })
+            team_key = cluster_config.team_key
           }
           if try(policy.mode, "browser") == "browser" && length(concat(
             try(policy.required_groups, []),
@@ -111,9 +123,8 @@ locals {
       url           = "https://${local.agentgateway_hostname}/outpost.goauthentik.io/callback"
   }] : [])
 
-  sandbox_brand_domain = "authentik.sb.osinfra.io"
-  sandbox_brand_title  = "osinfra.io | Sandbox"
-  sandbox_flow_title   = "Welcome to osinfra.io sandbox!"
+  # Prod drops the env segment.
+  public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
 
   state_bucket = "${module.core_helpers.repository}-state-${module.core_helpers.env}"
 }

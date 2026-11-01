@@ -35,6 +35,12 @@ variable "google_oauth_client_secret" {
 
 }
 
+variable "import_built_in_brand" {
+  default     = true
+  description = "Import the built-in brand so it can be demoted; disabled only by mocked tests, which cannot import"
+  type        = bool
+}
+
 variable "revoke_application_access" {
   default     = false
   description = "Local-only revocation test: temporarily empty declared application memberships without changing Logos or diagnostic access."
@@ -45,8 +51,9 @@ variable "teams" {
   description = "Actual Logos team declaration passed by the owning local setup script."
   type = map(object({
     authentik_groups = optional(map(object({
-      description = string
-      label       = string
+      description = optional(string)
+      label       = optional(string)
+      name        = optional(string)
       members = optional(object({
         non-production = optional(list(string), [])
         production     = optional(list(string), [])
