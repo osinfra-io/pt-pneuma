@@ -7,7 +7,7 @@ output "cloud_inputs" {
   description = "Resolved cloud inputs independent of the extracted brand/flow resources"
   value = {
     default_authentication_source_uuids = local.default_authentication_source_uuids
-    external_host                       = local.external_host
+    dns_zone_name                       = local.dns_zone_name
     manage_default_authentication_stage = local.manage_default_authentication_stage
     namespace                           = local.namespace
     redirect_uris                       = local.redirect_uris

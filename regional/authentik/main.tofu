@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-authentik
 
 module "kubernetes_authentik" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=bd81e9ba75b72f2f803c96241198642743fa984a" # v0.2.8
+  source = "github.com/osinfra-io/pt-arche-kubernetes-authentik//regional?ref=4b52f588ae3dec20bb20c4547d3d7a4d55abaced" # v0.2.9
 
   depends_on = [
     kubernetes_secret_v1.authentik,

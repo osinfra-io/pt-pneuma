@@ -32,7 +32,6 @@ module "authentik_config" {
   client_id = "development"
 
   default_authentication_stage_settings = module.authentication.default_authentication_stage_settings
-  external_host                         = "https://dev.localhost"
   gateway_oidc_enabled                  = false
   google_internal_domains               = ["osinfra.io"]
   google_oauth_client_id                = var.google_oauth_client_id

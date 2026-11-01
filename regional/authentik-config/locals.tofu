@@ -99,9 +99,6 @@ locals {
 
   dns_zone_name = module.core_helpers.env == "prod" ? "${local.dns_subdomain}.osinfra.io" : "${local.dns_subdomain}.${module.core_helpers.env}.osinfra.io"
 
-  # The protected gateway host used as the proxy provider external host for forward-auth.
-  external_host = "https://${local.dns_zone_name}"
-
   # Main workspace outputs (shared Authentik base URL and secret env).
   main = data.terraform_remote_state.main.outputs
 
