@@ -35,6 +35,12 @@ variable "google_oauth_client_secret" {
 
 }
 
+variable "import_built_in_brand" {
+  default     = true
+  description = "Import the built-in brand so it can be demoted; disabled only by mocked tests, which cannot import"
+  type        = bool
+}
+
 variable "revoke_application_access" {
   default     = false
   description = "Local-only revocation test: temporarily empty declared application memberships without changing Logos or diagnostic access."

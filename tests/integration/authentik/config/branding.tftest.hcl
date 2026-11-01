@@ -24,6 +24,7 @@ mock_provider "authentik" {
 variables {
   authentik_token            = "mock-local-token"
   embedded_outpost_id        = "mock-outpost"
+  import_built_in_brand      = false
   google_oauth_client_id     = "mock-google-client"
   google_oauth_client_secret = "mock-google-secret"
 }

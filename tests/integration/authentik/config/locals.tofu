@@ -27,10 +27,10 @@ locals {
     for team_key, team in var.teams : team_key => {
       authentik_groups = {
         for key, group in team.authentik_groups : key => {
-          description = coalesce(group.description, try(format(local.authentik_group_defaults[key].description, team_key), null))
-          label       = coalesce(group.label, try(local.authentik_group_defaults[key].label, null))
+          description = group.description != null ? group.description : try(format(local.authentik_group_defaults[key].description, team_key), null)
+          label       = group.label != null ? group.label : try(local.authentik_group_defaults[key].label, null)
           members     = group.members
-          name        = coalesce(group.name, "${team_key}: ${coalesce(group.label, try(local.authentik_group_defaults[key].label, null))}")
+          name        = group.name != null ? group.name : "${team_key}: ${group.label != null ? group.label : try(local.authentik_group_defaults[key].label, key)}"
         }
       }
     }
