@@ -266,6 +266,8 @@ locals {
     for rule in local.cloud_armor_preconfigured_waf_rules : rule.name =>
     rule.name == "methodenforcement-v33-stable" && length(local.authentik_cloud_armor_method_enforcement_exceptions) > 0 ?
     "evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}}) && !(${local.cloud_armor_method_enforcement_exception_expression})" :
+    rule.name == "rce-v33-stable" ?
+    "(evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}}) && !(${local.openbao_kv_waf_exception_expression})) || evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}, 'opt_out_rule_ids': ['owasp-crs-v030301-id932100-rce']})" :
     "evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}})"
   }
 
@@ -393,6 +395,10 @@ locals {
 
   # OpenBao has a dedicated global GKE multi-cluster ingress, separate from the Istio mesh gateway.
   openbao_hostname = "openbao.${local.authentik_public_dns_domain}"
+
+  # KV secret values can legitimately contain shell commands that trigger RCE signature 932100.
+  # Exempt only that signature for KV writes; OpenBao still validates the token and enforces ACLs.
+  openbao_kv_waf_exception_expression = "has(request.headers['host']) && request.headers['host'] == '${local.openbao_hostname}' && request.path.startsWith('/v1/kv2/data/') && request.method.matches('^POST$|^PUT$') && has(request.headers['x-vault-token']) && request.headers['x-vault-token'] != ''"
 
   openbao_workload_identity_member = "serviceAccount:${local.team_project_ids[module.core_helpers.team]}.svc.id.goog[openbao/openbao]"
 
