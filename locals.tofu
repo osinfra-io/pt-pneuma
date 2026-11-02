@@ -111,8 +111,8 @@ locals {
   ))
 
   authentik_gateway_hostname_regex = format(
-    "^(%s)$",
-    join("|", [for hostname in local.authentik_gateway_hostnames : replace(hostname, ".", "\\.")])
+    "^%s$",
+    join("$|^", [for hostname in local.authentik_gateway_hostnames : replace(hostname, ".", "\\.")])
   )
 
   # Authentik is a single platform-wide IdP shared by every team, so it is published at the
