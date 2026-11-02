@@ -52,6 +52,11 @@ output "gateway_dns" {
   value       = local.gateway_dns_by_team
 }
 
+output "gateway_regional_host_dns" {
+  description = "Environment-level host DNS records for regional Istio ingress aliases"
+  value       = merge(local.authentik_gateway_dns, local.agentgateway_gateway_dns)
+}
+
 output "gke_clusters" {
   description = "GKE clusters aggregated from all teams"
   value       = local.gke_clusters

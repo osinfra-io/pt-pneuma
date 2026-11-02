@@ -18,17 +18,24 @@ locals {
   authentik_cloud_armor_allow_rules = {
     authentik_api = {
       description = "Allow token-authenticated Authentik API requests"
-      expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && request.path.startsWith('/api/v3/') && has(request.headers['authorization']) && request.headers['authorization'].startsWith('Bearer ')"
+      expression  = "has(request.headers['host']) && request.headers['host'].matches(${jsonencode(local.authentik_gateway_hostname_regex)}) && request.path.startsWith('/api/v3/') && has(request.headers['authorization']) && request.headers['authorization'].startsWith('Bearer ')"
       priority    = 9000
     }
   }
 
-  authentik_cloud_armor_method_enforcement_exceptions = [
+  cloud_armor_method_enforcement_exceptions = [
     {
-      hostname    = local.authentik_hostname
-      methods     = ["DELETE", "PATCH", "PUT"]
-      path_prefix = "/api/v3/"
-    }
+      hostname       = ""
+      hostname_regex = local.authentik_gateway_hostname_regex
+      methods        = ["DELETE", "PATCH", "PUT"]
+      path_prefix    = "/api/v3/"
+    },
+    {
+      hostname       = local.openbao_hostname
+      hostname_regex = ""
+      methods        = ["DELETE", "LIST", "PATCH", "PUT"]
+      path_prefix    = "/v1/"
+    },
   ]
 
   # The Google OAuth flow's "scope" query parameter (e.g. "userinfo.profile") is false-positive
@@ -85,15 +92,28 @@ locals {
   authentik_database_user = "authentik"
 
   # Apex A record for the shared platform Authentik IdP, published in the environment-level
-  # <env>.osinfra.io public zone (owned by pt-corpus in the shared VPC host project). It is merged
-  # into the main gateway module's DNS input only — not the gateway_dns output that regional/istio
-  # zonal-prefixes — so it resolves to the single MCI global address, not per-zone gateway LBs.
+  # <env>.osinfra.io public zone (owned by pt-corpus in the shared VPC host project). The main
+  # gateway uses this name for MCI; regional/istio uses it to create zone-prefixed ingress aliases.
   authentik_gateway_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
     (local.authentik_hostname) = {
       managed_zone = local.authentik_public_dns_zone_name
       project      = data.google_project.shared_vpc_host.project_id
     }
   } : {}
+
+  authentik_gateway_hostnames = distinct(concat(
+    [local.authentik_hostname],
+    [
+      for cluster_name in keys(local.gke_clusters) :
+      "${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${local.authentik_hostname}"
+      if startswith(cluster_name, "${module.core_helpers.team}-")
+    ],
+  ))
+
+  authentik_gateway_hostname_regex = format(
+    "^%s$",
+    join("$|^", [for hostname in local.authentik_gateway_hostnames : replace(hostname, ".", "\\.")])
+  )
 
   # Authentik is a single platform-wide IdP shared by every team, so it is published at the
   # environment-level public zone (authentik.<env>.osinfra.io) rather than under any one team's
@@ -130,14 +150,8 @@ locals {
   authentik_workload_identity_member = "serviceAccount:${local.team_project_ids[module.core_helpers.team]}.svc.id.goog[${local.authentik_kubernetes_namespace}/${local.authentik_kubernetes_service_account}]"
 
   cloud_armor_method_enforcement_exception_expression = join(" || ", [
-    for scope in concat(local.authentik_cloud_armor_method_enforcement_exceptions, [
-      {
-        hostname    = local.openbao_hostname
-        methods     = ["DELETE", "LIST", "PATCH", "PUT"]
-        path_prefix = "/v1/"
-      }
-    ]) :
-    "(has(request.headers['host']) && request.headers['host'] == ${jsonencode(scope.hostname)} && request.path.startsWith(${jsonencode(scope.path_prefix)}) && request.method.matches(${jsonencode(join("|", [for method in sort(tolist(scope.methods)) : "^${method}$"]))}))"
+    for scope in local.cloud_armor_method_enforcement_exceptions :
+    "(has(request.headers['host']) && request.headers['host'].matches(${jsonencode(scope.hostname_regex != "" ? scope.hostname_regex : format("^%s$", replace(scope.hostname, ".", "\\.")))}) && request.path.startsWith(${jsonencode(scope.path_prefix)}) && request.method.matches(${jsonencode(join("|", [for method in sort(tolist(scope.methods)) : "^${method}$"]))}))"
   ])
 
   cloud_armor_preconfigured_waf_rules = [
@@ -264,7 +278,7 @@ locals {
 
   cloud_armor_waf_rule_expressions = {
     for rule in local.cloud_armor_preconfigured_waf_rules : rule.name =>
-    rule.name == "methodenforcement-v33-stable" && length(local.authentik_cloud_armor_method_enforcement_exceptions) > 0 ?
+    rule.name == "methodenforcement-v33-stable" && length(local.cloud_armor_method_enforcement_exceptions) > 0 ?
     "evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}}) && !(${local.cloud_armor_method_enforcement_exception_expression})" :
     rule.name == "rce-v33-stable" ?
     "(evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}}) && !(${local.openbao_kv_waf_exception_expression})) || evaluatePreconfiguredWaf('${rule.name}', {'sensitivity': ${rule.sensitivity}, 'opt_out_rule_ids': ['owasp-crs-v030301-id932100-rce']})" :
@@ -316,7 +330,7 @@ locals {
   # Merged gateway DNS for all teams — passed to pneuma's MCI module instance so the
   # single MCI global address creates DNS A records for every team that routes through
   # pneuma's gateway (e.g. pneuma.sb.osinfra.io and any member team subdomain), plus the
-  # environment-level authentik.<env>.osinfra.io record for the shared IdP.
+  # environment-level authentik.<env>.osinfra.io and agentgateway.<env>.osinfra.io records.
   gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(
     merge(values(local.gateway_dns_by_team)...),
     local.authentik_gateway_dns,

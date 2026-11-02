@@ -222,13 +222,13 @@ resource "kubernetes_manifest" "gateway_authentik_jwt_bypass_filter" {
       # are not JWTs. This disables the jwt_authn filter for the Authentik virtual host only, so
       # those opaque tokens pass through to Authentik while every other host still enforces JWT.
       configPatches = [
-        {
+        for vhost_name in local.authentik_vhost_names : {
           applyTo = "VIRTUAL_HOST"
           match = {
             context = "GATEWAY"
             routeConfiguration = {
               vhost = {
-                name = local.authentik_vhost_name
+                name = vhost_name
               }
             }
           }

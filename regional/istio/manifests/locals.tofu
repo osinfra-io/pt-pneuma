@@ -88,12 +88,20 @@ locals {
 
   agentgateway_hostname = "agentgateway.${local.authentik_public_dns_domain}"
 
+  agentgateway_regional_hostname = "${local.zone}.${local.agentgateway_hostname}"
+
   agentgateway_namespace = "agentgateway"
 
   agentgateway_policy_inputs = {
     for name in keys(local.agentgateway_clusters) : name => {
       "${name}-agentgateway-admin" = {
         host            = local.agentgateway_hostname
+        mode            = "browser"
+        path            = "/"
+        required_groups = ["${module.core_helpers.team}: agentgateway Admins"]
+      }
+      "${name}-agentgateway-admin-${local.zone}" = {
+        host            = local.agentgateway_regional_hostname
         mode            = "browser"
         path            = "/"
         required_groups = ["${module.core_helpers.team}: agentgateway Admins"]
@@ -108,6 +116,13 @@ locals {
         backend_port      = 15000
         backend_service   = "agentgateway-proxy-admin"
         host              = local.agentgateway_hostname
+        path              = "/"
+      }
+      "agentgateway-admin-${local.zone}" = {
+        backend_namespace = local.agentgateway_namespace
+        backend_port      = 15000
+        backend_service   = "agentgateway-proxy-admin"
+        host              = local.agentgateway_regional_hostname
         path              = "/"
       }
     }
@@ -135,12 +150,10 @@ locals {
   # Prod drops the env segment.
   authentik_public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
 
-  # HTTPRoute exposing the Authentik IdP UI and OIDC endpoints on the shared ingress gateway.
-  # Authentik is a single platform-managed IdP running in the gateway team's cluster, so the route
-  # exists only on the gateway cluster. Its host
-  # ("authentik.<env>.osinfra.io") is a distinct hostname from every team apex/zonal host, so
-  # the host-scoped gateway_auth AuthorizationPolicies never match it — the IdP is reachable without
-  # forward-auth, as an identity provider must be (it authenticates users itself).
+  authentik_regional_hostname = "${local.zone}.${local.authentik_hostname}"
+
+  # HTTPRoutes expose the Authentik IdP UI and OIDC endpoints on the shared ingress gateway, using
+  # both the MCI hostname and this zone's direct ingress hostname.
   authentik_routes = {
     for cluster_name, cluster_config in local.gateway_clusters :
     cluster_name => {
@@ -151,10 +164,20 @@ locals {
         host              = local.authentik_hostname
         path              = "/"
       }
+      "authentik-${local.authentik_dns_subdomain}-${local.zone}" = {
+        backend_namespace = local.authentik_namespace
+        backend_port      = 80
+        backend_service   = "authentik-server"
+        host              = local.authentik_regional_hostname
+        path              = "/"
+      }
     }
   }
 
-  authentik_vhost_name = "${local.authentik_hostname}:443"
+  authentik_vhost_names = [
+    "${local.authentik_hostname}:443",
+    "${local.authentik_regional_hostname}:443",
+  ]
 
   datadog_aap_cluster_names = {
     for cluster_name in keys(local.gateway_clusters) :
