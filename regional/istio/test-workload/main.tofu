@@ -18,7 +18,7 @@ resource "datadog_synthetics_test" "this" {
 
   locations = each.value.locations
   message   = each.value.message
-  name      = "${each.value.name} ${each.value.region} ${module.core_helpers.environment}"
+  name      = "${local.datadog_synthetic_name}: ${each.value.name}"
 
   options_list {
     monitor_priority = each.value.message_priority
