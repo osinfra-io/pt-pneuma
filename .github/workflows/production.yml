@@ -1244,6 +1244,210 @@ jobs:
       working_directory: regional/istio
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
+  agentgateway_us_east1_b:
+    name: "agentgateway: us-east1-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-b":')
+    needs: [istio_us_east1_b, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway: us-east1-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-b\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-b-agentgateway-production
+      working_directory: regional/agentgateway
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_us_east1_c:
+    name: "agentgateway: us-east1-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-c":')
+    needs: [istio_us_east1_c, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway: us-east1-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-c\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-c-agentgateway-production
+      working_directory: regional/agentgateway
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_us_east1_d:
+    name: "agentgateway: us-east1-d"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-d":')
+    needs: [istio_us_east1_d, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway: us-east1-d"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-d\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-d-agentgateway-production
+      working_directory: regional/agentgateway
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_us_east4_a:
+    name: "agentgateway: us-east4-a"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-a":')
+    needs: [istio_us_east4_a, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway: us-east4-a"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-a\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-a-agentgateway-production
+      working_directory: regional/agentgateway
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_us_east4_b:
+    name: "agentgateway: us-east4-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-b":')
+    needs: [istio_us_east4_b, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway: us-east4-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-b\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-b-agentgateway-production
+      working_directory: regional/agentgateway
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_us_east4_c:
+    name: "agentgateway: us-east4-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-c":')
+    needs: [istio_us_east4_c, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway: us-east4-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-c\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-c-agentgateway-production
+      working_directory: regional/agentgateway
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_manifests_us_east1_b:
+    name: "agentgateway Manifests: us-east1-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-b":')
+    needs: [agentgateway_us_east1_b, authentik_config, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway Manifests: us-east1-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-b\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-b-agentgateway-manifests-production
+      working_directory: regional/agentgateway/manifests
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_manifests_us_east1_c:
+    name: "agentgateway Manifests: us-east1-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-c":')
+    needs: [agentgateway_us_east1_c, authentik_config, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway Manifests: us-east1-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-c\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-c-agentgateway-manifests-production
+      working_directory: regional/agentgateway/manifests
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_manifests_us_east1_d:
+    name: "agentgateway Manifests: us-east1-d"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-d":')
+    needs: [agentgateway_us_east1_d, authentik_config, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway Manifests: us-east1-d"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-d\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east1-d-agentgateway-manifests-production
+      working_directory: regional/agentgateway/manifests
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_manifests_us_east4_a:
+    name: "agentgateway Manifests: us-east4-a"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-a":')
+    needs: [agentgateway_us_east4_a, authentik_config, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway Manifests: us-east4-a"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-a\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-a-agentgateway-manifests-production
+      working_directory: regional/agentgateway/manifests
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_manifests_us_east4_b:
+    name: "agentgateway Manifests: us-east4-b"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-b":')
+    needs: [agentgateway_us_east4_b, authentik_config, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway Manifests: us-east4-b"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-b\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-b-agentgateway-manifests-production
+      working_directory: regional/agentgateway/manifests
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
+  agentgateway_manifests_us_east4_c:
+    name: "agentgateway Manifests: us-east4-c"
+    uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
+    if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-c":')
+    needs: [agentgateway_us_east4_c, authentik_config, main]
+    with:
+      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      github_environment: "Production agentgateway Manifests: us-east4-c"
+      service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
+      opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_state_bucket: pt-pneuma-state-prod
+      opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-c\":') && needs.main.outputs.passthrough || '{}' }}}"
+      opentofu_version: ${{ vars.OPENTOFU_VERSION }}
+      opentofu_workspace: us-east4-c-agentgateway-manifests-production
+      working_directory: regional/agentgateway/manifests
+      workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
+
   opa_gatekeeper_us_east1_b:
     name: "OPA Gatekeeper: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1

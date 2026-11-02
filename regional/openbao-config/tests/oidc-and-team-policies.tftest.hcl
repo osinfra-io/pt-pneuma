@@ -256,12 +256,20 @@ run "github_actions_readme_permissions_are_exact_and_limited" {
         strcontains(
           vault_policy.github_actions["apply"].policy,
           "path \"kv2/data/${team_key}/README\" {\n  capabilities = [\"create\",\"read\",\"update\",\"delete\"]\n}",
+        ) &&
+        strcontains(
+          vault_policy.github_actions["plan"].policy,
+          "path \"kv2/metadata/${team_key}/README\" {\n  capabilities = [\"read\"]\n}",
+        ) &&
+        strcontains(
+          vault_policy.github_actions["apply"].policy,
+          "path \"kv2/metadata/${team_key}/README\" {\n  capabilities = [\"read\"]\n}",
         )
       ]) &&
       !strcontains(vault_policy.github_actions["plan"].policy, "kv2/data/*") &&
       !strcontains(vault_policy.github_actions["apply"].policy, "kv2/data/*") &&
-      !strcontains(vault_policy.github_actions["plan"].policy, "kv2/metadata/") &&
-      !strcontains(vault_policy.github_actions["apply"].policy, "kv2/metadata/")
+      !strcontains(vault_policy.github_actions["plan"].policy, "kv2/metadata/*") &&
+      !strcontains(vault_policy.github_actions["apply"].policy, "kv2/metadata/*")
     )
     error_message = "Plan may only read each registered README secret, and apply may only manage those exact README paths."
   }

@@ -4,7 +4,7 @@
 locals {
   agentgateway_clusters = {
     for name, cluster in var.clusters : name => cluster
-    if endswith(name, "-${local.zone}") && cluster.team_key == module.core_helpers.team && module.core_helpers.environment == "sandbox"
+    if endswith(name, "-${local.zone}") && cluster.team_key == module.core_helpers.team
   }
 
   cluster                = one(values(data.google_container_cluster.this))
