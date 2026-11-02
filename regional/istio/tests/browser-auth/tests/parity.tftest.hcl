@@ -52,8 +52,8 @@ run "production_parity" {
   command = plan
 
   assert {
-    condition     = length(module.legacy_manifests.custom_manifests) == 3 && jsonencode(module.shared.custom_authorization_policy_manifests) == jsonencode(module.legacy_manifests.custom_manifests)
-    error_message = "Shared CUSTOM rendering must equal the real production global/zonal browser manifests, including agentgateway."
+    condition     = length(module.legacy_manifests.custom_manifests) == 4 && jsonencode(module.shared.custom_authorization_policy_manifests) == jsonencode(module.legacy_manifests.custom_manifests)
+    error_message = "Shared CUSTOM rendering must equal the real production global, zonal, and agentgateway browser manifests."
   }
 
   assert {
@@ -64,6 +64,15 @@ run "production_parity" {
   assert {
     condition     = jsonencode(module.shared.callback_routes) == jsonencode(module.legacy_manifests.callback_routes["pt-pneuma-us-east1-b"])
     error_message = "Shared callback route names and backends must equal production."
+  }
+
+  assert {
+    condition = (
+      module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin-us-east1-b"].host == "us-east1-b.agentgateway.nonprod.osinfra.io" &&
+      module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["authentik-pneuma-us-east1-b"].host == "us-east1-b.authentik.nonprod.osinfra.io" &&
+      module.legacy_manifests.callback_routes["pt-pneuma-us-east1-b"]["authentik-callback-${substr(sha1("us-east1-b.agentgateway.nonprod.osinfra.io"), 0, 8)}"].host == "us-east1-b.agentgateway.nonprod.osinfra.io"
+    )
+    error_message = "The regional ingress must expose Authentik and agentgateway hosts and route the regional agentgateway callback."
   }
 
   assert {

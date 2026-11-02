@@ -85,9 +85,8 @@ locals {
   authentik_database_user = "authentik"
 
   # Apex A record for the shared platform Authentik IdP, published in the environment-level
-  # <env>.osinfra.io public zone (owned by pt-corpus in the shared VPC host project). It is merged
-  # into the main gateway module's DNS input only — not the gateway_dns output that regional/istio
-  # zonal-prefixes — so it resolves to the single MCI global address, not per-zone gateway LBs.
+  # <env>.osinfra.io public zone (owned by pt-corpus in the shared VPC host project). The main
+  # gateway uses this name for MCI; regional/istio uses it to create zone-prefixed ingress aliases.
   authentik_gateway_dns = length(data.google_projects.shared_vpc_host.projects) > 0 ? {
     (local.authentik_hostname) = {
       managed_zone = local.authentik_public_dns_zone_name
@@ -316,7 +315,7 @@ locals {
   # Merged gateway DNS for all teams — passed to pneuma's MCI module instance so the
   # single MCI global address creates DNS A records for every team that routes through
   # pneuma's gateway (e.g. pneuma.sb.osinfra.io and any member team subdomain), plus the
-  # environment-level authentik.<env>.osinfra.io record for the shared IdP.
+  # environment-level authentik.<env>.osinfra.io and agentgateway.<env>.osinfra.io records.
   gateway_dns_for_pneuma = length(data.google_projects.shared_vpc_host.projects) > 0 ? merge(
     merge(values(local.gateway_dns_by_team)...),
     local.authentik_gateway_dns,

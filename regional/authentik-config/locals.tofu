@@ -4,6 +4,12 @@
 locals {
   agentgateway_hostname = "agentgateway.${local.public_dns_domain}"
 
+  agentgateway_regional_hostnames = distinct([
+    for cluster_name, cluster_config in var.clusters :
+    "${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${local.agentgateway_hostname}"
+    if cluster_config.team_key == module.core_helpers.team
+  ])
+
   authentication_policy_ids = {
     for key, policy in data.authentik_policy_expression.authentication_stage_policies : key => policy.id
   }
@@ -50,6 +56,13 @@ locals {
       groups      = ["${module.core_helpers.team}: agentgateway Admins"]
       host        = "https://${local.agentgateway_hostname}"
       policy_name = "agentgateway-browser-access"
+    }
+    }, {
+    for hostname in local.agentgateway_regional_hostnames :
+    "https://${hostname}" => {
+      groups      = ["${module.core_helpers.team}: agentgateway Admins"]
+      host        = "https://${hostname}"
+      policy_name = "agentgateway-browser-access-${split(".", hostname)[0]}"
     }
   })
 
@@ -110,15 +123,22 @@ locals {
 
   # Authentik matches REGEX entries with Python re.fullmatch. The optional hostname prefix
   # accepts the apex and zonal subdomains, but never paths or attacker-controlled hostnames.
-  redirect_uris = concat([
-    {
+  redirect_uris = concat(
+    [{
       matching_mode = "regex"
       url           = "https://([a-z0-9-]+\\.)*${replace(local.dns_zone_name, ".", "\\.")}/outpost\\.goauthentik\\.io/callback.*"
-    }
-    ], [{
+    }],
+    [{
       matching_mode = "strict"
       url           = "https://${local.agentgateway_hostname}/outpost.goauthentik.io/callback"
-  }])
+    }],
+    [
+      for hostname in local.agentgateway_regional_hostnames : {
+        matching_mode = "strict"
+        url           = "https://${hostname}/outpost.goauthentik.io/callback"
+      }
+    ]
+  )
 
   # Prod drops the env segment.
   public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"

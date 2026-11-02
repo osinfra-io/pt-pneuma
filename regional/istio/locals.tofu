@@ -42,11 +42,17 @@ locals {
   # Member team clusters get nothing (their traffic arrives via the mesh, not a local LB).
   gateway_dns = {
     for cluster_name, cluster_config in local.gke_clusters :
-    cluster_name => cluster_config.team_key == module.core_helpers.team ? {
-      for team_key, team_dns in local.main.gateway_dns :
-      "${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${one(keys(team_dns))}" => one(values(team_dns))
-      if length(team_dns) > 0
-    } : {}
+    cluster_name => cluster_config.team_key == module.core_helpers.team ? merge(
+      {
+        for team_key, team_dns in local.main.gateway_dns :
+        "${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${one(keys(team_dns))}" => one(values(team_dns))
+        if length(team_dns) > 0
+      },
+      {
+        for host, record in try(local.main.gateway_regional_host_dns, {}) :
+        "${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${host}" => record
+      },
+    ) : {}
   }
 
   gateway_mci_global_addresses = {

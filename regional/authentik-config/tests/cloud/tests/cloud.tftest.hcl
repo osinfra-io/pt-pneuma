@@ -30,6 +30,15 @@ override_data {
 run "cloud_sandbox_root" {
   command = apply
 
+  variables {
+    clusters = {
+      pt-pneuma-us-east1-b = {
+        project_id = "mock-pneuma"
+        team_key   = "pt-pneuma"
+      }
+    }
+  }
+
   assert {
     condition     = module.authentication.brand.domain == "authentik.sb.osinfra.io" && module.authentication.brand.branding_title == "osinfra.io | Sandbox" && module.authentication.flow.slug == "osinfra-authentication-flow" && module.authentication.flow.title == "Welcome to osinfra.io sandbox!"
     error_message = "The cloud root must derive the brand domain and titles from the environment."
@@ -61,6 +70,12 @@ run "cloud_nonproduction_authentication" {
   command = apply
 
   variables {
+    clusters = {
+      pt-pneuma-us-east1-b = {
+        project_id = "mock-pneuma"
+        team_key   = "pt-pneuma"
+      }
+    }
     test_env = "nonprod"
   }
 
@@ -78,12 +93,23 @@ run "cloud_nonproduction_authentication" {
     condition     = module.authentik_config.browser_group_policy_bindings["https://agentgateway.nonprod.osinfra.io"].groups == tolist(["pt-pneuma: agentgateway Admins"]) && output.cloud_inputs.redirect_uris[1].matching_mode == "strict" && output.cloud_inputs.redirect_uris[1].url == "https://agentgateway.nonprod.osinfra.io/outpost.goauthentik.io/callback"
     error_message = "Non-production agentgateway must have its dedicated Authentik group binding and exact callback."
   }
+
+  assert {
+    condition     = module.authentik_config.browser_group_policy_bindings["https://us-east1-b.agentgateway.nonprod.osinfra.io"].groups == tolist(["pt-pneuma: agentgateway Admins"]) && output.cloud_inputs.redirect_uris[2].matching_mode == "strict" && output.cloud_inputs.redirect_uris[2].url == "https://us-east1-b.agentgateway.nonprod.osinfra.io/outpost.goauthentik.io/callback"
+    error_message = "Non-production regional agentgateway must have its own Authentik group binding and exact callback."
+  }
 }
 
 run "cloud_production_authentication" {
   command = apply
 
   variables {
+    clusters = {
+      pt-pneuma-us-east1-b = {
+        project_id = "mock-pneuma"
+        team_key   = "pt-pneuma"
+      }
+    }
     test_env = "prod"
   }
 
@@ -100,6 +126,11 @@ run "cloud_production_authentication" {
   assert {
     condition     = module.authentik_config.browser_group_policy_bindings["https://agentgateway.osinfra.io"].groups == tolist(["pt-pneuma: agentgateway Admins"]) && output.cloud_inputs.redirect_uris[1].matching_mode == "strict" && output.cloud_inputs.redirect_uris[1].url == "https://agentgateway.osinfra.io/outpost.goauthentik.io/callback"
     error_message = "Production agentgateway must have its dedicated Authentik group binding and exact callback."
+  }
+
+  assert {
+    condition     = module.authentik_config.browser_group_policy_bindings["https://us-east1-b.agentgateway.osinfra.io"].groups == tolist(["pt-pneuma: agentgateway Admins"]) && output.cloud_inputs.redirect_uris[2].matching_mode == "strict" && output.cloud_inputs.redirect_uris[2].url == "https://us-east1-b.agentgateway.osinfra.io/outpost.goauthentik.io/callback"
+    error_message = "Production regional agentgateway must have its own Authentik group binding and exact callback."
   }
 }
 
