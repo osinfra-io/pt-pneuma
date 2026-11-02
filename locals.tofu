@@ -2,10 +2,10 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  agentgateway_gateway_dns = module.core_helpers.environment == "sandbox" ? {
+  agentgateway_gateway_dns = {
     for host, record in local.authentik_gateway_dns :
     replace(host, "authentik.", "agentgateway.") => record
-  } : {}
+  }
 
   # Single logical Authentik service (pt-pneuma#142): one shared Cloud SQL primary, one secret
   # key and one issuer are created here in main and consumed by every regional authentik workspace,

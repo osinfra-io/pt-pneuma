@@ -45,13 +45,13 @@ locals {
         item.host == host ? item.required_roles : []
       ]))
     }
-    }, module.core_helpers.environment == "sandbox" ? {
+    }, {
     "https://${local.agentgateway_hostname}" = {
       groups      = ["${module.core_helpers.team}: agentgateway Admins"]
       host        = "https://${local.agentgateway_hostname}"
       policy_name = "agentgateway-browser-access"
     }
-  } : {})
+  })
 
   browser_group_policy_conflicting_hosts = [
     for host in sort(distinct([for item in local.browser_group_policy_items : item.host])) : host
@@ -115,10 +115,10 @@ locals {
       matching_mode = "regex"
       url           = "https://([a-z0-9-]+\\.)*${replace(local.dns_zone_name, ".", "\\.")}/outpost\\.goauthentik\\.io/callback.*"
     }
-    ], module.core_helpers.environment == "sandbox" ? [{
+    ], [{
       matching_mode = "strict"
       url           = "https://${local.agentgateway_hostname}/outpost.goauthentik.io/callback"
-  }] : [])
+  }])
 
   # Prod drops the env segment.
   public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
