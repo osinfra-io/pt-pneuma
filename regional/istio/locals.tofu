@@ -24,6 +24,11 @@ locals {
   authentik_resolved_outpost_service_name = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_name, local.authentik_outpost_service_name)
   authentik_resolved_outpost_service_port = try(data.terraform_remote_state.authentik_config.outputs.outpost_service_port, local.authentik_outpost_service_port)
 
+  gateway_mci_ssl_certificate_names = {
+    for cluster_name, cluster_config in local.gke_clusters :
+    cluster_name => try(local.main.kubernetes_istio_gateway_mci_ssl_certificate_names[cluster_config.team_key], [])
+  }
+
   # GKE clusters in this zone that have the Istio gateway enabled (platform team only).
   # Used for resources that are gateway-specific (e.g. Datadog AAP extproc).
   gateway_clusters = {

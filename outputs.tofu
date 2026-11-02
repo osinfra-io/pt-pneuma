@@ -78,6 +78,11 @@ output "kubernetes_istio_gateway_mci_global_address" {
   value       = local.kubernetes_istio_gateway_mci_global_addresses
 }
 
+output "kubernetes_istio_gateway_mci_ssl_certificate_names" {
+  description = "The names of the SSL certificates for the Istio Gateway multi-cluster ingress, keyed by team"
+  value       = local.kubernetes_istio_gateway_mci_ssl_certificate_names
+}
+
 output "openbao_hostname" {
   description = "Global public hostname for the OpenBao multi-cluster ingress"
   value       = local.openbao_hostname

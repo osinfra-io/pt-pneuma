@@ -17,7 +17,7 @@ module "gateway_auth" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=ffae90ec7bb81fffbde170a991802ca7398676f2" # v0.9.7
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=943d7660dad5b04316903e4de379c26488901d36" # v0.9.8
 
   for_each = local.gke_clusters
 
@@ -44,6 +44,7 @@ module "kubernetes_istio" {
   gateway_cpu_requests                        = var.kubernetes_istio_gateway_cpu_requests
   gateway_dns                                 = local.gateway_dns[each.key]
   gateway_mci_global_address                  = local.gateway_mci_global_addresses[each.key]
+  gateway_mci_ssl_certificate_names           = local.gateway_mci_ssl_certificate_names[each.key]
   gateway_memory_limits                       = var.kubernetes_istio_gateway_memory_limits
   gateway_memory_requests                     = var.kubernetes_istio_gateway_memory_requests
   labels                                      = module.core_helpers.labels

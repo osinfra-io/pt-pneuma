@@ -57,14 +57,15 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=ffae90ec7bb81fffbde170a991802ca7398676f2" # v0.9.7
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=943d7660dad5b04316903e4de379c26488901d36" # v0.9.8
 
   for_each = local.teams_with_clusters
 
-  gateway_dns               = local.istio_gateway_dns_by_team[each.key]
-  gke_fleet_host_project_id = local.gke_fleet_host_project_id_by_team[each.key]
-  labels                    = module.core_helpers.labels
-  project                   = local.team_project_ids[each.key]
+  gateway_dns                  = local.istio_gateway_dns_by_team[each.key]
+  gateway_retained_domain_sets = local.istio_gateway_retained_domain_sets_by_team[each.key]
+  gke_fleet_host_project_id    = local.gke_fleet_host_project_id_by_team[each.key]
+  labels                       = module.core_helpers.labels
+  project                      = local.team_project_ids[each.key]
 }
 
 # Google Compute Global Address Resource
