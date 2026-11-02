@@ -45,7 +45,7 @@ resource "datadog_synthetics_test" "this" {
     "env:${module.core_helpers.environment}",
     "region:${each.value.region}",
     "service:${each.value.service}",
-    "team:${module.core_helpers.team}"
+    "team:${each.value.team_key}"
   ]
 
   type = "api"
