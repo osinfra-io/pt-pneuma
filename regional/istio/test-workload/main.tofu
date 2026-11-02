@@ -18,7 +18,7 @@ resource "datadog_synthetics_test" "this" {
 
   locations = each.value.locations
   message   = each.value.message
-  name      = "${each.value.name} ${each.value.region} ${module.core_helpers.environment}"
+  name      = "${local.datadog_synthetic_name}: ${each.value.name}"
 
   options_list {
     monitor_priority = each.value.message_priority
@@ -45,7 +45,7 @@ resource "datadog_synthetics_test" "this" {
     "env:${module.core_helpers.environment}",
     "region:${each.value.region}",
     "service:${each.value.service}",
-    "team:${module.core_helpers.team}"
+    "team:${each.value.team_key}"
   ]
 
   type = "api"

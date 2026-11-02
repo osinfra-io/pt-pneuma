@@ -23,11 +23,6 @@ variable "datadog_app_key" {
   type        = string
 }
 
-variable "datadog_synthetic_dns_domain" {
-  description = "The DNS domain used by Datadog synthetic tests"
-  type        = string
-}
-
 variable "datadog_synthetic_message_critical" {
   description = "Datadog notification message for critical synthetic tests"
   type        = string
