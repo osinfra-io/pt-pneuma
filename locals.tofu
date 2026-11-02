@@ -380,7 +380,7 @@ locals {
   # Teams and environment-level hosts (e.g. "agentgateway") whose domains are being added to the
   # shared load balancer certificate. While one is listed, the certificate without its domain stays
   # in state so the old certificate is never deleted while the load balancer still uses it.
-  istio_gateway_pending_hosts = []
+  istio_gateway_pending_hosts = ["agentgateway"]
 
   istio_gateway_pending_domains = concat(
     [for team_key in local.istio_gateway_pending_teams : try(local.dns_zones[team_key].dns_name, "")],
