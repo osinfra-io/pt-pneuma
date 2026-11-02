@@ -54,7 +54,7 @@ locals {
       for test in flatten([
         for team_key, domain in local.team_dns_domains : flatten([
           for region in local.team_regions[team_key] : [
-            for zone in try(local.gateway_zones_by_region[region], []) : {
+            for zone in local.team_zones_by_region[team_key][region] : {
               domain   = domain
               region   = region
               team_key = team_key
@@ -78,7 +78,7 @@ locals {
         service  = local.datadog_synthetic_service
         status   = "paused"
         team_key = test.team_key
-        url      = "https://${test.zone}.${test.domain}/${local.datadog_synthetic_service}"
+        url      = "https://${test.zone}.${test.domain}/${local.datadog_synthetic_service}/metadata/cluster-name"
       }
     }
   ) : {}
@@ -123,18 +123,17 @@ locals {
     cluster_name => regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]
   }
 
-  # Gateway zones publish zonal DNS records for every team's synthetic ingress tests.
-  gateway_zones_by_region = {
-    for region in toset([
-      for cluster_name, cluster_config in var.clusters :
-      local.regions[cluster_name]
-      if cluster_config.team_key == module.core_helpers.team
-    ]) :
-    region => sort(tolist(toset([
-      for cluster_name, cluster_config in var.clusters :
-      regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]
-      if cluster_config.team_key == module.core_helpers.team && local.regions[cluster_name] == region
-    ])))
+  # Ingress routes exist only for teams with a cluster in that zone.
+  team_zones_by_region = {
+    for team_key in keys(local.team_regions) :
+    team_key => {
+      for region in local.team_regions[team_key] :
+      region => sort(tolist(toset([
+        for cluster_name, cluster_config in var.clusters :
+        regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]
+        if cluster_config.team_key == team_key && local.regions[cluster_name] == region
+      ])))
+    }
   }
 
   # Team public DNS domains come from the main workspace's authoritative DNS configuration.
