@@ -61,11 +61,12 @@ module "kubernetes_istio" {
 
   for_each = local.teams_with_clusters
 
-  gateway_dns                  = local.istio_gateway_dns_by_team[each.key]
-  gateway_retained_domain_sets = local.istio_gateway_retained_domain_sets_by_team[each.key]
-  gke_fleet_host_project_id    = local.gke_fleet_host_project_id_by_team[each.key]
-  labels                       = module.core_helpers.labels
-  project                      = local.team_project_ids[each.key]
+  gateway_attach_retained_certificates = local.istio_gateway_attach_retained_certificates
+  gateway_dns                          = local.istio_gateway_dns_by_team[each.key]
+  gateway_retained_domain_sets         = local.istio_gateway_retained_domain_sets_by_team[each.key]
+  gke_fleet_host_project_id            = local.gke_fleet_host_project_id_by_team[each.key]
+  labels                               = module.core_helpers.labels
+  project                              = local.team_project_ids[each.key]
 }
 
 # Google Compute Global Address Resource
