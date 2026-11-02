@@ -278,7 +278,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     name: "Istio Manifests: us-east1-b"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
-    needs: [agentgateway_us_east1_b, authentik_us_east1_b, istio_us_east1_b, main]
+    needs: [authentik_us_east1_b, istio_us_east1_b, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east1-b"
@@ -295,7 +295,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     name: "Istio Manifests: us-east4-a"
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
-    needs: [agentgateway_us_east4_a, authentik_us_east4_a, istio_us_east4_a, main]
+    needs: [authentik_us_east4_a, istio_us_east4_a, main]
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Istio Manifests: us-east4-a"
