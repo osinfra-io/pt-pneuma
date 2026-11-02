@@ -365,6 +365,42 @@ locals {
     team_key => team_key == module.core_helpers.team ? local.gateway_dns_for_pneuma : {}
   }
 
+  # Whether the retained certificate stays attached to the load balancer. Rotation has three
+  # deployments, each finished in every environment before the next: (1) list the pending entry with
+  # this true so both certificates are attached; (2) once the new certificate is ACTIVE, set this
+  # false so the old certificate is detached but kept; (3) after ingress has reconciled, remove the
+  # pending entry (and reset this to true) so the old certificate is deleted.
+  istio_gateway_attach_retained_certificates = true
+
+  # Fixed-name certificate from before hash-named certificates. It stays attached until the new
+  # certificate is ACTIVE. Then set this to [] so it is detached, and delete it manually in GCP
+  # after ingress has reconciled.
+  istio_gateway_legacy_certificate_names = ["istio-gateway-mci"]
+
+  # Teams and environment-level hosts (e.g. "agentgateway") whose domains are being added to the
+  # shared load balancer certificate. While one is listed, the certificate without its domain stays
+  # in state so the old certificate is never deleted while the load balancer still uses it.
+  istio_gateway_pending_hosts = []
+
+  istio_gateway_pending_domains = concat(
+    [for team_key in local.istio_gateway_pending_teams : try(local.dns_zones[team_key].dns_name, "")],
+    [for host in local.istio_gateway_pending_hosts : "${host}.${local.authentik_public_dns_domain}"]
+  )
+
+  istio_gateway_pending_teams = []
+
+  istio_gateway_retained_domain_sets = length(local.istio_gateway_pending_domains) > 0 ? [
+    [
+      for domain in keys(local.gateway_dns_for_pneuma) : domain
+      if !contains(local.istio_gateway_pending_domains, domain)
+    ]
+  ] : []
+
+  istio_gateway_retained_domain_sets_by_team = {
+    for team_key in keys(local.teams_with_clusters) :
+    team_key => team_key == module.core_helpers.team ? local.istio_gateway_retained_domain_sets : []
+  }
+
   kubernetes_engine_workload_identity_service_account_emails = {
     for team_key, google_kubernetes_engine in module.google_kubernetes_engine :
     team_key => google_kubernetes_engine.workload_identity_service_account_emails
@@ -373,6 +409,11 @@ locals {
   kubernetes_istio_gateway_mci_global_addresses = {
     for team_key, istio in module.kubernetes_istio :
     team_key => istio.gateway_mci_global_address
+  }
+
+  kubernetes_istio_gateway_mci_ssl_certificate_names = {
+    for team_key, istio in module.kubernetes_istio :
+    team_key => length(istio.gateway_mci_ssl_certificate_names) > 0 ? concat(istio.gateway_mci_ssl_certificate_names, local.istio_gateway_legacy_certificate_names) : []
   }
 
   openbao_kms_member = "serviceAccount:${google_service_account.openbao_kms.email}"
