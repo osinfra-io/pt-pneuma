@@ -68,6 +68,10 @@ run "production_parity" {
 
   assert {
     condition = (
+      module.legacy_manifests.authentik_vhost_names == [
+        "authentik.nonprod.osinfra.io:443",
+        "us-east1-b.authentik.nonprod.osinfra.io:443",
+      ] &&
       module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin-us-east1-b"].host == "us-east1-b.agentgateway.nonprod.osinfra.io" &&
       module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["authentik-pneuma-us-east1-b"].host == "us-east1-b.authentik.nonprod.osinfra.io" &&
       module.legacy_manifests.callback_routes["pt-pneuma-us-east1-b"]["authentik-callback-${substr(sha1("us-east1-b.agentgateway.nonprod.osinfra.io"), 0, 8)}"].host == "us-east1-b.agentgateway.nonprod.osinfra.io"

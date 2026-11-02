@@ -174,7 +174,10 @@ locals {
     }
   }
 
-  authentik_vhost_name = "${local.authentik_hostname}:443"
+  authentik_vhost_names = [
+    "${local.authentik_hostname}:443",
+    "${local.authentik_regional_hostname}:443",
+  ]
 
   datadog_aap_cluster_names = {
     for cluster_name in keys(local.gateway_clusters) :

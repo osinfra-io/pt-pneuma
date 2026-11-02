@@ -18,14 +18,14 @@ locals {
   authentik_cloud_armor_allow_rules = {
     authentik_api = {
       description = "Allow token-authenticated Authentik API requests"
-      expression  = "has(request.headers['host']) && request.headers['host'] == '${local.authentik_hostname}' && request.path.startsWith('/api/v3/') && has(request.headers['authorization']) && request.headers['authorization'].startsWith('Bearer ')"
+      expression  = "has(request.headers['host']) && (${join(" || ", [for hostname in local.authentik_gateway_hostnames : "request.headers['host'] == ${jsonencode(hostname)}"])}) && request.path.startsWith('/api/v3/') && has(request.headers['authorization']) && request.headers['authorization'].startsWith('Bearer ')"
       priority    = 9000
     }
   }
 
   authentik_cloud_armor_method_enforcement_exceptions = [
-    {
-      hostname    = local.authentik_hostname
+    for hostname in local.authentik_gateway_hostnames : {
+      hostname    = hostname
       methods     = ["DELETE", "PATCH", "PUT"]
       path_prefix = "/api/v3/"
     }
@@ -93,6 +93,15 @@ locals {
       project      = data.google_project.shared_vpc_host.project_id
     }
   } : {}
+
+  authentik_gateway_hostnames = distinct(concat(
+    [local.authentik_hostname],
+    [
+      for cluster_name in keys(local.gke_clusters) :
+      "${regex("(us-[a-z0-9]+-[a-z])$", cluster_name)[0]}.${local.authentik_hostname}"
+      if startswith(cluster_name, "${module.core_helpers.team}-")
+    ],
+  ))
 
   # Authentik is a single platform-wide IdP shared by every team, so it is published at the
   # environment-level public zone (authentik.<env>.osinfra.io) rather than under any one team's

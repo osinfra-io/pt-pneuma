@@ -33,6 +33,11 @@ output "platform_routes" {
   value       = local.routes
 }
 
+output "authentik_vhost_names" {
+  description = "Authentik vhosts excluded from gateway JWT validation."
+  value       = local.authentik_vhost_names
+}
+
 output "admin_allow" {
   description = "Cloud admin ingress exception."
   value       = local.agentgateway_admin_allow_manifest
