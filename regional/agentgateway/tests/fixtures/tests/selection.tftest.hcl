@@ -20,7 +20,7 @@ run "owning_team_and_zone_only" {
 
   assert {
     condition     = keys(output.clusters) == ["pt-pneuma-us-east1-b"] && output.namespace == "agentgateway"
-    error_message = "Sandbox agentgateway must deploy only to the owning team's cluster in this workspace's zone."
+    error_message = "Agentgateway must deploy only to the owning team's cluster in this workspace's zone."
   }
 
   assert {
@@ -30,7 +30,7 @@ run "owning_team_and_zone_only" {
 
 }
 
-run "nonproduction_not_enabled" {
+run "nonproduction_enabled" {
   command = plan
 
   variables {
@@ -38,12 +38,12 @@ run "nonproduction_not_enabled" {
   }
 
   assert {
-    condition     = length(output.clusters) == 0 && length(output.lookup_clusters) == 0 && output.cluster_endpoint == null
-    error_message = "Temporary sandbox testing must not enable non-production deployment."
+    condition     = keys(output.clusters) == ["pt-pneuma-us-east1-b"] && output.lookup_clusters == ["pt-pneuma-us-east1-b"] && output.cluster_endpoint == "https://192.0.2.1"
+    error_message = "Non-production agentgateway must deploy only to the owning team's cluster in this workspace's zone."
   }
 }
 
-run "production_not_enabled" {
+run "production_enabled" {
   command = plan
 
   variables {
@@ -51,8 +51,8 @@ run "production_not_enabled" {
   }
 
   assert {
-    condition     = length(output.clusters) == 0 && length(output.lookup_clusters) == 0 && output.cluster_endpoint == null
-    error_message = "Temporary sandbox testing must not enable production deployment."
+    condition     = keys(output.clusters) == ["pt-pneuma-us-east1-b"] && output.lookup_clusters == ["pt-pneuma-us-east1-b"] && output.cluster_endpoint == "https://192.0.2.1"
+    error_message = "Production agentgateway must deploy only to the owning team's cluster in this workspace's zone."
   }
 }
 mock_provider "google" {

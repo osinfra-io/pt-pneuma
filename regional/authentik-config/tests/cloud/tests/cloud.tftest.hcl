@@ -73,6 +73,11 @@ run "cloud_nonproduction_authentication" {
     condition     = output.cloud_inputs.dns_zone_name == "pneuma.nonprod.osinfra.io"
     error_message = "Non-production host discovery must remain unchanged."
   }
+
+  assert {
+    condition     = module.authentik_config.browser_group_policy_bindings["https://agentgateway.nonprod.osinfra.io"].groups == tolist(["pt-pneuma: agentgateway Admins"]) && output.cloud_inputs.redirect_uris[1].matching_mode == "strict" && output.cloud_inputs.redirect_uris[1].url == "https://agentgateway.nonprod.osinfra.io/outpost.goauthentik.io/callback"
+    error_message = "Non-production agentgateway must have its dedicated Authentik group binding and exact callback."
+  }
 }
 
 run "cloud_production_authentication" {
@@ -90,6 +95,11 @@ run "cloud_production_authentication" {
   assert {
     condition     = output.cloud_inputs.dns_zone_name == "pneuma.osinfra.io"
     error_message = "Production host discovery must remain unchanged."
+  }
+
+  assert {
+    condition     = module.authentik_config.browser_group_policy_bindings["https://agentgateway.osinfra.io"].groups == tolist(["pt-pneuma: agentgateway Admins"]) && output.cloud_inputs.redirect_uris[1].matching_mode == "strict" && output.cloud_inputs.redirect_uris[1].url == "https://agentgateway.osinfra.io/outpost.goauthentik.io/callback"
+    error_message = "Production agentgateway must have its dedicated Authentik group binding and exact callback."
   }
 }
 

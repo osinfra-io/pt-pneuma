@@ -20,6 +20,13 @@ locals {
         jsonencode(["create", "read", "update", "delete"]),
       )
     ]),
+    join("\n\n", [
+      for team_key in keys(module.core_helpers.teams) : format(
+        "path \"kv2/metadata/%s/README\" {\n  capabilities = %s\n}",
+        team_key,
+        jsonencode(["read"]),
+      )
+    ]),
   ]))
 
   github_actions_plan_policy = join("\n\n", compact([
@@ -27,6 +34,13 @@ locals {
     join("\n\n", [
       for team_key in keys(module.core_helpers.teams) : format(
         "path \"kv2/data/%s/README\" {\n  capabilities = %s\n}",
+        team_key,
+        jsonencode(["read"]),
+      )
+    ]),
+    join("\n\n", [
+      for team_key in keys(module.core_helpers.teams) : format(
+        "path \"kv2/metadata/%s/README\" {\n  capabilities = %s\n}",
         team_key,
         jsonencode(["read"]),
       )

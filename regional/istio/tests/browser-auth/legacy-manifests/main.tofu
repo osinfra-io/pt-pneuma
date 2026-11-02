@@ -47,3 +47,8 @@ output "controller_allow" {
   description = "Proxy-to-controller discovery exception."
   value       = local.agentgateway_controller_allow_manifest
 }
+
+output "agentgateway_clusters" {
+  description = "Pneuma gateway clusters selected for agentgateway controller access."
+  value       = local.agentgateway_clusters
+}

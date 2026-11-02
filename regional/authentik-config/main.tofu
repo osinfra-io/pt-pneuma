@@ -50,8 +50,8 @@ module "team_access" {
 resource "terraform_data" "browser_group_policy_validation" {
   lifecycle {
     precondition {
-      condition     = module.core_helpers.environment != "sandbox" || contains(keys(module.team_access.application_group_members), "${module.core_helpers.team}: agentgateway Admins")
-      error_message = "Deploy the Logos agentgateway application-group declaration before enabling its sandbox Authentik provider."
+      condition     = contains(keys(module.team_access.application_group_members), "${module.core_helpers.team}: agentgateway Admins")
+      error_message = "Deploy the Logos agentgateway application-group declaration before enabling its Authentik provider."
     }
 
     precondition {

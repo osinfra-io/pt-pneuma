@@ -27,6 +27,11 @@ output "teams" {
         agentgateway-admins = {
           description = "Admin access"
           name        = "pt-pneuma: agentgateway Admins"
+          members = {
+            sandbox        = []
+            non-production = []
+            production     = []
+          }
         }
       }
     }
