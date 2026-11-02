@@ -55,7 +55,6 @@ locals {
 
   agentgateway_clusters = {
     for name, cluster in local.gateway_clusters : name => cluster
-    if module.core_helpers.environment == "sandbox"
   }
 
   agentgateway_controller_allow_manifest = {

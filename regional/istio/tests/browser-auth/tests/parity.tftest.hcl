@@ -52,8 +52,8 @@ run "production_parity" {
   command = plan
 
   assert {
-    condition     = length(module.legacy_manifests.custom_manifests) == 2 && jsonencode(module.shared.custom_authorization_policy_manifests) == jsonencode(module.legacy_manifests.custom_manifests)
-    error_message = "Shared CUSTOM rendering must equal the real production global/zonal browser manifests."
+    condition     = length(module.legacy_manifests.custom_manifests) == 3 && jsonencode(module.shared.custom_authorization_policy_manifests) == jsonencode(module.legacy_manifests.custom_manifests)
+    error_message = "Shared CUSTOM rendering must equal the real production global/zonal browser manifests, including agentgateway."
   }
 
   assert {
@@ -119,8 +119,8 @@ run "managed_cloud_adapter" {
   override_module {
     target = module.legacy_manifests.module.core_helpers
     outputs = {
-      env         = "sb"
-      environment = "sandbox"
+      env         = "nonprod"
+      environment = "non-production"
       repository  = "pt-pneuma"
       team        = "pt-pneuma"
       teams = {
@@ -161,8 +161,13 @@ run "managed_cloud_adapter" {
   }
 
   assert {
-    condition     = module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin"].host == "agentgateway.sb.osinfra.io" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin"].path == "/" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin"].backend_port == 15000
+    condition     = module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin"].host == "agentgateway.nonprod.osinfra.io" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin"].path == "/" && module.legacy_manifests.platform_routes["pt-pneuma-us-east1-b"]["agentgateway-admin"].backend_port == 15000
     error_message = "The admin surface must use the dedicated platform host, not a stream-team hostname."
+  }
+
+  assert {
+    condition     = keys(module.legacy_manifests.agentgateway_clusters) == ["pt-pneuma-us-east1-b"]
+    error_message = "The controller discovery allow policy must target Pneuma-owned gateway clusters in non-production as well as sandbox."
   }
 
   assert {
@@ -171,12 +176,12 @@ run "managed_cloud_adapter" {
   }
 
   assert {
-    condition     = module.legacy_manifests.callback_routes["pt-pneuma-us-east1-b"]["authentik-callback-${substr(sha1("agentgateway.sb.osinfra.io"), 0, 8)}"].host == "agentgateway.sb.osinfra.io"
+    condition     = module.legacy_manifests.callback_routes["pt-pneuma-us-east1-b"]["authentik-callback-${substr(sha1("agentgateway.nonprod.osinfra.io"), 0, 8)}"].host == "agentgateway.nonprod.osinfra.io"
     error_message = "The dedicated host must have its own outpost callback route."
   }
 
   assert {
-    condition     = module.legacy_manifests.gateway_auth_authorization_policies["pt-pneuma-us-east1-b-agentgateway-admin"].cluster_name == "pt-pneuma-us-east1-b" && module.legacy_manifests.custom_manifests["pt-pneuma-us-east1-b-agentgateway-admin"].spec.rules[0].to[0].operation.hosts == ["agentgateway.sb.osinfra.io"]
+    condition     = module.legacy_manifests.gateway_auth_authorization_policies["pt-pneuma-us-east1-b-agentgateway-admin"].cluster_name == "pt-pneuma-us-east1-b" && module.legacy_manifests.custom_manifests["pt-pneuma-us-east1-b-agentgateway-admin"].spec.rules[0].to[0].operation.hosts == ["agentgateway.nonprod.osinfra.io"]
     error_message = "Dedicated-host authorization resources must remain keyed to their own gateway cluster."
   }
 }
