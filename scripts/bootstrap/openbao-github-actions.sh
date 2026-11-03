@@ -58,8 +58,25 @@ bao write auth/github-actions/config \
   bound_issuer=https://token.actions.githubusercontent.com
 
 policy_directory="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../regional/openbao-config/policies" && pwd)"
+bootstrap_policy_directory="$(mktemp -d)"
+trap 'rm -rf -- "$bootstrap_policy_directory"' EXIT
+
 for access in plan apply; do
-  bao policy write "pt-pneuma-openbao-$access" "$policy_directory/github-actions-$access.hcl"
+  bootstrap_policy="$bootstrap_policy_directory/github-actions-$access.hcl"
+  cat "$policy_directory/github-actions-$access.hcl" > "$bootstrap_policy"
+  cat >> "$bootstrap_policy" <<'EOF'
+
+path "kv2/metadata/+/README" {
+  capabilities = ["read"]
+}
+
+EOF
+  readme_capabilities='["read"]'
+  if [[ "$access" == apply ]]; then
+    readme_capabilities='["create", "read", "update", "delete"]'
+  fi
+  printf '\npath "kv2/data/+/README" {\n  capabilities = %s\n}\n' "$readme_capabilities" >> "$bootstrap_policy"
+  bao policy write "pt-pneuma-openbao-$access" "$bootstrap_policy"
 done
 
 for access in plan apply; do
@@ -93,3 +110,4 @@ for access in plan apply; do
 done
 
 echo "Configured GitHub Actions authentication at $BAO_ADDR for $ref."
+echo "The next OpenTofu plan/apply in regional/openbao-config will import any untracked bootstrap resources via import.tofu."
