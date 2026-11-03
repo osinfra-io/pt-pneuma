@@ -384,7 +384,7 @@ locals {
   # this true so both certificates are attached; (2) once the new certificate is ACTIVE, set this
   # false so the old certificate is detached but kept; (3) after ingress has reconciled, remove the
   # pending entry (and reset this to true) so the old certificate is deleted.
-  istio_gateway_attach_retained_certificates = false
+  istio_gateway_attach_retained_certificates = true
 
   # Fixed-name certificate from before hash-named certificates. It stays attached until the new
   # certificate is ACTIVE. Then set this to [] so it is detached, and delete it manually in GCP
@@ -394,7 +394,7 @@ locals {
   # Teams and environment-level hosts (e.g. "agentgateway") whose domains are being added to the
   # shared load balancer certificate. While one is listed, the certificate without its domain stays
   # in state so the old certificate is never deleted while the load balancer still uses it.
-  istio_gateway_pending_hosts = ["agentgateway"]
+  istio_gateway_pending_hosts = []
 
   istio_gateway_pending_domains = concat(
     [for team_key in local.istio_gateway_pending_teams : try(local.dns_zones[team_key].dns_name, "")],
