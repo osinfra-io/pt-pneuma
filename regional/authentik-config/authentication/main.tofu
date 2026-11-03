@@ -4,8 +4,10 @@
 # Authentik allows a single default brand. The built-in brand ships as the default, so callers import
 # it here and demote it before the osinfra.io brand takes over.
 resource "authentik_brand" "built_in" {
-  default = false
-  domain  = local.built_in_brand_domain
+  branding_favicon = "/static/dist/assets/icons/icon.png"
+  branding_logo    = "/static/dist/assets/icons/icon_left_brand.svg"
+  default          = false
+  domain           = local.built_in_brand_domain
 }
 
 resource "authentik_brand" "this" {

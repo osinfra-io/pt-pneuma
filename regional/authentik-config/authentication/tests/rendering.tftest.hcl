@@ -26,6 +26,15 @@ run "identity_and_rendering" {
   command = apply
 
   assert {
+    condition = (
+      !authentik_brand.built_in.default &&
+      authentik_brand.built_in.branding_favicon == "/static/dist/assets/icons/icon.png" &&
+      authentik_brand.built_in.branding_logo == "/static/dist/assets/icons/icon_left_brand.svg"
+    )
+    error_message = "Demoting the built-in brand must preserve authentik's stock favicon and logo."
+  }
+
+  assert {
     condition     = authentik_brand.this.domain == "authentik.sb.osinfra.io" && authentik_brand.this.branding_title == "osinfra.io | Sandbox" && authentik_flow.authentication.title == "Welcome to osinfra.io sandbox!"
     error_message = "The brand and flow must use the caller-supplied domain and titles."
   }
