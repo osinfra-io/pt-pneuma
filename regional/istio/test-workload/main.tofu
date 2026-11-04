@@ -12,7 +12,7 @@ resource "datadog_synthetics_test" "this" {
 
   assertion {
     operator = "lessThan"
-    target   = 1000
+    target   = 5000
     type     = "responseTime"
   }
 

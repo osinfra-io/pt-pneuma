@@ -34,7 +34,7 @@ locals {
       ]) :
       "${test.team_key}-${test.region}-regional-mci" => {
         follow_redirects = false
-        locations        = local.datadog_synthetic_regional_locations
+        locations        = [local.datadog_synthetic_location_by_region[test.region]]
         message_priority = "3"
         name             = "Istio Test: Regional MCI"
         region           = test.region
@@ -63,7 +63,7 @@ locals {
       ]) :
       "${test.team_key}-${test.zone}-regional-ingress" => {
         follow_redirects = false
-        locations        = local.datadog_synthetic_regional_locations
+        locations        = [local.datadog_synthetic_location_by_region[test.region]]
         message_priority = "3"
         name             = "Istio Test: Regional Ingress"
         region           = test.region
@@ -107,22 +107,16 @@ locals {
   ) : {}
 
   datadog_synthetic_global_locations = [
-    "aws:ca-central-1",
-    "aws:eu-central-1",
-    "aws:eu-north-1",
-    "aws:eu-south-1",
-    "aws:us-east-1",
-    "aws:us-east-2",
-    "aws:us-west-1",
-    "aws:us-west-2"
+    "gcp:us-east4",
+    "gcp:us-west1",
+    "gcp:us-west2",
+    "gcp:us-south1"
   ]
 
-  datadog_synthetic_regional_locations = [
-    "aws:us-east-1",
-    "aws:us-east-2",
-    "aws:us-west-1",
-    "aws:us-west-2"
-  ]
+  datadog_synthetic_location_by_region = {
+    us-east1 = "gcp:us-east4"
+    us-east4 = "gcp:us-east4"
+  }
 
   # GKE clusters in this zone — the subset that actually receives the istio-test harness.
   # The zone is parsed from the workspace name (static context safe).
