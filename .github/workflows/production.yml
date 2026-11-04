@@ -26,7 +26,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     if: github.event.head_commit.author.username != 'dependabot[bot]'
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production: Main"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -42,7 +42,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -57,7 +57,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -72,7 +72,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -87,7 +87,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -102,7 +102,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -117,7 +117,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -132,7 +132,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Onboarding: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -148,7 +148,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Onboarding: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -164,7 +164,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Onboarding: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -180,7 +180,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Onboarding: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -196,7 +196,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Onboarding: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -212,7 +212,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Onboarding: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -228,7 +228,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east1_b_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -244,7 +244,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east1_b, us_east1_b_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OpenBao: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -260,7 +260,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east1_c_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -276,7 +276,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east1_c, us_east1_c_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OpenBao: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -292,7 +292,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east1_d_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -308,7 +308,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east1_d, us_east1_d_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OpenBao: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -324,7 +324,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east4_a_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -340,7 +340,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east4_a, us_east4_a_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OpenBao: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -356,7 +356,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east4_b_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -372,7 +372,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east4_b, us_east4_b_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OpenBao: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -388,7 +388,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east4_c_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -404,7 +404,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east4_c, us_east4_c_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OpenBao: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -420,7 +420,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -436,7 +436,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -452,7 +452,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -468,7 +468,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -484,7 +484,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -500,7 +500,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production cert-manager Istio CSR: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -516,7 +516,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east1_b_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -537,7 +537,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east1_c_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -558,7 +558,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east1_d_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -579,7 +579,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east4_a_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -600,7 +600,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east4_b_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -621,7 +621,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [us_east4_c_onboarding, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -642,7 +642,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [datadog_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog Manifests: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -663,7 +663,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [datadog_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog Manifests: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -684,7 +684,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [datadog_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog Manifests: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -705,7 +705,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [datadog_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog Manifests: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -726,7 +726,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [datadog_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog Manifests: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -747,7 +747,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [datadog_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog Manifests: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -769,7 +769,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Manifests: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -786,7 +786,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_c, istio_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Manifests: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -803,7 +803,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_d, istio_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Manifests: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -820,7 +820,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east4_a, istio_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Manifests: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -837,7 +837,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east4_b, istio_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Manifests: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -854,7 +854,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east4_c, istio_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Manifests: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -871,7 +871,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [istio_manifests_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Test: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -893,7 +893,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [istio_manifests_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Test: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -915,7 +915,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [istio_manifests_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Test: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -937,7 +937,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [istio_manifests_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Test: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -959,7 +959,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [istio_manifests_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Test: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -981,7 +981,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [istio_manifests_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio Test: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1003,7 +1003,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [istio_test_us_east1_b, istio_test_us_east1_c, istio_test_us_east1_d, istio_test_us_east4_a, istio_test_us_east4_b, istio_test_us_east4_c, authentik_config, openbao_config, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Datadog Config"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1025,7 +1025,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [istio_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production authentik: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1043,7 +1043,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [istio_manifests_us_east1_b, istio_manifests_us_east1_c, istio_manifests_us_east1_d, istio_manifests_us_east4_a, istio_manifests_us_east4_b, istio_manifests_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production authentik Config"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1064,7 +1064,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-b":')
     needs: [openbao_us_east1_b, authentik_config, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OpenBao: us-east1-b"
       openbao_address: https://openbao.osinfra.io
       openbao_jwt_apply_role: pt-pneuma-openbao-apply
@@ -1085,7 +1085,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_istio_csr_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1102,7 +1102,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production authentik: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1119,7 +1119,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_istio_csr_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1136,7 +1136,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production authentik: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1153,7 +1153,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_istio_csr_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1170,7 +1170,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production authentik: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1187,7 +1187,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_istio_csr_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1204,7 +1204,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production authentik: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1221,7 +1221,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_istio_csr_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1238,7 +1238,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     needs: [authentik_us_east1_b, istio_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production authentik: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1255,7 +1255,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_istio_csr_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production Istio: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1272,7 +1272,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-b":')
     needs: [istio_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1289,7 +1289,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-c":')
     needs: [istio_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1306,7 +1306,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-d":')
     needs: [istio_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1323,7 +1323,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-a":')
     needs: [istio_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1340,7 +1340,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-b":')
     needs: [istio_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1357,7 +1357,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-c":')
     needs: [istio_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1374,7 +1374,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-b":')
     needs: [agentgateway_us_east1_b, authentik_config, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway Manifests: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1391,7 +1391,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-c":')
     needs: [agentgateway_us_east1_c, authentik_config, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway Manifests: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1408,7 +1408,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east1-d":')
     needs: [agentgateway_us_east1_d, authentik_config, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway Manifests: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1425,7 +1425,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-a":')
     needs: [agentgateway_us_east4_a, authentik_config, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway Manifests: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1442,7 +1442,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-b":')
     needs: [agentgateway_us_east4_b, authentik_config, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway Manifests: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1459,7 +1459,7 @@ jobs:
     if: github.actor != 'dependabot[bot]' && contains(needs.main.outputs.passthrough || '{}', 'us-east4-c":')
     needs: [agentgateway_us_east4_c, authentik_config, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production agentgateway Manifests: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1475,7 +1475,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1491,7 +1491,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east1-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1507,7 +1507,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_templates_us_east1_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east1-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1523,7 +1523,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1539,7 +1539,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east1-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1555,7 +1555,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_templates_us_east1_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east1-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1571,7 +1571,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1587,7 +1587,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east1-d"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1603,7 +1603,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_templates_us_east1_d, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east1-d"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1619,7 +1619,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1635,7 +1635,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east4-a"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1651,7 +1651,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_templates_us_east4_a, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east4-a"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1667,7 +1667,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1683,7 +1683,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east4-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1699,7 +1699,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_templates_us_east4_b, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east4-b"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1715,7 +1715,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [cert_manager_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
@@ -1731,7 +1731,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Templates: us-east4-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod
@@ -1747,7 +1747,7 @@ jobs:
     uses: osinfra-io/pt-techne-opentofu-workflows/.github/workflows/plan-and-apply.yml@e37130a8cea1e747b73a9d325eb4f8f209c0e95d # v0.7.1
     needs: [opa_gatekeeper_templates_us_east4_c, main]
     with:
-      checkout_ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      checkout_ref: ${{ github.sha }}
       github_environment: "Production OPA Gatekeeper Constraints: us-east4-c"
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-prod

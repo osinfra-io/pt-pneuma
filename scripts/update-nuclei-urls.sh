@@ -25,12 +25,6 @@ if [[ ! -d "${LOGOS_TEAMS_DIR}" ]]; then
   exit 0
 fi
 
-# Active zones per environment (mirrors locals.tofu active_zones).
-
-SB_ZONES=("us-east1-b" "us-east4-a")
-NONPROD_ZONES=()
-PROD_ZONES=("us-east1-b")
-
 # Collect team data from logos tfvars.
 
 declare -a TEAM_ENTRIES=()
@@ -53,7 +47,7 @@ for TFVARS in "${LOGOS_TEAMS_DIR}"/*.tfvars; do
     continue
   fi
 
-  TEAM_ENTRIES+=("${SUBDOMAIN} ${ZONES[*]}")
+  TEAM_ENTRIES+=("${SUBDOMAIN}")
 done
 
 if [[ ${#TEAM_ENTRIES[@]} -eq 0 ]]; then
@@ -62,43 +56,23 @@ if [[ ${#TEAM_ENTRIES[@]} -eq 0 ]]; then
 fi
 
 # Generate URL list for a given environment.
-# Args: env_short (sb|nonprod|prod), active zone names
+# Args: env_short (sb|nonprod|prod)
 
 generate_urls() {
   local ENV="${1}"
-  shift
-  local -a ACTIVE=("$@")
   local -a URLS=()
 
-  # Authentik is a single platform-wide IdP shared by every team, so it is published at the
-  # environment-level public zone rather than under any team's subdomain and has no zonal hosts.
-  if [[ "${ENV}" == "prod" ]]; then
-    URLS+=("https://authentik.osinfra.io")
-  else
-    URLS+=("https://authentik.${ENV}.osinfra.io")
+  local DOMAIN="osinfra.io"
+  if [[ "${ENV}" != "prod" ]]; then
+    DOMAIN="${ENV}.osinfra.io"
   fi
 
-  for ENTRY in "${TEAM_ENTRIES[@]}"; do
-    read -ra PARTS <<< "${ENTRY}"
-    local SUBDOMAIN="${PARTS[0]}"
-    local TEAM_ZONES=("${PARTS[@]:1}")
+  for SERVICE in agentgateway authentik openbao; do
+    URLS+=("https://${SERVICE}.${DOMAIN}")
+  done
 
-    if [[ "${ENV}" == "prod" ]]; then
-      local BASE="${SUBDOMAIN}.osinfra.io"
-    else
-      local BASE="${SUBDOMAIN}.${ENV}.osinfra.io"
-    fi
-
-    URLS+=("https://${BASE}")
-
-    for ZONE in "${TEAM_ZONES[@]}"; do
-      for ACTIVE_ZONE in "${ACTIVE[@]}"; do
-        if [[ "${ZONE}" == "${ACTIVE_ZONE}" ]]; then
-          URLS+=("https://${ZONE}.${BASE}")
-          break
-        fi
-      done
-    done
+  for SUBDOMAIN in "${TEAM_ENTRIES[@]}"; do
+    URLS+=("https://${SUBDOMAIN}.${DOMAIN}")
   done
 
   printf '%s\n' "${URLS[@]}" | sort -u
@@ -106,9 +80,9 @@ generate_urls() {
 
 mkdir -p "${NUCLEI_DIR}"
 
-generate_urls "sb"      "${SB_ZONES[@]}"      > "${NUCLEI_DIR}/sb.txt"
-generate_urls "nonprod" "${NONPROD_ZONES[@]}"  > "${NUCLEI_DIR}/nonprod.txt"
-generate_urls "prod"    "${PROD_ZONES[@]}"     > "${NUCLEI_DIR}/prod.txt"
+generate_urls "sb"      > "${NUCLEI_DIR}/sb.txt"
+generate_urls "nonprod" > "${NUCLEI_DIR}/nonprod.txt"
+generate_urls "prod"    > "${NUCLEI_DIR}/prod.txt"
 
 echo "Updated:"
 for ENV in sb nonprod prod; do
