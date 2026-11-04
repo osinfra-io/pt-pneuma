@@ -1,0 +1,17 @@
+name: Nuclei Vulnerability Scan - Non-Production
+
+on:
+  schedule:
+    - cron: "0 11 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  nuclei:
+    name: Nuclei
+    uses: osinfra-io/pt-techne-misc-workflows/.github/workflows/nuclei.yml@08a1f8d55cb21e733dc36c5abe3cb0b277114697  # v0.2.9
+    with:
+      urls_file: .github/workflows/nuclei/nonprod.txt

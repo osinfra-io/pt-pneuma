@@ -1,4 +1,4 @@
-name: Nuclei Vulnerability Scan
+name: Nuclei Vulnerability Scan - Production
 
 on:
   schedule:
@@ -14,4 +14,4 @@ jobs:
     name: Nuclei
     uses: osinfra-io/pt-techne-misc-workflows/.github/workflows/nuclei.yml@08a1f8d55cb21e733dc36c5abe3cb0b277114697  # v0.2.9
     with:
-      urls_file: .github/workflows/nuclei/all.txt
+      urls_file: .github/workflows/nuclei/prod.txt
