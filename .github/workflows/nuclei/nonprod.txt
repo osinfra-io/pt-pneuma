@@ -1,2 +1,4 @@
+https://agentgateway.nonprod.osinfra.io
 https://authentik.nonprod.osinfra.io
+https://openbao.nonprod.osinfra.io
 https://pneuma.nonprod.osinfra.io

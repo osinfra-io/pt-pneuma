@@ -1,4 +1,4 @@
+https://agentgateway.sb.osinfra.io
 https://authentik.sb.osinfra.io
+https://openbao.sb.osinfra.io
 https://pneuma.sb.osinfra.io
-https://us-east1-b.pneuma.sb.osinfra.io
-https://us-east4-a.pneuma.sb.osinfra.io
