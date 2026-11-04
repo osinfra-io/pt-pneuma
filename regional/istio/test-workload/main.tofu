@@ -20,7 +20,7 @@ resource "datadog_synthetics_suite" "pneuma" {
 
     content {
       alerting_criticality = "critical"
-      public_id            = datadog_synthetics_test.this[tests.key].public_id
+      public_id            = datadog_synthetics_test.this[tests.key].id
     }
   }
 }
