@@ -4,8 +4,10 @@ set -euo pipefail
 # Generate Nuclei URL target files from pt-logos team configurations.
 #
 # Reads all teams/*.tfvars files in pt-logos, extracts teams with a
-# kubernetes_engine block, and writes one URL file per environment:
+# kubernetes_engine block, and writes one URL file per environment plus a
+# combined list for the workflow:
 #
+#   .github/workflows/nuclei/all.txt
 #   .github/workflows/nuclei/sb.txt
 #   .github/workflows/nuclei/nonprod.txt
 #   .github/workflows/nuclei/prod.txt
@@ -110,8 +112,10 @@ generate_urls "sb"      "${SB_ZONES[@]}"      > "${NUCLEI_DIR}/sb.txt"
 generate_urls "nonprod" "${NONPROD_ZONES[@]}"  > "${NUCLEI_DIR}/nonprod.txt"
 generate_urls "prod"    "${PROD_ZONES[@]}"     > "${NUCLEI_DIR}/prod.txt"
 
+sort -u "${NUCLEI_DIR}/sb.txt" "${NUCLEI_DIR}/nonprod.txt" "${NUCLEI_DIR}/prod.txt" > "${NUCLEI_DIR}/all.txt"
+
 echo "Updated:"
-for ENV in sb nonprod prod; do
+for ENV in all sb nonprod prod; do
   COUNT=$(wc -l < "${NUCLEI_DIR}/${ENV}.txt")
   echo "  ${NUCLEI_DIR}/${ENV}.txt (${COUNT} URLs)"
 done
