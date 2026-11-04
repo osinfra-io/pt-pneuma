@@ -23,16 +23,6 @@ variable "datadog_app_key" {
   type        = string
 }
 
-variable "datadog_synthetic_message_critical" {
-  description = "Datadog notification message for critical synthetic tests"
-  type        = string
-}
-
-variable "datadog_synthetic_message_medium" {
-  description = "Datadog notification message for medium-priority synthetic tests"
-  type        = string
-}
-
 variable "istio_test_replicas" {
   default     = 1
   description = "The number of replicas for the istio-test deployment"
