@@ -106,6 +106,12 @@ locals {
     }
   ) : {}
 
+  datadog_synthetic_team_tests = {
+    for test_name, test in local.datadog_synthetic_tests :
+    test_name => test
+    if test.team_key == module.core_helpers.team
+  }
+
   datadog_synthetic_global_locations = [
     "gcp:us-east4",
     "gcp:us-west1",
@@ -117,6 +123,8 @@ locals {
     us-east1 = "gcp:us-east4"
     us-east4 = "gcp:us-east4"
   }
+
+  datadog_synthetic_suite_alerting_threshold = 1.0 / max(1, length(local.datadog_synthetic_team_tests))
 
   # GKE clusters in this zone — the subset that actually receives the istio-test harness.
   # The zone is parsed from the workspace name (static context safe).
