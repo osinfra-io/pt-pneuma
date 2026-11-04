@@ -47,6 +47,8 @@ Each workflow (sandbox, non-production, production) deploys a `main` workspace f
 
 The primary authentik deployment is also a prerequisite for every other authentik zone so database migrations complete before additional instances start.
 
+Environment-wide API configuration lives under `config/authentik`, `config/datadog`, and `config/openbao`. Zone-scoped cluster deployments remain under `regional/`.
+
 ```mermaid
 flowchart LR
     classDef gke fill:#4285F4,stroke:#4285F4,color:#fff

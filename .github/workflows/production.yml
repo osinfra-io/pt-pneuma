@@ -1012,7 +1012,7 @@ jobs:
       opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: datadog-config-production
-      working_directory: regional/datadog/config
+      working_directory: config/datadog
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-
@@ -1052,7 +1052,7 @@ jobs:
       opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: authentik-config-production
-      working_directory: regional/authentik-config
+      working_directory: config/authentik
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
     secrets:
       opentofu_plan_secret_args: >-
@@ -1077,7 +1077,7 @@ jobs:
       opentofu_var_json: "{\"openbao_address\": \"https://openbao.osinfra.io\"}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
       opentofu_workspace: us-east1-b-openbao-config-production
-      working_directory: regional/openbao-config
+      working_directory: config/openbao
       workload_identity_provider: projects/557265520053/locations/global/workloadIdentityPools/github-actions/providers/github-actions-oidc
 
   istio_us_east1_b:

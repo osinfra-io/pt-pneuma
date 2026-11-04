@@ -57,7 +57,7 @@ bao write auth/github-actions/config \
   oidc_discovery_url=https://token.actions.githubusercontent.com \
   bound_issuer=https://token.actions.githubusercontent.com
 
-policy_directory="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../regional/openbao-config/policies" && pwd)"
+policy_directory="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../config/openbao/policies" && pwd)"
 bootstrap_policy_directory="$(mktemp -d)"
 trap 'rm -rf -- "$bootstrap_policy_directory"' EXIT
 
@@ -110,4 +110,4 @@ for access in plan apply; do
 done
 
 echo "Configured GitHub Actions authentication at $BAO_ADDR for $ref."
-echo "The next OpenTofu plan/apply in regional/openbao-config will import any untracked bootstrap resources via import.tofu."
+echo "The next OpenTofu plan/apply in config/openbao will import any untracked bootstrap resources via import.tofu."
