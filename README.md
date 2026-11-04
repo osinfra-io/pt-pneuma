@@ -43,9 +43,11 @@ An opt-in Docker Desktop Kind suite in [`tests/integration`](tests/integration/R
 
 ## 🔄 Deployment Dependency Graph
 
-Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain. authentik is deployed per zone (the primary us-east1-b zone first, then the rest), while a single global **authentik Config** job runs after every zone's authentik deployment.
+Each workflow (sandbox, non-production, production) deploys a `main` workspace first, then runs the per-zone job chains in parallel. Sandbox and non-production deploy **2 zones** (us-east1-b, us-east4-a); production deploys all **6 zones** (us-east1-b/c/d, us-east4-a/b/c). Two zones are expanded below — every zone follows the same dependency chain. authentik is deployed per zone (the primary us-east1-b zone first, then the rest), while a single global **authentik Config** job runs after every zone's authentik deployment. A single global **Datadog Config** job runs after all Istio Test workspaces, authentik Config, and OpenBao Config, and owns the Datadog synthetic tests.
 
 The primary authentik deployment is also a prerequisite for every other authentik zone so database migrations complete before additional instances start.
+
+Environment-wide API configuration lives under `config/authentik`, `config/datadog`, and `config/openbao`. Zone-scoped cluster deployments remain under `regional/`.
 
 ```mermaid
 flowchart LR
@@ -72,6 +74,7 @@ flowchart LR
     z1_istio --> z1_istio_manifests["Istio Manifests: us-east1-b"]:::istio
     z1_authentik --> z1_istio_manifests
     z1_istio_manifests --> z1_istio_test["Istio Test: us-east1-b"]:::istio
+    z1_istio_test --> datadog_config["Datadog Config"]:::datadog
     z1_istio --> z1_agentgateway["agentgateway: us-east1-b"]:::agentgateway
     z1_agentgateway --> z1_agentgateway_manifests["agentgateway Manifests: us-east1-b"]:::agentgateway
     authentik_config --> z1_agentgateway_manifests
@@ -92,6 +95,7 @@ flowchart LR
     z2_istio --> z2_istio_manifests["Istio Manifests: us-east4-a"]:::istio
     z2_authentik --> z2_istio_manifests
     z2_istio_manifests --> z2_istio_test["Istio Test: us-east4-a"]:::istio
+    z2_istio_test --> datadog_config
     z2_istio --> z2_agentgateway["agentgateway: us-east4-a"]:::agentgateway
     z2_agentgateway --> z2_agentgateway_manifests["agentgateway Manifests: us-east4-a"]:::agentgateway
     authentik_config --> z2_agentgateway_manifests
@@ -101,4 +105,8 @@ flowchart LR
 
     z1_istio_manifests --> authentik_config["authentik Config"]:::authentik
     z2_istio_manifests --> authentik_config
+    z1_openbao --> openbao_config["OpenBao Config"]:::openbao
+    authentik_config --> openbao_config
+    authentik_config --> datadog_config
+    openbao_config --> datadog_config
 ```

@@ -55,7 +55,7 @@ module "authentik_config" {
 # https://github.com/osinfra-io/pt-pneuma
 
 module "authentication" {
-  source = "../../../../regional/authentik-config/authentication"
+  source = "../../../../config/authentik/authentication"
 
   brand_domain = "authentik.localhost"
   brand_title  = "osinfra.io | Development"
