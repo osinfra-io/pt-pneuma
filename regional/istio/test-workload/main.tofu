@@ -17,10 +17,10 @@ resource "datadog_synthetics_test" "this" {
   }
 
   locations = each.value.locations
-  message   = each.value.message
-  name      = "${local.datadog_synthetic_name}: ${each.value.name}"
+  name      = each.value.name
 
   options_list {
+    follow_redirects = each.value.follow_redirects
     monitor_priority = each.value.message_priority
 
     retry {
@@ -28,7 +28,7 @@ resource "datadog_synthetics_test" "this" {
       interval = 120
     }
 
-    tick_every = 300
+    tick_every = 3600
   }
 
   request_definition {

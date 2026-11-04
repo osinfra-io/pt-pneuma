@@ -2,22 +2,22 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
-  datadog_synthetic_name    = "Istio Test"
   datadog_synthetic_service = "istio-test"
+  datadog_synthetic_status  = module.core_helpers.env == "prod" ? "live" : "paused"
 
   # Create all teams' synthetic tests from one stable workspace to prevent duplicate ownership.
   datadog_synthetic_tests = local.zone == "us-east1-b" ? merge(
     {
       for team_key, domain in local.team_dns_domains :
       "${team_key}-global-mci" => {
+        follow_redirects = false
         locations        = local.datadog_synthetic_global_locations
-        message          = var.datadog_synthetic_message_critical
         message_priority = "1"
-        name             = "Global MCI"
+        name             = "Istio Test: Global MCI"
         region           = "global"
         request_headers  = {}
         service          = local.datadog_synthetic_service
-        status           = "paused"
+        status           = local.datadog_synthetic_status
         team_key         = team_key
         url              = "https://${domain}/${local.datadog_synthetic_service}/metadata/cluster-name"
       }
@@ -33,19 +33,17 @@ locals {
         ]
       ]) :
       "${test.team_key}-${test.region}-regional-mci" => {
-        locations = local.datadog_synthetic_regional_locations
-
-        message          = var.datadog_synthetic_message_medium
+        follow_redirects = false
+        locations        = local.datadog_synthetic_regional_locations
         message_priority = "3"
-        name             = "Regional MCI"
+        name             = "Istio Test: Regional MCI"
         region           = test.region
-
         request_headers = {
           Body = "services-${test.region}"
         }
 
         service  = local.datadog_synthetic_service
-        status   = "paused"
+        status   = local.datadog_synthetic_status
         team_key = test.team_key
         url      = "https://${test.domain}/${local.datadog_synthetic_service}/metadata/cluster-name"
       }
@@ -64,21 +62,46 @@ locals {
         ])
       ]) :
       "${test.team_key}-${test.zone}-regional-ingress" => {
-        locations = local.datadog_synthetic_regional_locations
-
-        message          = var.datadog_synthetic_message_medium
+        follow_redirects = false
+        locations        = local.datadog_synthetic_regional_locations
         message_priority = "3"
-        name             = "Regional Ingress"
+        name             = "Istio Test: Regional Ingress"
         region           = test.region
-
         request_headers = {
           Body = "services-${test.region}"
         }
 
         service  = local.datadog_synthetic_service
-        status   = "paused"
+        status   = local.datadog_synthetic_status
         team_key = test.team_key
         url      = "https://${test.zone}.${test.domain}/${local.datadog_synthetic_service}/metadata/cluster-name"
+      }
+    },
+    {
+      "${module.core_helpers.team}-authentik-global" = {
+        follow_redirects = false
+        locations        = local.datadog_synthetic_global_locations
+        message_priority = "1"
+        name             = "authentik: Global Health"
+        region           = "global"
+        request_headers  = {}
+        service          = "authentik"
+        status           = local.datadog_synthetic_status
+        team_key         = module.core_helpers.team
+        url              = "${local.main.authentik_base_url}/-/health/ready/"
+      }
+
+      "${module.core_helpers.team}-openbao-global" = {
+        follow_redirects = false
+        locations        = local.datadog_synthetic_global_locations
+        message_priority = "1"
+        name             = "OpenBao: Global Health"
+        region           = "global"
+        request_headers  = {}
+        service          = "openbao"
+        status           = local.datadog_synthetic_status
+        team_key         = module.core_helpers.team
+        url              = "https://${local.main.openbao_hostname}/v1/sys/health?standbyok=true"
       }
     }
   ) : {}
