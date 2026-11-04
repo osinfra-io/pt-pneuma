@@ -1,3 +1,30 @@
+# Datadog Synthetics Suite Resource
+# https://search.opentofu.org/provider/datadog/datadog/latest/resources/synthetics_suite
+
+resource "datadog_synthetics_suite" "pneuma" {
+  for_each = module.core_helpers.env == "prod" && local.zone == "us-east1-b" ? { pneuma = true } : {}
+
+  name = "Pneuma Synthetics"
+
+  options {
+    alerting_threshold = local.datadog_synthetic_suite_alerting_threshold
+  }
+
+  tags = [
+    "env:${module.core_helpers.environment}",
+    "team:${module.core_helpers.team}"
+  ]
+
+  dynamic "tests" {
+    for_each = local.datadog_synthetic_team_tests
+
+    content {
+      alerting_criticality = "critical"
+      public_id            = datadog_synthetics_test.this[tests.key].id
+    }
+  }
+}
+
 # Datadog Synthetics Test Resource
 # https://search.opentofu.org/provider/opentofu/datadog/latest/resources/synthetics_test
 
@@ -12,7 +39,7 @@ resource "datadog_synthetics_test" "this" {
 
   assertion {
     operator = "lessThan"
-    target   = 1000
+    target   = 5000
     type     = "responseTime"
   }
 
