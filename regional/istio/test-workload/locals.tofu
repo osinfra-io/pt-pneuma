@@ -78,19 +78,6 @@ locals {
       }
     },
     {
-      "${module.core_helpers.team}-agentgateway-global" = {
-        follow_redirects = true
-        locations        = local.datadog_synthetic_global_locations
-        message_priority = "1"
-        name             = "agentgateway: Global Health"
-        region           = "global"
-        request_headers  = {}
-        service          = "agentgateway"
-        status           = local.datadog_synthetic_status
-        team_key         = module.core_helpers.team
-        url              = "https://agentgateway.${local.public_dns_domain}/"
-      }
-
       "${module.core_helpers.team}-authentik-global" = {
         follow_redirects = false
         locations        = local.datadog_synthetic_global_locations
@@ -136,8 +123,6 @@ locals {
     "aws:us-west-1",
     "aws:us-west-2"
   ]
-
-  public_dns_domain = module.core_helpers.env == "prod" ? "osinfra.io" : "${module.core_helpers.env}.osinfra.io"
 
   # GKE clusters in this zone — the subset that actually receives the istio-test harness.
   # The zone is parsed from the workspace name (static context safe).
