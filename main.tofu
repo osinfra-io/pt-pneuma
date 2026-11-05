@@ -178,7 +178,7 @@ resource "google_compute_security_policy" "shared_ingress" {
 
   rule {
     action      = "throttle"
-    description = "Rate limit all user IPs"
+    description = "Rate limit each source IP to 5000 requests per minute"
 
     match {
       config {
@@ -193,11 +193,11 @@ resource "google_compute_security_policy" "shared_ingress" {
 
     rate_limit_options {
       conform_action = "allow"
-      enforce_on_key = "ALL"
+      enforce_on_key = "IP"
       exceed_action  = "deny(429)"
 
       rate_limit_threshold {
-        count        = 500
+        count        = 5000
         interval_sec = 60
       }
     }
