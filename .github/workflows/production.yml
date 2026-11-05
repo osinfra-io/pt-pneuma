@@ -1089,6 +1089,7 @@ jobs:
       github_environment: "Production Istio: us-east1-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-b\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
@@ -1123,6 +1124,7 @@ jobs:
       github_environment: "Production Istio: us-east1-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-c\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
@@ -1157,6 +1159,7 @@ jobs:
       github_environment: "Production Istio: us-east1-d"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east1-d\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
@@ -1191,6 +1194,7 @@ jobs:
       github_environment: "Production Istio: us-east4-a"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-a\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
@@ -1225,6 +1229,7 @@ jobs:
       github_environment: "Production Istio: us-east4-b"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-b\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
@@ -1259,6 +1264,7 @@ jobs:
       github_environment: "Production Istio: us-east4-c"
       service_account: pt-pneuma-github@pt-corpus-tf16-prod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf16-prod/locations/us/keyRings/state-encryption/cryptoKeys/default
+      opentofu_plan_args: -var-file=environments/production.tfvars
       opentofu_state_bucket: pt-pneuma-state-prod
       opentofu_var_json: "{\"clusters\": ${{ contains(needs.main.outputs.passthrough, 'us-east4-c\":') && needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
