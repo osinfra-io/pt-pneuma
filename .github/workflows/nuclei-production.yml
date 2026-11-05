@@ -12,6 +12,6 @@ permissions:
 jobs:
   nuclei:
     name: Nuclei
-    uses: osinfra-io/pt-techne-misc-workflows/.github/workflows/nuclei.yml@d65622482ba9f82fb5cce7ff82cf5addd2827fc3  # v0.3.4
+    uses: osinfra-io/pt-techne-misc-workflows/.github/workflows/nuclei.yml@873e5eb069348e446ddc20c9c96661073d4bec42  # v0.3.5
     with:
       urls_file: .github/workflows/nuclei/prod.txt
