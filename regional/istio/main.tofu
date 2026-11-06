@@ -143,7 +143,7 @@ resource "kubernetes_deployment_v1" "datadog_aap_extproc" {
             }
           }
 
-          image             = "ghcr.io/datadog/dd-trace-go/service-extensions-callout:v2.2.2"
+          image             = "ghcr.io/datadog/dd-trace-go/service-extensions-callout@sha256:751f3652dabbea599b7da17d2782603a0a6e929854a7f011be0ccb5e0bbe7ebb" # v2.12.0
           image_pull_policy = "Always"
           name              = "datadog-aap-extproc-container"
 
