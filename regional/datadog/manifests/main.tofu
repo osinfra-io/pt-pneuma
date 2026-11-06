@@ -21,7 +21,8 @@ module "kubernetes_datadog_operator_manifests" {
   enable_asm_threats             = true
   enable_usm                     = true
   node_agent_container_resources = var.kubernetes_datadog_operator_node_agent_container_resources
-  node_agent_image               = "agent-gatekeeper"
+  node_agent_image               = "agent-integrations-extra"
+  node_agent_tag                 = "v0.6.2"
   registry                       = local.artifact_registry
   team                           = each.value.team_key
 }
