@@ -15,7 +15,7 @@ module "gateway_auth" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=943d7660dad5b04316903e4de379c26488901d36" # v0.9.8
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional/manifests?ref=8087d40697daa28203b72ab3a05817e05761f6e7" # v0.9.9
 
   depends_on = [
     kubernetes_namespace_v1.istio_test_gateway_stub,
@@ -155,7 +155,17 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
                   envoy_grpc = {
                     cluster_name = local.datadog_aap_cluster_names[each.key]
                   }
+                  initial_metadata = [
+                    {
+                      key   = "x-datadog-envoy-integration"
+                      value = "1"
+                    }
+                  ]
                   timeout = "0.5s"
+                }
+                processing_mode = {
+                  request_header_mode  = "SEND"
+                  response_header_mode = "SEND"
                 }
               }
             }

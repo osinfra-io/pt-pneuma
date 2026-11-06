@@ -18,6 +18,7 @@ module "kubernetes_datadog_operator_manifests" {
   cluster_agent_requests_memory  = var.kubernetes_datadog_operator_cluster_agent_requests_memory
   cluster_prefix                 = each.value.team_key
   enable_apm                     = true
+  enable_asm_threats             = true
   enable_usm                     = true
   node_agent_container_resources = var.kubernetes_datadog_operator_node_agent_container_resources
   registry                       = local.artifact_registry
