@@ -155,7 +155,17 @@ resource "kubernetes_manifest" "datadog_aap_gateway_filter" {
                   envoy_grpc = {
                     cluster_name = local.datadog_aap_cluster_names[each.key]
                   }
+                  initial_metadata = [
+                    {
+                      key   = "x-datadog-envoy-integration"
+                      value = "1"
+                    }
+                  ]
                   timeout = "0.5s"
+                }
+                processing_mode = {
+                  request_header_mode  = "SEND"
+                  response_header_mode = "SEND"
                 }
               }
             }
