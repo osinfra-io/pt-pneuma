@@ -57,7 +57,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=943d7660dad5b04316903e4de379c26488901d36" # v0.9.8
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=8087d40697daa28203b72ab3a05817e05761f6e7" # v0.9.9
 
   for_each = local.teams_with_clusters
 
