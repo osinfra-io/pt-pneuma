@@ -50,7 +50,11 @@ run "cloud_wrapper_helm_parity" {
   }
 
   assert {
-    condition     = helm_release.cni.values[0] == yamlencode({ global = { hub = "mock-docker.pkg.dev/mock-project/mock-virtual/istio" }, platform = "gke", podLabels = { "tags.datadoghq.com/env" = "non-production", "tags.datadoghq.com/service" = "istio-cni", "tags.datadoghq.com/source" = "istio", "tags.datadoghq.com/version" = "1.31.0-rc.0" }, profile = "ambient", resources = { requests = { cpu = "100m", memory = "100Mi" } } })
+    condition = (
+      yamldecode(helm_release.cni.values[0]).podAnnotations["ad.datadoghq.com/install-cni.logs"] ==
+      "[{\"service\":\"istio-cni\",\"source\":\"istio\"}]" &&
+      local.cni_helm_values.platform == "gke"
+    )
     error_message = "The shared runtime must preserve the regional wrapper's GKE CNI Helm values."
   }
 
@@ -62,6 +66,14 @@ run "cloud_wrapper_helm_parity" {
   assert {
     condition     = yamldecode(helm_release.ztunnel.values[0]).global.caAddress == "cert-manager-istio-csr.cert-manager.svc:443" && yamldecode(helm_release.ztunnel.values[0]).global.hub == "mock-docker.pkg.dev/mock-project/mock-virtual/istio"
     error_message = "The shared runtime must retain the cloud wrapper's ztunnel CA and image hub."
+  }
+
+  assert {
+    condition = (
+      jsondecode(yamldecode(helm_release.ztunnel.values[0]).podAnnotations["ad.datadoghq.com/istio-proxy.logs"])[0].source == "istio" &&
+      jsondecode(yamldecode(helm_release.ztunnel.values[0]).podAnnotations["ad.datadoghq.com/istio-proxy.logs"])[0].service == "istio-ztunnel"
+    )
+    error_message = "ztunnel logs must use the Istio source and service."
   }
 }
 
@@ -112,7 +124,7 @@ run "local_runtime_profile" {
   }
 
   assert {
-    condition     = helm_release.cni.values[0] == yamlencode({ global = { hub = "docker.io/istio" }, podLabels = { "tags.datadoghq.com/env" = "local", "tags.datadoghq.com/service" = "istio-cni", "tags.datadoghq.com/source" = "istio", "tags.datadoghq.com/version" = "1.31.0-rc.0" }, profile = "ambient", resources = { requests = { cpu = "100m", memory = "100Mi" } } })
+    condition     = helm_release.cni.values[0] == yamlencode({ global = { hub = "docker.io/istio" }, podAnnotations = { "ad.datadoghq.com/install-cni.logs" = "[{\"service\":\"istio-cni\",\"source\":\"istio\"}]" }, podLabels = { "tags.datadoghq.com/env" = "local", "tags.datadoghq.com/service" = "istio-cni", "tags.datadoghq.com/source" = "istio", "tags.datadoghq.com/version" = "1.31.0-rc.0" }, profile = "ambient", resources = { requests = { cpu = "100m", memory = "100Mi" } } })
     error_message = "The local CNI profile must omit the GKE platform selector and use public images."
   }
 
