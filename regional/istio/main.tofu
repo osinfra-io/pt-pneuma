@@ -17,7 +17,7 @@ module "gateway_auth" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=8087d40697daa28203b72ab3a05817e05761f6e7" # v0.9.9
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio//regional?ref=ce1b1152cef167eefe8aa720bd905a531fe291ec" # v0.9.91
 
   for_each = local.gke_clusters
 
