@@ -45,7 +45,7 @@ resource "tls_self_signed_cert" "cert_manager_ca" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-cert-manager
 
 module "kubernetes_cert_manager" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=5a6ea395abc2d4d6e8096e94a3723cffbf4b06cd" # v0.4.4
+  source = "github.com/osinfra-io/pt-arche-kubernetes-cert-manager?ref=221c1d9f6999c7caba5aa13faa0893b664695df4" # v0.4.5
 
   for_each = local.teams_with_clusters
 
@@ -57,7 +57,7 @@ module "kubernetes_cert_manager" {
 # https://github.com/osinfra-io/pt-arche-kubernetes-istio
 
 module "kubernetes_istio" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=a2879fea63f0fd371e118d5d787cd676c3b5ff25" # v0.9.94
+  source = "github.com/osinfra-io/pt-arche-kubernetes-istio?ref=02bf82449c2306f6804c04552ff93d171dae45f7" # v0.9.95
 
   for_each = local.teams_with_clusters
 

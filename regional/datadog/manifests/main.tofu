@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-datadog-operator
 
 module "kubernetes_datadog_operator_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-datadog-operator//regional/manifests?ref=0cdcdfed36b4e413c5d416b74355e3464a0b50d8" # v0.6.0
+  source = "github.com/osinfra-io/pt-arche-kubernetes-datadog-operator//regional/manifests?ref=d52a0c5ce705e7b5c0d06abaa029afef101104c9" # v0.6.2
 
   for_each = local.datadog_clusters
 
@@ -21,6 +21,8 @@ module "kubernetes_datadog_operator_manifests" {
   enable_asm_threats             = true
   enable_usm                     = true
   node_agent_container_resources = var.kubernetes_datadog_operator_node_agent_container_resources
+  node_agent_image               = "agent-integrations-extra"
+  node_agent_tag                 = "v0.6.2"
   registry                       = local.artifact_registry
   team                           = each.value.team_key
 }
