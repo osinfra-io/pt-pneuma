@@ -23,6 +23,10 @@ locals {
     }
   }
 
+  cloud_armor_allowed_hostname_regex = "^(?:[a-z0-9-]+\\.)*osinfra\\.io\\.?(?::[0-9]+)?$"
+
+  cloud_armor_external_hostname_deny_expression = "!has(request.headers['host']) || !request.headers['host'].lower().matches(${jsonencode(local.cloud_armor_allowed_hostname_regex)})"
+
   cloud_armor_method_enforcement_exceptions = [
     {
       hostname       = ""
