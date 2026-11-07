@@ -21,6 +21,7 @@ spec:
   lifecycle: production
   tier: one
   components:
+  - api:istio-test
   - service:cert-manager
   - service:cert-manager-cainjector
   - service:cert-manager-istio-csr
@@ -80,6 +81,11 @@ spec:
   lifecycle: production
   tier: one
   type: infrastructure
+datadog:
+  codeLocations:
+  - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+    paths:
+    - regional/cert-manager/**
 ---
 apiVersion: v3
 kind: service
@@ -115,6 +121,11 @@ spec:
   lifecycle: production
   tier: one
   type: infrastructure
+datadog:
+  codeLocations:
+  - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+    paths:
+    - regional/cert-manager/**
 ---
 apiVersion: v3
 kind: service
@@ -154,6 +165,11 @@ spec:
   lifecycle: production
   tier: one
   type: infrastructure
+datadog:
+  codeLocations:
+  - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+    paths:
+    - regional/datadog/**
 ---
 apiVersion: v3
 kind: service
@@ -217,6 +233,11 @@ spec:
   lifecycle: production
   tier: one
   type: infrastructure
+datadog:
+  codeLocations:
+  - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+    paths:
+    - regional/opa-gatekeeper/**
 ---
 apiVersion: v3
 kind: service
@@ -263,6 +284,24 @@ datadog:
     paths:
     - config/datadog/**
     - regional/istio/test-workload/**
+  - repositoryURL: https://github.com/osinfra-io/pt-pneuma-istio-test.git
+    paths:
+    - '**'
+---
+apiVersion: v3
+kind: api
+metadata:
+  name: istio-test
+  description: Diagnostic API for validating Istio routing, metadata, and gateway authentication.
+  owner: pt-pneuma
+spec:
+  type: openapi
+  implementedBy:
+  - service:istio-test
+  interface:
+    fileRef: https://github.com/osinfra-io/pt-pneuma-istio-test/blob/main/openapi.yaml
+  lifecycle: production
+  tier: three
 ---
 apiVersion: v3
 kind: service
