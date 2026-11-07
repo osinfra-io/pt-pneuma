@@ -472,7 +472,7 @@ apiVersion: v3
 kind: service
 metadata:
   name: openbao
-  displayName: OpenBao
+  displayName: openbao
   description: OpenBao secrets management service backed by encrypted Raft storage and exposed through the platform's protected ingress.
   links:
   - name: OpenBao API documentation
