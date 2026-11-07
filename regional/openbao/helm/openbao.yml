@@ -5,6 +5,9 @@ global:
   tlsDisable: false
 
 injector:
+  annotations:
+    ad.datadoghq.com/sidecar-injector.logs: '[{"source":"vault","service":"openbao-injector"}]'
+
   enabled: true
 
 server:
