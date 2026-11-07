@@ -439,7 +439,7 @@ locals {
   }
 
   openbao_cloud_armor_hostname_regex = format(
-    "^([a-z0-9-]+\\.)?%s(:443)?$",
+    "^(?:[a-z0-9-]+\\.)?%s(?::443)?$",
     replace(local.openbao_hostname, ".", "\\.")
   )
 
