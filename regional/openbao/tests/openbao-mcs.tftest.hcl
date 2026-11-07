@@ -92,6 +92,16 @@ run "datadog_vault_metrics_integration" {
   }
 
   assert {
+    condition = jsondecode(
+      yamldecode(file("${path.module}/helm/openbao.yml")).injector.annotations["ad.datadoghq.com/sidecar-injector.logs"]
+      ) == [{
+        service = "openbao-injector"
+        source  = "vault"
+    }]
+    error_message = "OpenBao injector logs must use the Vault log source and the OpenBao injector service."
+  }
+
+  assert {
     condition     = yamldecode(file("${path.module}/helm/openbao.yml")).server.configAnnotation && yamldecode(file("${path.module}/helm/openbao.yml")).server.updateStrategyType == "RollingUpdate"
     error_message = "OpenBao must roll pods when its telemetry configuration changes."
   }

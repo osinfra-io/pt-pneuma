@@ -1,8 +1,3 @@
-# Datadog Logs Pipelines Data Source
-# https://search.opentofu.org/provider/datadog/datadog/latest/docs/datasources/logs_pipelines
-
-data "datadog_logs_pipelines" "this" {}
-
 # Terraform Remote State Data Source - Main
 # https://opentofu.org/docs/language/state/remote-state-data
 
