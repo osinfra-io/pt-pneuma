@@ -116,6 +116,38 @@ resource "google_compute_security_policy" "shared_ingress" {
   name    = local.shared_ingress_policy_name
   project = local.team_project_ids[module.core_helpers.team]
 
+  rule {
+    action      = "deny(403)"
+    description = "Deny requests with Host headers outside osinfra.io"
+
+    match {
+      expr {
+        expression = local.cloud_armor_external_hostname_deny_expression
+      }
+    }
+
+    preview  = false
+    priority = 7000
+  }
+
+  dynamic "rule" {
+    for_each = local.openbao_cloud_armor_deny_rules
+
+    content {
+      action      = "deny(403)"
+      description = rule.value.description
+
+      match {
+        expr {
+          expression = rule.value.expression
+        }
+      }
+
+      preview  = false
+      priority = rule.value.priority
+    }
+  }
+
   dynamic "rule" {
     for_each = local.authentik_cloud_armor_allow_rules
 

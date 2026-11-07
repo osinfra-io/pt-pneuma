@@ -23,6 +23,10 @@ locals {
     }
   }
 
+  cloud_armor_allowed_hostname_regex = "^(?:[a-z0-9-]+\\.)*osinfra\\.io\\.?(?::[0-9]+)?$"
+
+  cloud_armor_external_hostname_deny_expression = "!has(request.headers['host']) || !request.headers['host'].lower().matches(${jsonencode(local.cloud_armor_allowed_hostname_regex)})"
+
   cloud_armor_method_enforcement_exceptions = [
     {
       hostname       = ""
@@ -428,6 +432,14 @@ locals {
   kubernetes_istio_gateway_mci_ssl_certificate_names = {
     for team_key, istio in module.kubernetes_istio :
     team_key => length(istio.gateway_mci_ssl_certificate_names) > 0 ? concat(istio.gateway_mci_ssl_certificate_names, local.istio_gateway_legacy_certificate_names) : []
+  }
+
+  openbao_cloud_armor_deny_rules = {
+    openbao_metrics = {
+      description = "Deny external requests to OpenBao metrics"
+      expression  = "request.path.urlDecode().lower().startsWith('/v1/sys/metrics')"
+      priority    = 8000
+    }
   }
 
   openbao_kms_member = "serviceAccount:${google_service_account.openbao_kms.email}"

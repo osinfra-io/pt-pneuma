@@ -50,6 +50,10 @@ locals {
               cluster_address = "[::]:8201"
               tls_cert_file = "/openbao/userconfig/openbao-tls/tls.crt"
               tls_key_file = "/openbao/userconfig/openbao-tls/tls.key"
+
+              telemetry {
+                unauthenticated_metrics_access = true
+              }
             }
 
             seal "gcpckms" {
@@ -64,6 +68,11 @@ locals {
             }
 
             service_registration "kubernetes" {}
+
+            telemetry {
+              disable_hostname          = true
+              prometheus_retention_time = "24h"
+            }
           EOT
         }
       }
