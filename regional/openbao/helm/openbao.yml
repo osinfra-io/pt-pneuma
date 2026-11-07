@@ -24,6 +24,7 @@ server:
           ]
         }
       }
+    ad.datadoghq.com/openbao.logs: '[{"source":"vault","service":"openbao"}]'
 
   configAnnotation: true
 

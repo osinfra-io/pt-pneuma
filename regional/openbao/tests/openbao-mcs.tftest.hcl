@@ -82,6 +82,16 @@ run "datadog_vault_metrics_integration" {
   }
 
   assert {
+    condition = jsondecode(
+      yamldecode(file("${path.module}/helm/openbao.yml")).server.annotations["ad.datadoghq.com/openbao.logs"]
+      ) == [{
+        service = "openbao"
+        source  = "vault"
+    }]
+    error_message = "OpenBao server logs must use the Vault log source while retaining the OpenBao service."
+  }
+
+  assert {
     condition     = yamldecode(file("${path.module}/helm/openbao.yml")).server.configAnnotation && yamldecode(file("${path.module}/helm/openbao.yml")).server.updateStrategyType == "RollingUpdate"
     error_message = "OpenBao must roll pods when its telemetry configuration changes."
   }
