@@ -21,7 +21,10 @@ spec:
   lifecycle: production
   tier: one
   components:
+  - api:authentik
   - api:istio-test
+  - service:agentgateway
+  - service:authentik
   - service:cert-manager
   - service:cert-manager-cainjector
   - service:cert-manager-istio-csr
@@ -37,11 +40,77 @@ spec:
   - service:istio-gateway
   - service:istio-test
   - service:istio-ztunnel
+  - service:openbao
 datadog:
   codeLocations:
   - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
     paths:
     - '**'
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: agentgateway
+  description: agentgateway control plane and proxy for AI, MCP, and HTTP traffic, with an authentik-protected administration interface.
+  links:
+  - name: agentgateway documentation
+    type: doc
+    url: https://agentgateway.dev/docs/kubernetes/latest/
+  - name: pt-arche-kubernetes-agentgateway
+    type: repo
+    provider: Github
+    url: https://github.com/osinfra-io/pt-arche-kubernetes-agentgateway
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: infrastructure
+datadog:
+  codeLocations:
+  - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+    paths:
+    - regional/agentgateway/**
+    - regional/istio/manifests/**
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: authentik
+  description: authentik identity provider and proxy authentication service for platform applications, including Google sign-in and group-based access control.
+  links:
+  - name: authentik documentation
+    type: doc
+    url: https://docs.goauthentik.io/
+  - name: pt-arche-kubernetes-authentik
+    type: repo
+    provider: Github
+    url: https://github.com/osinfra-io/pt-arche-kubernetes-authentik
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: web
+datadog:
+  codeLocations:
+  - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+    paths:
+    - config/authentik/**
+    - regional/authentik/**
+---
+apiVersion: v3
+kind: api
+metadata:
+  name: authentik
+  description: authentik API for managing identity sources, applications, providers, flows, users, groups, and access policies.
+  owner: pt-pneuma
+spec:
+  type: openapi
+  implementedBy:
+  - service:authentik
+  interface:
+    fileRef: https://github.com/goauthentik/authentik/blob/4ec0d19b98da3c329781894cd550da95d3033954/schema.yml
+  lifecycle: production
+  tier: one
 ---
 apiVersion: v3
 kind: service
@@ -398,3 +467,32 @@ datadog:
   - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
     paths:
     - regional/istio/**
+---
+apiVersion: v3
+kind: service
+metadata:
+  name: openbao
+  displayName: OpenBao
+  description: OpenBao secrets management service backed by encrypted Raft storage and exposed through the platform's protected ingress.
+  links:
+  - name: OpenBao API documentation
+    type: doc
+    url: https://openbao.org/docs/api/
+  - name: OpenBao OpenAPI export
+    type: doc
+    url: https://openbao.org/docs/api/system/internal-specs-openapi/
+  - name: OpenBao
+    type: repo
+    provider: Github
+    url: https://github.com/openbao/openbao
+  owner: pt-pneuma
+spec:
+  lifecycle: production
+  tier: one
+  type: infrastructure
+datadog:
+  codeLocations:
+  - repositoryURL: https://github.com/osinfra-io/pt-pneuma.git
+    paths:
+    - config/openbao/**
+    - regional/openbao/**
