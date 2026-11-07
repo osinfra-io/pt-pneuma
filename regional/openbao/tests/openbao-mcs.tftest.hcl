@@ -53,3 +53,36 @@ run "global_openbao_endpoint_uses_only_supported_cluster" {
     error_message = "The global OpenBao hostname must route only to the us-east1-b cluster while preserving team filtering."
   }
 }
+
+run "datadog_vault_metrics_integration" {
+  command = plan
+
+  assert {
+    condition = strcontains(
+      yamldecode(local.openbao_dynamic_helm_values).server.ha.raft.config,
+      "unauthenticated_metrics_access = true"
+      ) && strcontains(
+      yamldecode(local.openbao_dynamic_helm_values).server.ha.raft.config,
+      "prometheus_retention_time = \"24h\""
+    )
+    error_message = "OpenBao must expose Prometheus metrics for the Datadog Vault integration."
+  }
+
+  assert {
+    condition = jsondecode(
+      yamldecode(file("${path.module}/helm/openbao.yml")).server.annotations["ad.datadoghq.com/openbao.checks"]
+      ).vault.instances[0] == {
+      api_url         = "https://%%host%%:8200/v1"
+      detect_leader   = true
+      no_token        = true
+      tls_verify      = false
+      use_openmetrics = true
+    }
+    error_message = "OpenBao pods must use unauthenticated, TLS-aware Datadog Vault OpenMetrics checks."
+  }
+
+  assert {
+    condition     = yamldecode(file("${path.module}/helm/openbao.yml")).server.configAnnotation && yamldecode(file("${path.module}/helm/openbao.yml")).server.updateStrategyType == "RollingUpdate"
+    error_message = "OpenBao must roll pods when its telemetry configuration changes."
+  }
+}

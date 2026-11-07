@@ -430,6 +430,19 @@ locals {
     team_key => length(istio.gateway_mci_ssl_certificate_names) > 0 ? concat(istio.gateway_mci_ssl_certificate_names, local.istio_gateway_legacy_certificate_names) : []
   }
 
+  openbao_cloud_armor_deny_rules = {
+    openbao_metrics = {
+      description = "Deny external requests to OpenBao metrics"
+      expression  = "has(request.headers['host']) && request.headers['host'].lower().matches(${jsonencode(local.openbao_cloud_armor_hostname_regex)}) && request.path.urlDecode().lower().startsWith('/v1/sys/metrics')"
+      priority    = 8000
+    }
+  }
+
+  openbao_cloud_armor_hostname_regex = format(
+    "^([a-z0-9-]+\\.)?%s(:443)?$",
+    replace(local.openbao_hostname, ".", "\\.")
+  )
+
   openbao_kms_member = "serviceAccount:${google_service_account.openbao_kms.email}"
 
   # Seal settings consumed by the regional openbao workspaces to render the gcpckms seal stanza.

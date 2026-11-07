@@ -8,6 +8,25 @@ injector:
   enabled: true
 
 server:
+  annotations:
+    ad.datadoghq.com/openbao.checks: |
+      {
+        "vault": {
+          "init_config": {},
+          "instances": [
+            {
+              "api_url": "https://%%host%%:8200/v1",
+              "detect_leader": true,
+              "no_token": true,
+              "tls_verify": false,
+              "use_openmetrics": true
+            }
+          ]
+        }
+      }
+
+  configAnnotation: true
+
   # The TLS Secret is mounted by the chart at /openbao/userconfig/openbao-tls.
   extraEnvironmentVars:
     BAO_CACERT: /openbao/userconfig/openbao-tls/ca.crt
@@ -35,6 +54,8 @@ server:
       cloud.google.com/backend-config: '{"default":"openbao-backend"}'
       cloud.google.com/neg: '{"ingress": true}'
     type: NodePort
+
+  updateStrategyType: RollingUpdate
 
   ha:
     enabled: true

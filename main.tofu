@@ -117,6 +117,24 @@ resource "google_compute_security_policy" "shared_ingress" {
   project = local.team_project_ids[module.core_helpers.team]
 
   dynamic "rule" {
+    for_each = local.openbao_cloud_armor_deny_rules
+
+    content {
+      action      = "deny(403)"
+      description = rule.value.description
+
+      match {
+        expr {
+          expression = rule.value.expression
+        }
+      }
+
+      preview  = false
+      priority = rule.value.priority
+    }
+  }
+
+  dynamic "rule" {
     for_each = local.authentik_cloud_armor_allow_rules
 
     content {
