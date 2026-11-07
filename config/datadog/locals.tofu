@@ -2,6 +2,17 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  # Log pipelines and their ordering are organization-wide, so only production owns them.
+  datadog_log_configuration_enabled = module.core_helpers.env == "prod"
+
+  datadog_log_pipeline_order = local.datadog_log_configuration_enabled ? concat(
+    [datadog_logs_custom_pipeline.openbao.id],
+    [
+      for pipeline in data.datadog_logs_pipelines.this.logs_pipelines :
+      pipeline.id if pipeline.id != datadog_logs_custom_pipeline.openbao.id
+    ],
+  ) : []
+
   datadog_synthetic_global_locations = [
     "gcp:us-east4",
     "gcp:us-west1",
@@ -125,6 +136,8 @@ locals {
   )
 
   main = data.terraform_remote_state.main.outputs
+
+  openbao_log_filter = "team:${module.core_helpers.team} kube_namespace:openbao service:(openbao OR vault-k8s)"
 
   regions = {
     for cluster_name in keys(var.clusters) :
