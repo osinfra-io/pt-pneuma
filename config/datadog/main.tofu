@@ -196,7 +196,7 @@ resource "datadog_synthetics_test" "this" {
 
   assertion {
     operator = "is"
-    target   = "200"
+    target   = each.value.expected_status
     type     = "statusCode"
   }
 
