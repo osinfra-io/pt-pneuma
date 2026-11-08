@@ -22,12 +22,12 @@ locals {
 
   datadog_synthetic_service = "istio-test"
 
-  datadog_synthetic_suite_alerting_threshold = 1.0 / max(1, length(local.datadog_synthetic_team_tests))
+  datadog_synthetic_suite_alerting_threshold = 1.0 / max(1, length(local.datadog_synthetic_team_global_tests))
 
-  datadog_synthetic_team_tests = {
+  datadog_synthetic_team_global_tests = {
     for test_name, test in local.datadog_synthetic_tests :
     test_name => test
-    if test.team_key == module.core_helpers.team
+    if test.team_key == module.core_helpers.team && test.region == "global"
   }
 
   datadog_synthetic_tests = merge(
