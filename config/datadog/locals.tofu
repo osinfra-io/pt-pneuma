@@ -8,6 +8,8 @@ locals {
 
   datadog_monitor_team_notification = "@team-${module.core_helpers.team}"
 
+  datadog_synthetic_agentgateway_url = "${replace(local.main.authentik_base_url, "authentik.", "agentgateway.")}/ui"
+
   datadog_synthetic_global_locations = [
     "gcp:us-east4",
     "gcp:us-west1",
@@ -22,18 +24,19 @@ locals {
 
   datadog_synthetic_service = "istio-test"
 
-  datadog_synthetic_suite_alerting_threshold = 1.0 / max(1, length(local.datadog_synthetic_team_tests))
+  datadog_synthetic_suite_alerting_threshold = 1.0 / max(1, length(local.datadog_synthetic_team_global_tests))
 
-  datadog_synthetic_team_tests = {
+  datadog_synthetic_team_global_tests = {
     for test_name, test in local.datadog_synthetic_tests :
     test_name => test
-    if test.team_key == module.core_helpers.team
+    if test.team_key == module.core_helpers.team && test.region == "global"
   }
 
   datadog_synthetic_tests = merge(
     {
       for team_key, domain in local.team_dns_domains :
       "${team_key}-global-mci" => {
+        expected_status  = "200"
         follow_redirects = false
         locations        = local.datadog_synthetic_global_locations
         message_priority = "1"
@@ -57,6 +60,7 @@ locals {
         ]
       ]) :
       "${test.team_key}-${test.region}-regional-mci" => {
+        expected_status  = "200"
         follow_redirects = false
         locations        = [local.datadog_synthetic_location_by_region[test.region]]
         message_priority = "3"
@@ -86,6 +90,7 @@ locals {
         ])
       ]) :
       "${test.team_key}-${test.zone}-regional-ingress" => {
+        expected_status  = "200"
         follow_redirects = false
         locations        = [local.datadog_synthetic_location_by_region[test.region]]
         message_priority = "3"
@@ -102,7 +107,22 @@ locals {
       }
     },
     {
+      "${module.core_helpers.team}-agentgateway-global" = {
+        expected_status  = "302"
+        follow_redirects = false
+        locations        = local.datadog_synthetic_global_locations
+        message_priority = "1"
+        name             = "agentgateway: Global Health"
+        region           = "global"
+        request_headers  = {}
+        service          = "agentgateway"
+        status           = var.datadog_synthetic_status
+        team_key         = module.core_helpers.team
+        url              = local.datadog_synthetic_agentgateway_url
+      }
+
       "${module.core_helpers.team}-authentik-global" = {
+        expected_status  = "200"
         follow_redirects = false
         locations        = local.datadog_synthetic_global_locations
         message_priority = "1"
@@ -116,6 +136,7 @@ locals {
       }
 
       "${module.core_helpers.team}-openbao-global" = {
+        expected_status  = "200"
         follow_redirects = false
         locations        = local.datadog_synthetic_global_locations
         message_priority = "1"

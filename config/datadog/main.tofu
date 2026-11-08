@@ -64,6 +64,7 @@ resource "datadog_monitor" "cloud_armor_anomalous_request_volume" {
   name                = "[Google Cloud Armor] Request volume is higher than usual"
   new_group_delay     = 60
   on_missing_data     = "default"
+  priority            = 4
   query               = local.datadog_monitor_cloud_armor_anomalous_request_volume_query
   require_full_window = false
   tags = [
@@ -148,6 +149,7 @@ resource "datadog_monitor" "cloud_armor_denied_request_rate" {
   name                = "[Google Cloud Armor] Denied request rate is high"
   new_group_delay     = 60
   on_missing_data     = "default"
+  priority            = 4
   query               = local.datadog_monitor_cloud_armor_denied_request_rate_query
   require_full_window = false
   tags = [
@@ -164,8 +166,8 @@ resource "datadog_monitor" "cloud_armor_denied_request_rate" {
 # https://search.opentofu.org/provider/datadog/datadog/latest/resources/synthetics_suite
 
 resource "datadog_synthetics_suite" "pneuma" {
-  message = "One or more critical Pneuma synthetic tests are failing."
-  name    = "Pneuma Synthetics"
+  message = "One or more critical Pneuma global synthetic checks are failing. ${local.datadog_monitor_team_notification}"
+  name    = "Pneuma: Global Health"
 
   options {
     alerting_threshold = local.datadog_synthetic_suite_alerting_threshold
@@ -177,7 +179,7 @@ resource "datadog_synthetics_suite" "pneuma" {
   ]
 
   dynamic "tests" {
-    for_each = local.datadog_synthetic_team_tests
+    for_each = local.datadog_synthetic_team_global_tests
 
     content {
       alerting_criticality = "critical"
@@ -194,7 +196,7 @@ resource "datadog_synthetics_test" "this" {
 
   assertion {
     operator = "is"
-    target   = "200"
+    target   = each.value.expected_status
     type     = "statusCode"
   }
 
@@ -205,6 +207,7 @@ resource "datadog_synthetics_test" "this" {
   }
 
   locations = each.value.locations
+  message   = "The ${each.value.name} synthetic test is failing. @team-${each.value.team_key}"
   name      = each.value.name
 
   options_list {
