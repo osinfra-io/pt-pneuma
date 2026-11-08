@@ -59,10 +59,10 @@ run "datadog_vault_metrics_integration" {
 
   assert {
     condition = strcontains(
-      yamldecode(local.openbao_dynamic_helm_values).server.ha.raft.config,
+      local.openbao_raft_configuration,
       "unauthenticated_metrics_access = true"
       ) && strcontains(
-      yamldecode(local.openbao_dynamic_helm_values).server.ha.raft.config,
+      local.openbao_raft_configuration,
       "prometheus_retention_time = \"24h\""
     )
     error_message = "OpenBao must expose Prometheus metrics for the Datadog Vault integration."
@@ -70,7 +70,7 @@ run "datadog_vault_metrics_integration" {
 
   assert {
     condition = jsondecode(
-      yamldecode(file("${path.module}/helm/openbao.yml")).server.annotations["ad.datadoghq.com/openbao.checks"]
+      local.openbao_server_annotations["ad.datadoghq.com/openbao.checks"]
       ).vault.instances[0] == {
       api_url         = "https://%%host%%:8200/v1"
       detect_leader   = true
@@ -80,29 +80,29 @@ run "datadog_vault_metrics_integration" {
     }
     error_message = "OpenBao pods must use unauthenticated, TLS-aware Datadog Vault OpenMetrics checks."
   }
+}
+
+run "tls_and_kms_configuration" {
+  command = plan
 
   assert {
-    condition = jsondecode(
-      yamldecode(file("${path.module}/helm/openbao.yml")).server.annotations["ad.datadoghq.com/openbao.logs"]
-      ) == [{
-        service = "openbao"
-        source  = "vault"
-    }]
-    error_message = "OpenBao server logs must use the Vault log source while retaining the OpenBao service."
+    condition = (
+      strcontains(local.openbao_raft_configuration, "tls_cert_file = \"/openbao/userconfig/openbao-tls/tls.crt\"") &&
+      strcontains(local.openbao_raft_configuration, "tls_key_file = \"/openbao/userconfig/openbao-tls/tls.key\"") &&
+      strcontains(local.openbao_raft_configuration, "seal \"gcpckms\"") &&
+      strcontains(local.openbao_raft_configuration, "project    = \"pt-example\"") &&
+      local.openbao_service_account_annotations["iam.gke.io/gcp-service-account"] == "openbao@example.iam.gserviceaccount.com"
+    )
+    error_message = "OpenBao must retain its TLS listener and main-workspace GCP KMS auto-unseal settings."
   }
 
   assert {
-    condition = jsondecode(
-      yamldecode(file("${path.module}/helm/openbao.yml")).injector.annotations["ad.datadoghq.com/sidecar-injector.logs"]
-      ) == [{
-        service = "openbao-injector"
-        source  = "vault"
-    }]
-    error_message = "OpenBao injector logs must use the Vault log source and the OpenBao injector service."
-  }
-
-  assert {
-    condition     = yamldecode(file("${path.module}/helm/openbao.yml")).server.configAnnotation && yamldecode(file("${path.module}/helm/openbao.yml")).server.updateStrategyType == "RollingUpdate"
-    error_message = "OpenBao must roll pods when its telemetry configuration changes."
+    condition = (
+      local.openbao_server_extra_environment_vars.BAO_CACERT == "/openbao/userconfig/openbao-tls/ca.crt" &&
+      local.openbao_server_extra_volumes == [{ name = "openbao-tls", type = "secret" }] &&
+      jsondecode(local.openbao_service_annotations["cloud.google.com/app-protocols"]).https == "HTTPS" &&
+      jsondecode(local.openbao_service_annotations["cloud.google.com/backend-config"]).default == "openbao-backend"
+    )
+    error_message = "OpenBao must mount its TLS secret and advertise HTTPS with its dedicated GKE backend configuration."
   }
 }

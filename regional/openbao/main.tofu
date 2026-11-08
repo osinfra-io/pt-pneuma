@@ -1,3 +1,36 @@
+# Kubernetes OpenBao Module (osinfra.io)
+# https://github.com/osinfra-io/pt-arche-kubernetes-openbao
+
+module "kubernetes_openbao" {
+  source = "github.com/osinfra-io/pt-arche-kubernetes-openbao//regional?ref=8b4ad53da987e1942f89f4912478b185ac60082a" # v0.1.3
+
+  depends_on = [
+    kubernetes_manifest.openbao_backendconfig,
+    kubernetes_manifest.openbao_tls_certificate,
+  ]
+
+  for_each = local.gke_clusters
+
+  providers = {
+    helm = helm.by_cluster[each.key]
+  }
+
+  labels                             = local.openbao_labels
+  namespace                          = kubernetes_namespace_v1.openbao[each.key].metadata[0].name
+  openbao_version                    = var.openbao_version
+  raft_configuration                 = local.openbao_raft_configuration
+  replicas                           = 1
+  server_annotations                 = local.openbao_server_annotations
+  server_config_annotation           = true
+  server_extra_environment_vars      = local.openbao_server_extra_environment_vars
+  server_extra_volumes               = local.openbao_server_extra_volumes
+  server_service_account_annotations = local.openbao_service_account_annotations
+  server_update_strategy_type        = "RollingUpdate"
+  service_annotations                = local.openbao_service_annotations
+  service_type                       = "NodePort"
+  tls_disable                        = false
+}
+
 # Google Compute Global Address Resource
 # https://search.opentofu.org/provider/hashicorp/google/latest/docs/resources/compute_global_address
 
@@ -23,39 +56,12 @@ resource "google_dns_record_set" "openbao_zonal" {
   type         = "A"
 }
 
-# Helm Release Resource
-# https://search.opentofu.org/provider/hashicorp/helm/latest/docs/resources/release
-
-resource "helm_release" "openbao" {
-  depends_on = [
-    kubernetes_manifest.openbao_backendconfig,
-    kubernetes_manifest.openbao_tls_certificate,
-  ]
-
-  for_each = local.gke_clusters
-  provider = helm.by_cluster[each.key]
-
-  chart      = "openbao"
-  name       = "openbao"
-  namespace  = kubernetes_namespace_v1.openbao[each.key].metadata[0].name
-  repository = "https://openbao.github.io/openbao-helm"
-
-  set = local.helm_set_values
-
-  values = [
-    file("${path.module}/helm/openbao.yml"),
-    local.openbao_dynamic_helm_values
-  ]
-
-  version = var.openbao_version
-}
-
 # Kubernetes Ingress Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/ingress_v1
 
 resource "kubernetes_ingress_v1" "openbao" {
   depends_on = [
-    helm_release.openbao,
+    module.kubernetes_openbao,
   ]
 
   for_each = local.gke_clusters
@@ -83,10 +89,10 @@ resource "kubernetes_ingress_v1" "openbao" {
         path {
           backend {
             service {
-              name = "openbao"
+              name = module.kubernetes_openbao[each.key].service_name
 
               port {
-                number = 8200
+                number = module.kubernetes_openbao[each.key].service_port
               }
             }
           }
@@ -280,7 +286,7 @@ resource "kubernetes_manifest" "openbao_mci" {
 
 resource "kubernetes_manifest" "openbao_mcs" {
   depends_on = [
-    helm_release.openbao,
+    module.kubernetes_openbao,
   ]
 
   for_each = local.openbao_config_clusters
