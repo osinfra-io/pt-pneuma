@@ -2,6 +2,12 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  datadog_monitor_cloud_armor_anomalous_request_volume_query = "avg(last_15m):anomalies(sum:gcp.networksecurity.https.request_count{project_id:${local.main.project_id}} by {project_id,location,policy_name,backend_target_name}.as_count(), 'agile', 2, direction='above', interval=60, alert_window='last_15m', count_default_zero='true', seasonality='weekly') >= 1"
+
+  datadog_monitor_cloud_armor_denied_request_rate_query = "sum(last_15m):(sum:gcp.networksecurity.https.request_count{blocked:true,project_id:${local.main.project_id}} by {project_id,location,policy_name,backend_target_name}.as_count() / clamp_min(sum:gcp.networksecurity.https.request_count{project_id:${local.main.project_id}} by {project_id,location,policy_name,backend_target_name}.as_count(), 100)) * 100 > 20"
+
+  datadog_monitor_team_notification = "@team-${module.core_helpers.team}"
+
   datadog_synthetic_global_locations = [
     "gcp:us-east4",
     "gcp:us-west1",
