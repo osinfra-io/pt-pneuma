@@ -2,6 +2,8 @@
 # https://opentofu.org/docs/language/values/locals
 
 locals {
+  datadog_monitor_team_notification = "@team-${module.core_helpers.team}"
+
   datadog_synthetic_global_locations = [
     "gcp:us-east4",
     "gcp:us-west1",
