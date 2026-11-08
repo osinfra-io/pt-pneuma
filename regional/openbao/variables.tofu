@@ -11,16 +11,6 @@ variable "clusters" {
   }))
 }
 
-variable "openbao_helm_set_values" {
-  default     = []
-  description = "Environment-specific OpenBao Helm set values"
-
-  type = list(object({
-    name  = string
-    value = string
-  }))
-}
-
 variable "openbao_version" {
   default     = "0.27.0"
   description = "The version of the OpenBao Helm chart to deploy"

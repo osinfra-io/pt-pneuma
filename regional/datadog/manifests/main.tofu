@@ -2,7 +2,7 @@
 # https://github.com/osinfra-io/pt-arche-kubernetes-datadog-operator
 
 module "kubernetes_datadog_operator_manifests" {
-  source = "github.com/osinfra-io/pt-arche-kubernetes-datadog-operator//regional/manifests?ref=5335ad0c7ae1822392ad94edd4662636c14ebc52" # v0.6.5
+  source = "github.com/osinfra-io/pt-arche-kubernetes-datadog-operator//regional/manifests?ref=31b28baabd30b62bb5eea0847e1484f5995d91a6" # v0.6.6
 
   for_each = local.datadog_clusters
 

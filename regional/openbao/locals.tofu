@@ -10,21 +10,6 @@ locals {
     if endswith(cluster_name, "-${local.zone}") && cluster_config.team_key == module.core_helpers.team
   }
 
-  # Helm set values derived from OpenTofu context and environment-specific variables.
-  helm_set_values = concat(
-    [
-      {
-        name  = "server.extraLabels.env"
-        value = module.core_helpers.environment
-      },
-      {
-        name  = "server.extraLabels.team"
-        value = module.core_helpers.team
-      },
-    ],
-    var.openbao_helm_set_values,
-  )
-
   # Main workspace outputs
   main = data.terraform_remote_state.main.outputs
 
@@ -36,56 +21,90 @@ locals {
     if cluster_name == "pt-pneuma-us-east1-b"
   }
 
-  # Values that depend on main workspace outputs: the Workload Identity binding for the OpenBao
-  # ServiceAccount and the Raft config (the chart default with TLS enabled plus the gcpckms auto-unseal stanza).
-  openbao_dynamic_helm_values = yamlencode({
-    server = {
-      ha = {
-        raft = {
-          config = <<-EOT
-            ui = true
+  openbao_labels = {
+    env  = module.core_helpers.environment
+    team = module.core_helpers.team
+  }
 
-            listener "tcp" {
-              address = "[::]:8200"
-              cluster_address = "[::]:8201"
-              tls_cert_file = "/openbao/userconfig/openbao-tls/tls.crt"
-              tls_key_file = "/openbao/userconfig/openbao-tls/tls.key"
+  # Zonal OpenBao instances have independent Raft data; the shared hostname must use us-east1-b.
+  openbao_multi_cluster_service_clusters = [
+    for cluster_name, cluster_config in local.main.gke_clusters :
+    {
+      link = "${regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]}/${cluster_name}"
+    }
+    if cluster_config.team_key == module.core_helpers.team && cluster_name == "pt-pneuma-us-east1-b"
+  ]
 
-              telemetry {
-                unauthenticated_metrics_access = true
-              }
-            }
+  openbao_raft_configuration = <<-EOT
+    ui = true
 
-            seal "gcpckms" {
-              crypto_key = "${local.main.openbao_kms_seal.crypto_key}"
-              key_ring   = "${local.main.openbao_kms_seal.key_ring}"
-              project    = "${local.main.openbao_kms_seal.project}"
-              region     = "${local.main.openbao_kms_seal.region}"
-            }
+    listener "tcp" {
+      address = "[::]:8200"
+      cluster_address = "[::]:8201"
+      tls_cert_file = "/openbao/userconfig/openbao-tls/tls.crt"
+      tls_key_file = "/openbao/userconfig/openbao-tls/tls.key"
 
-            storage "raft" {
-              path = "/openbao/data"
-            }
-
-            service_registration "kubernetes" {}
-
-            telemetry {
-              disable_hostname          = true
-              prometheus_retention_time = "24h"
-            }
-          EOT
-        }
-      }
-
-      serviceAccount = {
-        annotations = {
-          "iam.gke.io/gcp-service-account" = local.main.openbao_kms_service_account_email
-        }
-
-        name = "openbao"
+      telemetry {
+        unauthenticated_metrics_access = true
       }
     }
-  })
+
+    seal "gcpckms" {
+      crypto_key = "${local.main.openbao_kms_seal.crypto_key}"
+      key_ring   = "${local.main.openbao_kms_seal.key_ring}"
+      project    = "${local.main.openbao_kms_seal.project}"
+      region     = "${local.main.openbao_kms_seal.region}"
+    }
+
+    storage "raft" {
+      path = "/openbao/data"
+    }
+
+    service_registration "kubernetes" {}
+
+    telemetry {
+      disable_hostname          = true
+      prometheus_retention_time = "24h"
+    }
+  EOT
+
+  openbao_server_annotations = {
+    "ad.datadoghq.com/openbao.checks" = jsonencode({
+      vault = {
+        init_config = {}
+        instances = [
+          {
+            api_url         = "https://%%host%%:8200/v1"
+            detect_leader   = true
+            no_token        = true
+            tls_verify      = false
+            use_openmetrics = true
+          }
+        ]
+      }
+    })
+  }
+
+  openbao_server_extra_environment_vars = {
+    BAO_CACERT = "/openbao/userconfig/openbao-tls/ca.crt"
+  }
+
+  openbao_server_extra_volumes = [
+    {
+      name = "openbao-tls"
+      type = "secret"
+    }
+  ]
+
+  openbao_service_account_annotations = {
+    "iam.gke.io/gcp-service-account" = local.main.openbao_kms_service_account_email
+  }
+
+  openbao_service_annotations = {
+    "cloud.google.com/app-protocols"  = jsonencode({ https = "HTTPS" })
+    "cloud.google.com/backend-config" = jsonencode({ default = "openbao-backend" })
+    "cloud.google.com/neg"            = jsonencode({ ingress = true })
+  }
 
   # SANs for the pod certificate: the external hostnames, every in-cluster name clients and Raft peers
   # use, and loopback for the in-pod bao CLI and probes.
@@ -100,15 +119,6 @@ locals {
     "openbao.openbao",
     "openbao.openbao.svc",
     "openbao.openbao.svc.cluster.local",
-  ]
-
-  # Zonal OpenBao instances have independent Raft data; the shared hostname must use us-east1-b.
-  openbao_multi_cluster_service_clusters = [
-    for cluster_name, cluster_config in local.main.gke_clusters :
-    {
-      link = "${regex("(us-[a-z0-9]+)-[a-z]$", cluster_name)[0]}/${cluster_name}"
-    }
-    if cluster_config.team_key == module.core_helpers.team && cluster_name == "pt-pneuma-us-east1-b"
   ]
 
   # Each cluster also gets a direct GKE Ingress endpoint, named with its zone prefix.
