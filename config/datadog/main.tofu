@@ -64,7 +64,7 @@ resource "datadog_monitor" "cloud_armor_anomalous_request_volume" {
   name                = "[Google Cloud Armor] Request volume is higher than usual"
   new_group_delay     = 60
   on_missing_data     = "default"
-  query               = "avg(last_15m):anomalies(sum:gcp.networksecurity.https.request_count{*} by {project_id,location,policy_name,backend_target_name}.as_count(), 'agile', 2, direction='above', interval=60, alert_window='last_15m', count_default_zero='true', seasonality='weekly') >= 1"
+  query               = local.datadog_monitor_cloud_armor_anomalous_request_volume_query
   require_full_window = false
   tags = [
     "env:${module.core_helpers.environment}",
@@ -148,7 +148,7 @@ resource "datadog_monitor" "cloud_armor_denied_request_rate" {
   name                = "[Google Cloud Armor] Denied request rate is high"
   new_group_delay     = 60
   on_missing_data     = "default"
-  query               = "sum(last_15m):(sum:gcp.networksecurity.https.request_count{blocked:true} by {project_id,location,policy_name,backend_target_name}.as_count() / clamp_min(sum:gcp.networksecurity.https.request_count{*} by {project_id,location,policy_name,backend_target_name}.as_count(), 100)) * 100 > 20"
+  query               = local.datadog_monitor_cloud_armor_denied_request_rate_query
   require_full_window = false
   tags = [
     "env:${module.core_helpers.environment}",
