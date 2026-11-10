@@ -263,6 +263,51 @@ resource "kubernetes_manifest" "gateway_authentik_jwt_bypass_filter" {
   }
 }
 
+# https://github.com/osinfra-io/pt-arche-kubernetes-istio/issues/147 tracks investigating
+# the cost and observability trade-offs before re-enabling Istio metrics.
+resource "kubernetes_manifest" "istio_telemetry" {
+  depends_on = [
+    module.kubernetes_istio_manifests
+  ]
+
+  for_each = local.gke_clusters
+
+  provider = kubernetes.by_cluster[each.key]
+
+  manifest = {
+    apiVersion = "telemetry.istio.io/v1"
+    kind       = "Telemetry"
+
+    metadata = {
+      name      = "mesh-default"
+      namespace = "istio-system"
+    }
+
+    spec = {
+      metrics = [
+        {
+          providers = [
+            {
+              name = "prometheus"
+            }
+          ]
+
+          overrides = [
+            {
+              disabled = true
+
+              match = {
+                metric = "ALL_METRICS"
+                mode   = "CLIENT_AND_SERVER"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
 # Kubernetes Namespace Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/namespace_v1
 
