@@ -24,7 +24,8 @@ if [ -f "${state_file}" ]; then
 fi
 
 # Only remove the certificate controller when setup created and labelled its namespace.
-if kubectl get namespace podcertificate-controller-system --selector="local-fixture.osinfra.io/owner=agent-substrate" --output=name | grep --quiet .; then
+owned_namespaces="$(kubectl get namespace --selector="local-fixture.osinfra.io/owner=agent-substrate" --output=name)"
+if grep --fixed-strings --line-regexp --quiet 'namespace/podcertificate-controller-system' <<<"${owned_namespaces}"; then
   helm uninstall substrate-podcert --kube-context=docker-desktop --namespace=podcertificate-controller-system --ignore-not-found >/dev/null
   kubectl delete namespace podcertificate-controller-system --ignore-not-found
 else

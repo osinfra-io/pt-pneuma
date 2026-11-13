@@ -43,7 +43,8 @@ fi
 
 # Claim the certificate controller namespace for this fixture and refuse one that already exists unowned.
 if kubectl get namespace "${PODCERT_NAMESPACE}" >/dev/null 2>&1; then
-  kubectl get namespace --selector="${PODCERT_OWNER_LABEL}" --output=name | grep --quiet . ||
+  owned_namespaces="$(kubectl get namespace --selector="${PODCERT_OWNER_LABEL}" --output=name)"
+  grep --fixed-strings --line-regexp --quiet "namespace/${PODCERT_NAMESPACE}" <<<"${owned_namespaces}" ||
     fail "namespace '${PODCERT_NAMESPACE}' exists but is not owned by this fixture; remove or adopt it explicitly before setup"
 else
   kubectl create namespace "${PODCERT_NAMESPACE}"
