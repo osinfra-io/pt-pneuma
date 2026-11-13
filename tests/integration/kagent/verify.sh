@@ -18,7 +18,11 @@ assert_local_gateway_stack_owner "${OWNER_NAME}" kube-system "${OWNER_VALUE}" ||
 
 kubectl rollout status statefulset/postgresql --namespace=kagent --timeout=180s
 
-for deployment in $(kubectl get deployments --namespace=kagent --output=jsonpath='{.items[*].metadata.name}'); do
+deployments="$(kubectl get deployments --namespace=kagent --output=jsonpath='{.items[*].metadata.name}')" ||
+  fail "could not list deployments in kagent"
+[ -n "${deployments}" ] || fail "no deployments found in kagent"
+
+for deployment in ${deployments}; do
   kubectl rollout status "deployment/${deployment}" --namespace=kagent --timeout=300s
 done
 

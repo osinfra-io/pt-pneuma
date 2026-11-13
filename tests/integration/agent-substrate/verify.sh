@@ -18,7 +18,11 @@ assert_local_gateway_stack_owner "${OWNER_NAME}" kube-system "${OWNER_VALUE}" ||
 
 kubectl rollout status statefulset/postgresql --namespace=ate-system --timeout=180s
 
-for deployment in $(kubectl get deployments --namespace=ate-system --output=jsonpath='{.items[*].metadata.name}'); do
+deployments="$(kubectl get deployments --namespace=ate-system --output=jsonpath='{.items[*].metadata.name}')" ||
+  fail "could not list deployments in ate-system"
+[ -n "${deployments}" ] || fail "no deployments found in ate-system"
+
+for deployment in ${deployments}; do
   kubectl rollout status "deployment/${deployment}" --namespace=ate-system --timeout=300s
 done
 

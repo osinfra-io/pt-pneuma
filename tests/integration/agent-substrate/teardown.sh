@@ -23,7 +23,12 @@ if [ -f "${state_file}" ]; then
   tofu_stage regional destroy -auto-approve -input=false
 fi
 
-helm uninstall substrate-podcert --kube-context=docker-desktop --namespace=podcertificate-controller-system --ignore-not-found >/dev/null
-kubectl delete namespace podcertificate-controller-system --ignore-not-found
+# Only remove the certificate controller when setup created and labelled its namespace.
+if kubectl get namespace podcertificate-controller-system --selector="local-fixture.osinfra.io/owner=agent-substrate" --output=name | grep --quiet .; then
+  helm uninstall substrate-podcert --kube-context=docker-desktop --namespace=podcertificate-controller-system --ignore-not-found >/dev/null
+  kubectl delete namespace podcertificate-controller-system --ignore-not-found
+else
+  echo "Skipping substrate-podcert: its namespace is absent or not owned by this fixture."
+fi
 
 echo "Agent Substrate-owned resources and local database data were removed. The shared ownership marker and cluster-wide CRDs were not deleted."

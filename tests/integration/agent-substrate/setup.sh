@@ -25,6 +25,7 @@ assert_local_gateway_stack_owner "${OWNER_NAME}" kube-system "${OWNER_VALUE}" ||
 readonly SUBSTRATE_VERSION="1.0.1"
 readonly SUBSTRATE_SOURCE_DIR="${WORK_DIR}/substrate-src"
 readonly PODCERT_NAMESPACE="podcertificate-controller-system"
+readonly PODCERT_OWNER_LABEL="local-fixture.osinfra.io/owner=agent-substrate"
 
 # The substrate chart needs the ClusterTrustBundle, ClusterTrustBundleProjection and
 # PodCertificateRequest feature gates plus certificates.k8s.io/v1beta1; the fixture
@@ -40,13 +41,22 @@ if [ ! -d "${SUBSTRATE_SOURCE_DIR}" ]; then
     https://github.com/kagent-dev/substrate "${SUBSTRATE_SOURCE_DIR}"
 fi
 
+# Claim the certificate controller namespace for this fixture and refuse one that already exists unowned.
+if kubectl get namespace "${PODCERT_NAMESPACE}" >/dev/null 2>&1; then
+  kubectl get namespace --selector="${PODCERT_OWNER_LABEL}" --output=name | grep --quiet . ||
+    fail "namespace '${PODCERT_NAMESPACE}' exists but is not owned by this fixture; remove or adopt it explicitly before setup"
+else
+  kubectl create namespace "${PODCERT_NAMESPACE}"
+  kubectl label namespace "${PODCERT_NAMESPACE}" "${PODCERT_OWNER_LABEL}"
+fi
+
 # Install the cluster-wide certificate controller and its CA pools once.
 if ! kubectl get secret postgres-ca-pool --namespace="${PODCERT_NAMESPACE}" >/dev/null 2>&1; then
   (cd "${SUBSTRATE_SOURCE_DIR}" && go run ./cmd/ate-setup --context=docker-desktop create podcertificate-controller-cas)
 fi
 helm upgrade --install substrate-podcert oci://ghcr.io/kagent-dev/substrate/helm/substrate-podcert \
   --version "${SUBSTRATE_VERSION}" --kube-context=docker-desktop \
-  --namespace="${PODCERT_NAMESPACE}" --create-namespace --wait --timeout=5m
+  --namespace="${PODCERT_NAMESPACE}" --wait --timeout=5m
 
 if helm status substrate --namespace=ate-system >/dev/null 2>&1 &&
   ! tofu_stage regional state list 2>/dev/null |

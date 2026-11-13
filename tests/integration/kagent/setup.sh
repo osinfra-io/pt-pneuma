@@ -22,7 +22,7 @@ assert_docker_desktop_kind_cluster || fail "Kubernetes is not backed by the Dock
 assert_local_gateway_stack_owner "${OWNER_NAME}" kube-system "${OWNER_VALUE}" ||
   fail "initialize the dedicated local gateway stack through preflight before setup"
 
-kubectl get deployment --namespace=ate-system >/dev/null 2>&1 ||
+kubectl get deployment/ate-api-server --namespace=ate-system >/dev/null 2>&1 ||
   fail "Agent Substrate must be installed before kagent"
 
 if helm status kagent --namespace=kagent >/dev/null 2>&1 &&
