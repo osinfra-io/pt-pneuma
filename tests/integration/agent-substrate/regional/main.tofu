@@ -11,6 +11,8 @@ module "agent_substrate" {
   crds_postrender            = local.crds_postrender
   ingress_allowed_spiffe_ids = ["spiffe://cluster.local/ns/kagent/sa/kagent-controller"]
   namespace                  = kubernetes_namespace_v1.agent_substrate.metadata[0].name
+  rustfs_access_key          = "rustfsadmin"
+  rustfs_secret_key          = "rustfsadmin"
 }
 
 # Kubernetes Namespace Resource
