@@ -27,6 +27,14 @@ module "authentik_config" {
       name        = "Istio"
       policy_name = "local-development-browser-access"
     }
+    kagent = {
+      groups      = ["pt-pneuma: kagent Admins"]
+      host        = "https://kagent.localhost"
+      icon        = "https://docs.osinfra.io/img/authentik/applications/kagent.svg"
+      launch_url  = "https://kagent.localhost/"
+      name        = "kagent"
+      policy_name = "kagent-browser-access"
+    }
   }
 
   client_id = "development"

@@ -16,6 +16,8 @@ readonly SCRIPT_DIR
 "${SCRIPT_DIR}/istio/apply-auth.sh"
 "${SCRIPT_DIR}/istio/apply-routes.sh"
 "${SCRIPT_DIR}/agentgateway/setup.sh"
+"${SCRIPT_DIR}/agent-substrate/setup.sh"
+"${SCRIPT_DIR}/kagent/setup.sh"
 "${SCRIPT_DIR}/openbao/setup.sh"
 
 echo "Local gateway stack is ready. Run tests/integration/verify.sh, then complete Google sign-in manually."

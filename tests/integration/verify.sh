@@ -19,7 +19,7 @@ run_stage() {
   fi
 }
 
-for component in istio authentik agentgateway openbao; do
+for component in istio authentik agentgateway agent-substrate kagent openbao; do
   run_stage "${component}" "${SCRIPT_DIR}/${component}/verify.sh"
 done
 
