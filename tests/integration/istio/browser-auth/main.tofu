@@ -25,6 +25,12 @@ module "browser_auth" {
       path         = "/istio-test"
       public_paths = ["/istio-test/health", "/istio-test/metadata/*"]
     }
+
+    kagent = {
+      host            = "kagent.localhost"
+      path            = "/"
+      required_groups = ["pt-pneuma: kagent Admins"]
+    }
   }
 }
 

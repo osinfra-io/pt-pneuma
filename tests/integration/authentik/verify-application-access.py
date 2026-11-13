@@ -44,11 +44,13 @@ def verify(work):
     expected_launches = {
         "agentgateway": "https://agentgateway.localhost/ui/",
         "Istio": "https://dev.localhost/istio-test/auth",
+        "kagent": "https://kagent.localhost/",
     }
     expected_icons = {
         "agentgateway": "https://docs.osinfra.io/img/authentik/applications/agentgateway.svg",
         "Istio": "https://docs.osinfra.io/img/authentik/applications/istio.svg",
         "OpenBao": "https://docs.osinfra.io/img/authentik/applications/openbao.svg",
+        "kagent": "https://docs.osinfra.io/img/authentik/applications/kagent.svg",
     }
     if {application["name"] for application in applications} != set(expected_launches):
         raise ValueError("Browser applications do not have the expected descriptive names")
@@ -70,6 +72,7 @@ def verify(work):
     browser_policies = objects("authentik_policy_expression", "browser_access")
     expected_policy_names = {
         "agentgateway-browser-access",
+        "kagent-browser-access",
         "local-development-browser-access",
     }
     if {policy["name"] for policy in browser_policies} != expected_policy_names:

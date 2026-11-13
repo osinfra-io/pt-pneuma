@@ -8,9 +8,9 @@ Pneuma composes these modules, so everything cross-cutting lives here: the share
 
 | Path | Purpose |
 | --- | --- |
-| `setup.sh`, `verify.sh`, `teardown.sh` | Stack entry points: Istio → Authentik → agentgateway → OpenBao (teardown in reverse) |
+| `setup.sh`, `verify.sh`, `teardown.sh` | Stack entry points: Istio → Authentik → agentgateway → Agent Substrate → kagent → OpenBao (teardown in reverse) |
 | `shared/` | Preflight/ownership, cluster guards, and `hostnames.txt` |
-| `istio/`, `authentik/`, `agentgateway/`, `openbao/` | Per-component fixtures with their own `setup.sh`, `verify.sh`, and `teardown.sh`; OpenBao also applies a local OIDC and team-policy configuration stage |
+| `istio/`, `authentik/`, `agentgateway/`, `agent-substrate/`, `kagent/`, `openbao/` | Per-component fixtures with their own `setup.sh`, `verify.sh`, and `teardown.sh`; OpenBao also applies a local OIDC and team-policy configuration stage |
 | `verify/` | Holistic HTTP and runtime (fail-closed, admin denial, ztunnel mTLS) verifiers |
 
 Fixtures use the aggregated workspace layout (`arche/` and `pneuma/` under `platform-group/`) so uncommitted module changes are exercised without release pins. Generated credentials and state live in ignored `.work/` directories.
@@ -38,7 +38,7 @@ Google-backed OIDC sign-in is a separate manual developer check and is not cover
 
 3. Verify team-scoped access with an Authentik user whose local team group membership is configured. The automated policy checks do not prove that Google sign-in or group claims work end to end. Report the browser/CLI check separately and only after observing it.
 
-The local fixture uses the same host-level authorization as the cloud: `agentgateway.localhost` requires the managed agentgateway Admins group, while `dev.localhost` uses the baseline `all` group. No post-auth authorization Lua is deployed; only identity-header stripping remains.
+The local fixture uses the same host-level authorization as the cloud: `agentgateway.localhost` requires the managed agentgateway Admins group, `kagent.localhost` requires kagent Admins, while `dev.localhost` uses the baseline `all` group. No post-auth authorization Lua is deployed; only identity-header stripping remains.
 
 Google users are classified as internal only when their verified email and Google Workspace `hd` claim both match `osinfra.io`; other Google users remain external. Existing accounts receive the classification on their next Google sign-in. Internal status permits access to the authentik user interface, but administrative permissions still require the declared authentik Admins group.
 

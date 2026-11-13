@@ -8,6 +8,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 
-for component in openbao agentgateway authentik istio; do
+for component in openbao kagent agent-substrate agentgateway authentik istio; do
   "${SCRIPT_DIR}/${component}/teardown.sh"
 done

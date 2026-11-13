@@ -150,7 +150,7 @@ ensure_auth_resources_safe() {
     "envoyfilters.networking.istio.io gateway-authentik-inbound-header-strip"
   )
 
-  for key in diagnostic agentgateway agentgateway_ui agentgateway_api agentgateway_config; do
+  for key in diagnostic agentgateway agentgateway_ui agentgateway_api agentgateway_config kagent; do
     policy_name="$(auth_policy_name "${key}")"
     resources+=("authorizationpolicies.security.istio.io ${policy_name}")
   done
