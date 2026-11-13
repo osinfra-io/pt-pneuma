@@ -16,7 +16,21 @@ class BootstrapTests(unittest.TestCase):
             {
                 "goauthentik.io/providers/oauth2/scope-entitlements",
                 "goauthentik.io/providers/oauth2/scope-profile",
+                "goauthentik.io/providers/proxy/scope-proxy",
             },
+        )
+
+    def test_waits_for_default_source_authentication_flow(self):
+        self.assertEqual(
+            bootstrap.missing_default_flows([{"slug": "default-authentication-flow"}]),
+            {"default-source-authentication"},
+        )
+        self.assertEqual(
+            bootstrap.missing_default_flows([
+                {"slug": "default-authentication-flow"},
+                {"slug": "default-source-authentication"},
+            ]),
+            set(),
         )
 
     def test_all_builtin_scope_mappings_allow_configuration(self):
