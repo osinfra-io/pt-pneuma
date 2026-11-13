@@ -4,11 +4,13 @@ module "agent_substrate" {
   depends_on = [
     kubernetes_secret_v1.postgres_owner,
     kubernetes_secret_v1.postgres_read_write,
+    kubernetes_secret_v1.rustfs_credentials,
     kubernetes_stateful_set_v1.postgresql
   ]
 
-  crds_postrender = local.crds_postrender
-  namespace       = kubernetes_namespace_v1.agent_substrate.metadata[0].name
+  crds_postrender            = local.crds_postrender
+  ingress_allowed_spiffe_ids = ["spiffe://cluster.local/ns/kagent/sa/kagent-controller"]
+  namespace                  = kubernetes_namespace_v1.agent_substrate.metadata[0].name
 }
 
 # Kubernetes Namespace Resource
@@ -42,6 +44,19 @@ resource "kubernetes_secret_v1" "postgres_read_write" {
 
   data = {
     readWriteConnectionString = local.read_write_connection_string
+  }
+}
+
+resource "kubernetes_secret_v1" "rustfs_credentials" {
+  metadata {
+    name      = "rustfs-credentials"
+    namespace = kubernetes_namespace_v1.agent_substrate.metadata[0].name
+  }
+
+  # The substrate chart's bundled RustFS defaults.
+  data = {
+    AWS_ACCESS_KEY_ID     = "rustfsadmin"
+    AWS_SECRET_ACCESS_KEY = "rustfsadmin"
   }
 }
 
