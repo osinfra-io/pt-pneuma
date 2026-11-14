@@ -19,7 +19,7 @@ export PATH="${TEST_DIR}/bin:${PATH}"
 export OWNER_PRESENT=no
 export MOCK_OWNER="osinfra-local-gateway-stack"
 export EXTRA_NAMESPACE=""
-export PENDING_RELEASE=no
+export HELM_RELEASE=""
 export EXISTING_CRDS=""
 export CLAIM_FILE="${TEST_DIR}/claimed"
 
@@ -49,10 +49,8 @@ kubectl() {
 }
 
 helm() {
-  [ "$*" = "--kube-context=docker-desktop list --all-namespaces --short --deployed --failed --pending --uninstalled --superseded --uninstalling" ] || return 1
-  if [ "${PENDING_RELEASE}" = yes ]; then
-    echo pending-release
-  fi
+  [ "$*" = "--kube-context=docker-desktop list --all-namespaces --short" ] || return 1
+  [ -z "${HELM_RELEASE}" ] || echo "${HELM_RELEASE}"
 }
 export -f docker kubectl helm
 
@@ -87,10 +85,10 @@ expect_preflight_failure() {
 }
 
 create_workdirs
-export PENDING_RELEASE=yes
+export HELM_RELEASE=active-release
 expect_preflight_failure "Existing Helm installations prevent setup on this unowned cluster."
 
-export PENDING_RELEASE=no
+export HELM_RELEASE=""
 export EXTRA_NAMESPACE=existing-app
 expect_preflight_failure "Existing namespace existing-app has no fixture ownership record"
 

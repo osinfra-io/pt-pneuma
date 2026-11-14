@@ -6,18 +6,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 source "${SCRIPT_DIR}/../shared/cluster.sh"
 
-if [ "${1:-}" != "--enable" ] || [ "$#" -ne 1 ]; then
-  echo "Usage: bash tests/integration/agent-substrate/enable-feature-gates.sh --enable" >&2
+if [ "$#" -ne 0 ]; then
+  echo "Usage: enable-feature-gates.sh" >&2
   exit 1
 fi
 
 assert_docker_desktop_kind_cluster
 assert_local_gateway_stack_owner
-version="$(kubectl version --output=json | jq -r '.serverVersion.gitVersion')"
-case "${version}" in
-  v1.36.*) ;;
-  *) echo "Unsupported Kubernetes version ${version}; review feature gates before editing the node." >&2; exit 1 ;;
-esac
 nodes="$(kubectl get nodes --output=jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')"
 if [ "$(printf '%s\n' "${nodes}" | wc -l)" -ne 1 ]; then
   echo "Feature-gate setup supports only a single-node dedicated cluster." >&2

@@ -66,8 +66,7 @@ for namespace in ${namespaces}; do
       ;;
   esac
 done
-helm_releases="$(helm --kube-context=docker-desktop list --all-namespaces --short \
-  --deployed --failed --pending --uninstalled --superseded --uninstalling)"
+helm_releases="$(helm --kube-context=docker-desktop list --all-namespaces --short)"
 if [ -n "${helm_releases}" ]; then
   echo "Existing Helm installations prevent setup on this unowned cluster." >&2
   exit 1

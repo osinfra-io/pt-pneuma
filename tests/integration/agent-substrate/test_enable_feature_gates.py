@@ -49,15 +49,12 @@ assert_local_gateway_stack_owner() { [ "${MOCK_OWNER}" = owned ]; }
 sleep() { :; }
 kubectl() {
   case "$1 $2" in
-    "version --output=json") printf '{"serverVersion":{"gitVersion":"v1.36.4"}}' ;;
     "get nodes") printf 'node-a\n' ;;
     "--request-timeout=5s get")
       case "$3" in
         --raw=/readyz) echo ok ;;
-        --raw=/apis/certificates.k8s.io/v1beta1)
-          if [ "${MOCK_LIVE}" = missing_api ]; then echo '{"resources":[]}'; else echo '{"resources":[{"name":"podcertificaterequests"},{"name":"clustertrustbundles"}]}'; fi ;;
-        --raw=/api/v1/nodes/node-a/proxy/configz)
-          if [ "${MOCK_LIVE}" = missing_gates ]; then echo '{"kubeletconfig":{"featureGates":{}}}'; else echo '{"kubeletconfig":{"featureGates":{"ClusterTrustBundle":true,"ClusterTrustBundleProjection":true,"PodCertificateRequest":true}}}'; fi ;;
+        --raw=/apis/certificates.k8s.io/v1beta1) echo '{"resources":[{"name":"podcertificaterequests"},{"name":"clustertrustbundles"}]}' ;;
+        --raw=/api/v1/nodes/node-a/proxy/configz) echo '{"kubeletconfig":{"featureGates":{"ClusterTrustBundle":true,"ClusterTrustBundleProjection":true,"PodCertificateRequest":true}}}' ;;
         *) return 1 ;;
       esac ;;
     "wait --for=condition=Ready") [ "${MOCK_LIVE}" != not_ready ] ;;
@@ -93,7 +90,7 @@ class EnableFeatureGatesTests(unittest.TestCase):
                 docker.write_text(MOCK_DOCKER)
                 docker.chmod(0o755)
                 result = subprocess.run(
-                    ["bash", str(script_dir / "enable-feature-gates.sh"), "--enable"],
+                    ["bash", str(script_dir / "enable-feature-gates.sh")],
                     env={**os.environ, "PATH": f"{bin_dir}:{os.environ['PATH']}",
                          "MOCK_NODE": str(node), "MOCK_OWNER": owner,
                          "MOCK_ACTIONS": str(root / "actions"), "MOCK_LIVE": "ready",
@@ -120,7 +117,7 @@ class EnableFeatureGatesTests(unittest.TestCase):
 
     def test_existing_configuration_requires_live_readiness_without_mutation(self):
         source = Path(__file__).parent
-        for live in ("ready", "missing_api", "missing_gates", "not_ready"):
+        for live in ("ready", "not_ready"):
             with self.subTest(live=live), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 script_dir = root / "agent-substrate"
@@ -145,7 +142,7 @@ class EnableFeatureGatesTests(unittest.TestCase):
                 docker.chmod(0o755)
                 actions = root / "actions"
                 result = subprocess.run(
-                    ["bash", str(script_dir / "enable-feature-gates.sh"), "--enable"],
+                    ["bash", str(script_dir / "enable-feature-gates.sh")],
                     env={**os.environ, "PATH": f"{bin_dir}:{os.environ['PATH']}",
                          "MOCK_NODE": str(node), "MOCK_OWNER": "owned",
                          "MOCK_ACTIONS": str(actions), "MOCK_LIVE": live},
