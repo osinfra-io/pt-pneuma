@@ -8,6 +8,7 @@ readonly WORK_DIR="${SCRIPT_DIR}/.work"
 readonly OWNER_NAME="local-gateway-stack-owner"
 readonly MODE="${1:-install-and-routes}"
 source "${SCRIPT_DIR}/../shared/cluster.sh"
+source "${SCRIPT_DIR}/state.sh"
 
 fail() {
   echo "AgentGateway local setup: $*" >&2
@@ -16,14 +17,6 @@ fail() {
 
 require_command() {
   command -v "$1" >/dev/null 2>&1 || fail "required command '$1' was not found"
-}
-
-state_has() {
-  local name="$1"
-  local address="$2"
-
-  tofu_stage "${name}" state list 2>/dev/null |
-    grep --fixed-strings --line-regexp --quiet "${address}"
 }
 
 assert_state_or_absent() {
@@ -92,6 +85,7 @@ for stage in regional manifests routing; do
     -reconfigure \
     -backend-config="path=${WORK_DIR}/${stage}.tfstate" \
     -input=false
+  assert_default_workspace "${stage}"
 done
 
 if [ "${MODE}" != routes ]; then
