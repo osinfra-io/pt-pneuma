@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import subprocess
+import tempfile
 import unittest
 
 
@@ -9,13 +10,21 @@ STATE_HELPER = Path(__file__).with_name("state.sh")
 
 
 class StateTests(unittest.TestCase):
-    def run_check(self, producer, address):
-        return subprocess.run(
-            ["bash", "-o", "pipefail", "-c",
-             f'tofu_stage() {{ {producer}; }}; source "$1"; state_has routing "$2"',
-             "test", str(STATE_HELPER), address],
-            text=True, capture_output=True, check=False,
-        )
+    def run_check(self, producer, address, state="existing"):
+        with tempfile.TemporaryDirectory() as temporary:
+            work_dir = Path(temporary)
+            state_file = work_dir / "routing.tfstate"
+            if state == "existing":
+                state_file.touch()
+            elif state == "dangling":
+                state_file.symlink_to(work_dir / "missing")
+            return subprocess.run(
+                ["bash", "-o", "pipefail", "-c",
+                 f'WORK_DIR="$3"; tofu_stage() {{ {producer}; }}; source "$1"; '
+                 'if state_has routing "$2"; then echo found; else echo absent; fi',
+                 "test", str(STATE_HELPER), address, str(work_dir)],
+                text=True, capture_output=True, check=False,
+            )
 
     def test_finds_early_match_in_large_state(self):
         result = self.run_check(
@@ -23,14 +32,28 @@ class StateTests(unittest.TestCase):
             "module.example",
         )
         self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "found")
 
     def test_missing_address_is_not_a_match(self):
-        self.assertEqual(self.run_check('echo module.other', "module.example").returncode, 1)
+        result = self.run_check('echo module.other', "module.example")
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout.strip(), "absent")
+
+    def test_fresh_backend_is_a_non_match_without_reading_state(self):
+        result = self.run_check('echo unexpected >&2; return 1', "module.example", state="absent")
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout.strip(), "absent")
+        self.assertNotIn("unexpected", result.stderr)
 
     def test_state_read_failure_stops_with_diagnostic(self):
         result = self.run_check('echo "state unavailable" >&2; return 1', "module.example")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("state unavailable", result.stderr)
+        self.assertIn("refusing", result.stderr)
+
+    def test_dangling_state_symlink_is_not_treated_as_fresh(self):
+        result = self.run_check('echo "state unavailable" >&2; return 1', "module.example", state="dangling")
+        self.assertNotEqual(result.returncode, 0)
         self.assertIn("refusing", result.stderr)
 
 
