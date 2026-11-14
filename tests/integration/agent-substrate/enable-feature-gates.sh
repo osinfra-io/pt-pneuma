@@ -6,33 +6,29 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 source "${SCRIPT_DIR}/../shared/cluster.sh"
 
-if [ "${1:-}" != "--enable" ] || [ "$#" -ne 1 ]; then
-  echo "Usage: bash tests/integration/agent-substrate/enable-feature-gates.sh --enable" >&2
+if [ "$#" -ne 0 ]; then
+  echo "Usage: enable-feature-gates.sh" >&2
   exit 1
 fi
 
 assert_docker_desktop_kind_cluster
 assert_local_gateway_stack_owner
-version="$(kubectl version --output=json | jq -r '.serverVersion.gitVersion')"
-case "${version}" in
-  v1.36.*) ;;
-  *) echo "Unsupported Kubernetes version ${version}; review feature gates before editing the node." >&2; exit 1 ;;
-esac
 nodes="$(kubectl get nodes --output=jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')"
 if [ "$(printf '%s\n' "${nodes}" | wc -l)" -ne 1 ]; then
   echo "Feature-gate setup supports only a single-node dedicated cluster." >&2
   exit 1
 fi
 node="${nodes}"
+
 umask 077
 mkdir -p "${SCRIPT_DIR}/.work"
-backup="$(mktemp -d "${SCRIPT_DIR}/.work/feature-gate-backup.XXXXXXXX")"
-docker cp "${node}:/etc/kubernetes/manifests/kube-apiserver.yaml" "${backup}/apiserver.yaml"
-docker cp "${node}:/var/lib/kubelet/config.yaml" "${backup}/kubelet.yaml"
-echo "Node configuration backups: ${backup}"
+working_dir="$(mktemp -d "${SCRIPT_DIR}/.work/feature-gates.XXXXXXXX")"
+trap 'rm -rf -- "${working_dir}"' EXIT
+docker cp "${node}:/etc/kubernetes/manifests/kube-apiserver.yaml" "${working_dir}/apiserver.yaml"
+docker cp "${node}:/var/lib/kubelet/config.yaml" "${working_dir}/kubelet.yaml"
 python3 "${SCRIPT_DIR}/feature_gate_config.py" \
-  "${backup}/apiserver.yaml" "${backup}/kubelet.yaml" \
-  "${backup}/apiserver-updated.yaml" "${backup}/kubelet-updated.yaml"
+  "${working_dir}/apiserver.yaml" "${working_dir}/kubelet.yaml" \
+  "${working_dir}/apiserver-updated.yaml" "${working_dir}/kubelet-updated.yaml"
 
 wait_features() {
   for _ in $(seq 1 60); do
@@ -49,69 +45,32 @@ wait_features() {
   return 1
 }
 
-if cmp -s "${backup}/apiserver.yaml" "${backup}/apiserver-updated.yaml" &&
-  cmp -s "${backup}/kubelet.yaml" "${backup}/kubelet-updated.yaml"; then
+if cmp -s "${working_dir}/apiserver.yaml" "${working_dir}/apiserver-updated.yaml" &&
+  cmp -s "${working_dir}/kubelet.yaml" "${working_dir}/kubelet-updated.yaml"; then
   wait_features
   echo "Certificate APIs and kubelet feature gates are ready."
   exit 0
 fi
 
 node_tmp="$(docker exec "${node}" mktemp -d /tmp/local-feature-gates.XXXXXXXX)"
-modified=false
-complete=false
-
-# These functions run indirectly from the EXIT trap.
-# shellcheck disable=SC2329
-wait_api() {
-  for _ in $(seq 1 60); do
-    if kubectl --request-timeout=5s get --raw=/readyz >/dev/null 2>&1; then
-      return 0
-    fi
-    sleep 3
-  done
-  return 1
-}
-
-# shellcheck disable=SC2329
-restore() {
-  docker exec --interactive "${node}" sh -c 'cat > "$1"' sh "${node_tmp}/apiserver.yaml" <"${backup}/apiserver.yaml" &&
-    docker exec --interactive "${node}" sh -c 'cat > "$1"' sh "${node_tmp}/kubelet.yaml" <"${backup}/kubelet.yaml" &&
-    docker exec "${node}" sh -c '
-      install -m 600 "$1/apiserver.yaml" /etc/kubernetes/.local-apiserver-restore.yaml &&
-      install -m 600 "$1/kubelet.yaml" /var/lib/kubelet/.local-kubelet-restore.yaml &&
-      mv /etc/kubernetes/.local-apiserver-restore.yaml /etc/kubernetes/manifests/kube-apiserver.yaml &&
-      mv /var/lib/kubelet/.local-kubelet-restore.yaml /var/lib/kubelet/config.yaml &&
-      systemctl restart kubelet
-    ' sh "${node_tmp}" &&
-    wait_api
-}
-
-# shellcheck disable=SC2329
-cleanup() {
-  if [ "${modified}" = true ] && [ "${complete}" = false ]; then
-    if restore; then
-      echo "Feature-gate setup failed; original node configuration was restored. Backups: ${backup}" >&2
-    else
-      echo "Feature-gate setup failed and automatic restoration failed; inspect node immediately. Backups: ${backup}" >&2
-    fi
-  fi
-  docker exec "${node}" sh -c 'rm -f "$1/apiserver.yaml" "$1/kubelet.yaml"; rmdir "$1"' sh "${node_tmp}" ||
-    echo "Could not remove temporary node files at ${node_tmp}." >&2
-}
-trap cleanup EXIT
-
-docker exec --interactive "${node}" sh -c 'cat > "$1"' sh "${node_tmp}/apiserver.yaml" <"${backup}/apiserver-updated.yaml"
-docker exec --interactive "${node}" sh -c 'cat > "$1"' sh "${node_tmp}/kubelet.yaml" <"${backup}/kubelet-updated.yaml"
-modified=true
-docker exec "${node}" sh -c '
+docker cp "${working_dir}/apiserver-updated.yaml" "${node}:${node_tmp}/apiserver.yaml"
+docker cp "${working_dir}/kubelet-updated.yaml" "${node}:${node_tmp}/kubelet.yaml"
+if ! docker exec "${node}" sh -c '
   install -m 600 "$1/apiserver.yaml" /etc/kubernetes/.local-apiserver-update.yaml &&
   install -m 600 "$1/kubelet.yaml" /var/lib/kubelet/.local-kubelet-update.yaml &&
   mv /var/lib/kubelet/.local-kubelet-update.yaml /var/lib/kubelet/config.yaml &&
   systemctl restart kubelet &&
   systemctl is-active --quiet kubelet &&
   mv /etc/kubernetes/.local-apiserver-update.yaml /etc/kubernetes/manifests/kube-apiserver.yaml
-' sh "${node_tmp}"
+' sh "${node_tmp}"; then
+  echo "Feature-gate update failed; reset Docker Desktop Kubernetes before retrying." >&2
+  exit 1
+fi
 
-wait_features
-complete=true
+if ! wait_features; then
+  echo "Feature-gate update did not become ready; reset Docker Desktop Kubernetes before retrying." >&2
+  exit 1
+fi
+
+docker exec "${node}" sh -c 'rm -rf "$1"' sh "${node_tmp}"
 echo "Certificate APIs and kubelet feature gates are ready."

@@ -1,6 +1,6 @@
 # Local integration tests
 
-An opt-in developer test that runs Authentik, Istio ambient, agentgateway, and OpenBao together on a dedicated Docker Desktop Kind cluster. It is not a CI gate; the modules' mocked `tofu test` suites stay in their own repositories.
+An opt-in developer test that runs Authentik, Istio ambient, agentgateway, Agent Substrate, kagent, and OpenBao together on a dedicated Docker Desktop Kind cluster. It is not a CI gate; the modules' mocked `tofu test` suites stay in their own repositories.
 
 Pneuma composes these modules, so everything cross-cutting lives here: the shared ingress gateway and TLS certificate, browser-auth policies and routes (rendered by Pneuma's real `gateway-auth` module), the diagnostic workload, the ownership marker, and the holistic verifiers. Module repositories contain no local integration fixtures.
 
@@ -13,15 +13,17 @@ Pneuma composes these modules, so everything cross-cutting lives here: the share
 | `istio/`, `authentik/`, `agentgateway/`, `agent-substrate/`, `kagent/`, `openbao/` | Per-component fixtures with their own `setup.sh`, `verify.sh`, and `teardown.sh`; OpenBao also applies a local OIDC and team-policy configuration stage |
 | `verify/` | Holistic HTTP and runtime (fail-closed, admin denial, ztunnel mTLS) verifiers |
 
-Fixtures use the aggregated workspace layout (`arche/` and `pneuma/` under `platform-group/`) so uncommitted module changes are exercised without release pins. Generated credentials and state live in ignored `.work/` directories.
+Fixtures use the aggregated workspace layout (`arche/` and `pneuma/` under `platform-group/`) so uncommitted module changes are exercised without release pins. Generated credentials and state live in ignored `.work/` directories while the fixture cluster is owned.
 
 ## Usage
 
 ```bash
-tests/integration/setup.sh --claim   # --claim only on a fresh, dedicated cluster
+tests/integration/setup.sh
 tests/integration/verify.sh
 tests/integration/teardown.sh        # deletes local users and database data
 ```
+
+On first setup, preflight checks that the `docker-desktop` Kind cluster has no non-system namespaces, Helm releases, or gateway/mesh CRDs, then records ownership automatically. If those checks pass, stale component `.work/` directories are removed before setup; this deletes local state and generated credentials, so provide OAuth variables again. Preflight preserves `.work/` on an already-owned cluster and refuses an unowned cluster that is not empty.
 
 Component scripts can be rerun individually (for example `tests/integration/authentik/setup.sh`) while iterating. The OpenBao setup applies its fixture-owned OIDC and KV v2 configuration using the local Authentik outputs and credentials under `.work/`. It seeds a README under each registered platform-team prefix and lets every team role list the top-level team names; secret values remain team-scoped. Automated verification checks the OIDC settings, reader/writer/admin capabilities, top-level team listing, and cross-team denial; it uses short-lived test tokens and never prints them.
 

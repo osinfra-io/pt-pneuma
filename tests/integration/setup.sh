@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
 # Sets up the whole local gateway stack on Docker Desktop Kind.
-# Pass --claim on a fresh, dedicated cluster to record fixture ownership first.
-
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
 
-"${SCRIPT_DIR}/shared/preflight.sh" "$@"
+if [ "$#" -ne 0 ]; then
+  echo "Usage: setup.sh" >&2
+  exit 2
+fi
+
+"${SCRIPT_DIR}/shared/preflight.sh"
 
 # Kubernetes manifest providers need CRDs at plan time, so each component is a separate stage.
 "${SCRIPT_DIR}/istio/setup.sh"
