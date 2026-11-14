@@ -87,18 +87,26 @@ def get(path):
 
 deadline = time.monotonic() + 300
 missing_scopes = bootstrap.DEFAULT_SCOPE_MAPPINGS
+missing_flows = bootstrap.DEFAULT_FLOWS
 while True:
     try:
         outposts = get("/api/v3/outposts/instances/?managed=goauthentik.io%2Foutposts%2Fembedded")["results"]
-        flows = get("/api/v3/flows/instances/?slug=default-authentication-flow")["results"]
+        flows = [
+            flow
+            for slug in bootstrap.DEFAULT_FLOWS
+            for flow in get(f"/api/v3/flows/instances/?slug={slug}")["results"]
+        ]
         stages = get("/api/v3/stages/identification/?name=default-authentication-identification")["results"]
         scope_mappings = get("/api/v3/propertymappings/provider/scope/?page_size=100")["results"]
+        missing_flows = bootstrap.missing_default_flows(flows)
         missing_scopes = bootstrap.missing_default_scope_mappings(scope_mappings)
-        if len(outposts) == 1 and len(flows) == 1 and len(stages) == 1 and not missing_scopes:
+        if len(outposts) == 1 and len(stages) == 1 and not missing_flows and not missing_scopes:
             break
     except (urllib.error.URLError, TimeoutError, ValueError, KeyError) as error:
         print(f"Waiting for Authentik bootstrap ({type(error).__name__}).", file=sys.stderr)
     if time.monotonic() >= deadline:
+        if missing_flows:
+            raise SystemExit(f"Timed out waiting for built-in Authentik flows: {', '.join(sorted(missing_flows))}.")
         if missing_scopes:
             raise SystemExit(f"Timed out waiting for built-in OAuth scope mappings: {', '.join(sorted(missing_scopes))}.")
         raise SystemExit("Timed out waiting for built-in Authentik objects; inspect server/worker logs.")
