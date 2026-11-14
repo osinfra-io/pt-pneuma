@@ -120,4 +120,6 @@ local_tofu config init -input=false
 # No additional OpenTofu arguments are needed during initial setup.
 # shellcheck disable=SC2119
 apply_local_config
+# Authentik adds memberships (e.g. the bootstrap administrator) after creation; sync state so verification compares against it.
+apply_local_config -refresh-only
 echo "Authentik configured in Kubernetes. Browser verification remains pending."
