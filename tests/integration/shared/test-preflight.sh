@@ -19,6 +19,7 @@ export PATH="${TEST_DIR}/bin:${PATH}"
 export OWNER_PRESENT=no
 export MOCK_OWNER="osinfra-local-gateway-stack"
 export EXTRA_NAMESPACE=""
+export EXTRA_WORKLOAD=""
 export HELM_RELEASE=""
 export EXISTING_CRDS=""
 export CLAIM_FILE="${TEST_DIR}/claimed"
@@ -42,6 +43,9 @@ kubectl() {
       echo "${MOCK_OWNER}"
       ;;
     *"get namespaces "*) echo "default kube-system kube-public kube-node-lease local-path-storage ${EXTRA_NAMESPACE}" ;;
+    *"get pods,deployments,replicasets,statefulsets,daemonsets,jobs,cronjobs "*)
+      [ -z "${EXTRA_WORKLOAD}" ] || echo "${EXTRA_WORKLOAD}"
+      ;;
     *"get crds "*) echo "${EXISTING_CRDS}" ;;
     *"create configmap "*) touch "${CLAIM_FILE}" ;;
     *) return 1 ;;
@@ -49,7 +53,7 @@ kubectl() {
 }
 
 helm() {
-  [ "$*" = "--kube-context=docker-desktop list --all-namespaces --short" ] || return 1
+  [ "$*" = "--kube-context=docker-desktop list --all-namespaces --short --deployed --failed --pending --uninstalling" ] || return 1
   [ -z "${HELM_RELEASE}" ] || echo "${HELM_RELEASE}"
 }
 export -f docker kubectl helm
@@ -93,6 +97,10 @@ export EXTRA_NAMESPACE=existing-app
 expect_preflight_failure "Existing namespace existing-app has no fixture ownership record"
 
 export EXTRA_NAMESPACE=""
+export EXTRA_WORKLOAD=deployment.apps/manual-app
+expect_preflight_failure "Existing workloads in the default namespace prevent setup on this unowned cluster."
+
+export EXTRA_WORKLOAD=""
 export EXISTING_CRDS=gateways.gateway.networking.k8s.io
 expect_preflight_failure "Existing gateway/mesh CRDs prevent setup on this unowned cluster"
 

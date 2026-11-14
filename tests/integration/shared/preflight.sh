@@ -66,7 +66,14 @@ for namespace in ${namespaces}; do
       ;;
   esac
 done
-helm_releases="$(helm --kube-context=docker-desktop list --all-namespaces --short)"
+default_workloads="$(kubectl --context=docker-desktop get pods,deployments,replicasets,statefulsets,daemonsets,jobs,cronjobs \
+  --namespace=default --output=name)"
+if [ -n "${default_workloads}" ]; then
+  echo "Existing workloads in the default namespace prevent setup on this unowned cluster." >&2
+  exit 1
+fi
+helm_releases="$(helm --kube-context=docker-desktop list --all-namespaces --short \
+  --deployed --failed --pending --uninstalling)"
 if [ -n "${helm_releases}" ]; then
   echo "Existing Helm installations prevent setup on this unowned cluster." >&2
   exit 1
