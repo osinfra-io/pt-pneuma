@@ -1,4 +1,4 @@
-"""Exercise node backup and rollback without a Kubernetes cluster."""
+"""Exercise node feature-gate edits without a Kubernetes cluster."""
 
 import os
 from pathlib import Path
@@ -29,20 +29,16 @@ if args[0] == "cp":
 elif args[:3] == ["exec", "node-a", "mktemp"]:
     (root / "tmp" / "local-feature-gates.test").mkdir(parents=True)
     print("/tmp/local-feature-gates.test")
-elif args[:4] == ["exec", "--interactive", "node-a", "sh"]:
-    (root / args[-1].lstrip("/")).write_bytes(sys.stdin.buffer.read())
-elif args[:5] == ["exec", "node-a", "sh", "-c", args[4]]:
+elif args[:4] == ["exec", "node-a", "sh", "-c"]:
     command = args[4]
     temporary = root / args[-1].lstrip("/")
-    if "local-apiserver-update" in command or "local-apiserver-restore" in command:
+    if "local-apiserver-update" in command:
         shutil.copyfile(temporary / "apiserver.yaml", root / "etc/kubernetes/manifests/kube-apiserver.yaml")
         shutil.copyfile(temporary / "kubelet.yaml", root / "var/lib/kubelet/config.yaml")
-        if "local-apiserver-update" in command and os.environ.get("MOCK_FAIL_UPDATE") == "true":
+        if os.environ.get("MOCK_FAIL_UPDATE") == "true":
             sys.exit(1)
     else:
-        for file in temporary.iterdir():
-            file.unlink()
-        temporary.rmdir()
+        shutil.rmtree(temporary)
 else:
     raise SystemExit(f"Unexpected docker invocation: {args}")
 """
@@ -72,7 +68,7 @@ kubectl() {
 
 
 class EnableFeatureGatesTests(unittest.TestCase):
-    def test_backup_apply_and_rollback(self):
+    def test_applies_gates_without_retaining_working_files(self):
         source = Path(__file__).parent
         for owner, fail in (("owned", False), ("owned", True), ("unowned", False)):
             with self.subTest(owner=owner, fail=fail), tempfile.TemporaryDirectory() as temporary:
@@ -104,21 +100,19 @@ class EnableFeatureGatesTests(unittest.TestCase):
                          "MOCK_FAIL_UPDATE": str(fail).lower()},
                     text=True, capture_output=True, check=False,
                 )
-                backups = list((script_dir / ".work").glob("feature-gate-backup.*"))
+                working_dirs = list((script_dir / ".work").glob("feature-gates.*"))
                 if owner != "owned":
                     self.assertNotEqual(result.returncode, 0)
-                    self.assertEqual(backups, [])
+                    self.assertEqual(working_dirs, [])
                     self.assertEqual(apiserver.read_text(), APISERVER)
                     self.assertEqual(kubelet.read_text(), KUBELET)
                     continue
-                self.assertEqual(len(backups), 1)
-                self.assertEqual((backups[0] / "apiserver.yaml").read_text(), APISERVER)
-                self.assertEqual((backups[0] / "kubelet.yaml").read_text(), KUBELET)
+                self.assertEqual(working_dirs, [])
                 if fail:
                     self.assertNotEqual(result.returncode, 0)
-                    self.assertIn("original node configuration was restored", result.stderr)
-                    self.assertEqual(apiserver.read_text(), APISERVER)
-                    self.assertEqual(kubelet.read_text(), KUBELET)
+                    self.assertIn("reset Docker Desktop Kubernetes", result.stderr)
+                    self.assertIn("PodCertificateRequest=true", apiserver.read_text())
+                    self.assertIn("PodCertificateRequest: true", kubelet.read_text())
                 else:
                     self.assertEqual(result.returncode, 0, result.stderr)
                     self.assertIn("PodCertificateRequest=true", apiserver.read_text())
