@@ -85,6 +85,7 @@ for stage in regional manifests routing; do
     -reconfigure \
     -backend-config="path=${WORK_DIR}/${stage}.tfstate" \
     -input=false
+  assert_default_workspace "${stage}"
 done
 
 if [ "${MODE}" != routes ]; then

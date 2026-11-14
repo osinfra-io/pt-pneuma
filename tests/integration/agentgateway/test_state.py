@@ -10,7 +10,7 @@ STATE_HELPER = Path(__file__).with_name("state.sh")
 
 
 class StateTests(unittest.TestCase):
-    def run_check(self, producer, address, state="existing"):
+    def run_check(self, producer, address, state="existing", workspace="default"):
         with tempfile.TemporaryDirectory() as temporary:
             work_dir = Path(temporary)
             state_file = work_dir / "routing.tfstate"
@@ -20,9 +20,12 @@ class StateTests(unittest.TestCase):
                 state_file.symlink_to(work_dir / "missing")
             return subprocess.run(
                 ["bash", "-o", "pipefail", "-c",
-                 f'WORK_DIR="$3"; tofu_stage() {{ {producer}; }}; source "$1"; '
+                 f'WORK_DIR="$3"; MOCK_WORKSPACE="$4"; tofu_stage() {{ '
+                 f'if [ "$2" = workspace ]; then '
+                 f'[ "$MOCK_WORKSPACE" != error ] || return 1; echo "$MOCK_WORKSPACE"; else {producer}; fi; '
+                 f'}}; source "$1"; '
                  'if state_has routing "$2"; then echo found; else echo absent; fi',
-                 "test", str(STATE_HELPER), address, str(work_dir)],
+                 "test", str(STATE_HELPER), address, str(work_dir), workspace],
                 text=True, capture_output=True, check=False,
             )
 
@@ -55,6 +58,23 @@ class StateTests(unittest.TestCase):
         result = self.run_check('echo "state unavailable" >&2; return 1', "module.example", state="dangling")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("refusing", result.stderr)
+
+    def test_non_default_workspace_is_rejected_even_without_default_state(self):
+        for state in ("absent", "existing"):
+            with self.subTest(state=state):
+                result = self.run_check(
+                    'echo unexpected >&2; return 1', "module.example",
+                    state=state, workspace="other",
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("Non-default", result.stderr)
+                self.assertNotIn("unexpected", result.stderr)
+
+    def test_workspace_read_failure_is_fatal(self):
+        result = self.run_check('echo unexpected >&2', "module.example", state="absent", workspace="error")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Could not determine", result.stderr)
+        self.assertNotIn("unexpected", result.stderr)
 
 
 if __name__ == "__main__":
