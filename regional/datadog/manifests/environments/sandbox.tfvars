@@ -1,3 +1,5 @@
+datadog_enable = false
+
 # The cluster agent uses 35-40m CPU / 190-194Mi memory in steady state and peaks around 221m /
 # 251Mi. Requests cover normal operation; limits retain headroom for collection bursts.
 

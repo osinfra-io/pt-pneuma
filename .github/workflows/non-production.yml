@@ -201,6 +201,7 @@ jobs:
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Datadog: us-east1-b"
+      opentofu_plan_args: -var=datadog_enable=false
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-nonprod
@@ -221,6 +222,7 @@ jobs:
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Datadog: us-east4-a"
+      opentofu_plan_args: -var=datadog_enable=false
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-nonprod
@@ -241,6 +243,7 @@ jobs:
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Datadog Manifests: us-east1-b"
+      opentofu_plan_args: -var=datadog_enable=false
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-nonprod
@@ -261,6 +264,7 @@ jobs:
     with:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Datadog Manifests: us-east4-a"
+      opentofu_plan_args: -var=datadog_enable=false
       service_account: pt-pneuma-github@pt-corpus-tf61-nonprod.iam.gserviceaccount.com
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
       opentofu_state_bucket: pt-pneuma-state-nonprod
@@ -361,7 +365,7 @@ jobs:
       checkout_ref: ${{ github.ref }}
       github_environment: "Non-Production Datadog Config"
       opentofu_kms_encryption_key: projects/pt-corpus-tf61-nonprod/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var=datadog_synthetic_status=paused
+      opentofu_plan_args: -var=datadog_enable=false -var=datadog_synthetic_status=paused
       opentofu_state_bucket: pt-pneuma-state-nonprod
       opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}

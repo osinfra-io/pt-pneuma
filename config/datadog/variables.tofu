@@ -23,6 +23,12 @@ variable "datadog_app_key" {
   type        = string
 }
 
+variable "datadog_enable" {
+  default     = false
+  description = "Platform kill switch for Datadog monitors and synthetic checks in this environment."
+  type        = bool
+}
+
 variable "datadog_synthetic_status" {
   default     = "paused"
   description = "The status of Datadog synthetic tests"

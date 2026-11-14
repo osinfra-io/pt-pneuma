@@ -450,7 +450,7 @@ jobs:
       checkout_ref: ${{ github.ref }}
       github_environment: "Sandbox Datadog Config"
       opentofu_kms_encryption_key: projects/pt-corpus-tfc9-sb/locations/us/keyRings/state-encryption/cryptoKeys/default
-      opentofu_plan_args: -var=datadog_synthetic_status=paused
+      opentofu_plan_args: -var=datadog_enable=false -var=datadog_synthetic_status=paused
       opentofu_state_bucket: pt-pneuma-state-sb
       opentofu_var_json: "{\"clusters\": ${{ needs.main.outputs.passthrough || '{}' }}}"
       opentofu_version: ${{ vars.OPENTOFU_VERSION }}
