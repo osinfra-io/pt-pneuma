@@ -32,7 +32,7 @@ kubectl() {
 }
 
 helm() {
-  [ "$*" = "--kube-context=docker-desktop list --all-namespaces --all --short" ] || return 1
+  [ "$*" = "--kube-context=docker-desktop list --all-namespaces --short --deployed --failed --pending --uninstalled --superseded --uninstalling" ] || return 1
   if [ "${PENDING_RELEASE}" = yes ]; then
     echo pending-release
   fi
