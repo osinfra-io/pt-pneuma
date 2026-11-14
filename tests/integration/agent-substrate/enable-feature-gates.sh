@@ -23,7 +23,14 @@ node="${nodes}"
 umask 077
 mkdir -p "${SCRIPT_DIR}/.work"
 working_dir="$(mktemp -d "${SCRIPT_DIR}/.work/feature-gates.XXXXXXXX")"
-trap 'rm -rf -- "${working_dir}"' EXIT
+node_tmp=""
+cleanup() {
+  rm -rf -- "${working_dir}"
+  if [ -n "${node_tmp}" ]; then
+    docker exec "${node}" rm -rf "${node_tmp}" >/dev/null 2>&1 || true
+  fi
+}
+trap cleanup EXIT
 docker cp "${node}:/etc/kubernetes/manifests/kube-apiserver.yaml" "${working_dir}/apiserver.yaml"
 docker cp "${node}:/var/lib/kubelet/config.yaml" "${working_dir}/kubelet.yaml"
 python3 "${SCRIPT_DIR}/feature_gate_config.py" \
@@ -52,7 +59,7 @@ if cmp -s "${working_dir}/apiserver.yaml" "${working_dir}/apiserver-updated.yaml
   exit 0
 fi
 
-node_tmp="$(docker exec "${node}" mktemp -d /tmp/local-feature-gates.XXXXXXXX)"
+node_tmp="$(docker exec "${node}" mktemp -d /var/tmp/local-feature-gates.XXXXXXXX)"
 docker cp "${working_dir}/apiserver-updated.yaml" "${node}:${node_tmp}/apiserver.yaml"
 docker cp "${working_dir}/kubelet-updated.yaml" "${node}:${node_tmp}/kubelet.yaml"
 if ! docker exec "${node}" sh -c '
@@ -72,5 +79,4 @@ if ! wait_features; then
   exit 1
 fi
 
-docker exec "${node}" sh -c 'rm -rf "$1"' sh "${node_tmp}"
 echo "Certificate APIs and kubelet feature gates are ready."

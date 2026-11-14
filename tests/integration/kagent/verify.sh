@@ -37,4 +37,8 @@ expect_header() {
 expect_header https://kagent.localhost/ '^location: https://authentik.localhost/application/o/authorize/'
 expect_header https://kagent.localhost/ 'redirect_uri=https%3a%2f%2fkagent.localhost%2foutpost.goauthentik.io%2fcallback'
 
+kubectl wait --for=jsonpath='{.status.conditions[?(@.type=="Accepted")].status}'=True \
+  remotemcpserver/opentofu --namespace=kagent --timeout=120s ||
+  fail "the opentofu RemoteMCPServer was not accepted"
+
 echo "kagent automated checks passed."
