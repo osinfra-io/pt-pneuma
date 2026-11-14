@@ -114,6 +114,26 @@ resource "kubernetes_manifest" "kagent_ui" {
   }
 }
 
+resource "kubernetes_manifest" "opentofu_mcp_server" {
+  depends_on = [
+    module.kagent
+  ]
+
+  manifest = {
+    apiVersion = "api.kagent.dev/v1alpha3"
+    kind       = "RemoteMCPServer"
+    metadata = {
+      name      = "opentofu"
+      namespace = kubernetes_namespace_v1.kagent.metadata[0].name
+    }
+    spec = {
+      description = "OpenTofu registry documentation for providers, modules, resources, and data sources"
+      protocol    = "STREAMABLE_HTTP"
+      url         = "https://mcp.opentofu.org/mcp"
+    }
+  }
+}
+
 # Kubernetes Namespace Resource
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/namespace_v1
 

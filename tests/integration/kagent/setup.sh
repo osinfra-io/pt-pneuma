@@ -33,6 +33,8 @@ fi
 
 mkdir -p "${WORK_DIR}"
 tofu_stage regional init -reconfigure -backend-config="path=${WORK_DIR}/regional.tfstate" -input=false
+# The RemoteMCPServer manifest needs its CRD at plan time, so install the kagent charts first.
+tofu_stage regional apply -auto-approve -input=false -target=module.kagent
 tofu_stage regional apply -auto-approve -input=false
 
 # The kagent controller reads Substrate state for the UI, which requires the global viewer role.
