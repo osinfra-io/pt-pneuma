@@ -42,7 +42,9 @@ substrate_source_dir="${SCRIPT_DIR}/../agent-substrate/.work/substrate-src"
 [ -d "${substrate_source_dir}" ] || fail "Agent Substrate source checkout is missing; run agent-substrate/setup.sh first"
 kubectl_ate="${WORK_DIR}/kubectl-ate"
 (cd "${substrate_source_dir}" && go build -o "${kubectl_ate}" ./cmd/kubectl-ate)
-if "${kubectl_ate}" --context=docker-desktop get access-policy --global -o yaml 2>&1 | grep --quiet 'has no access policy'; then
+policy_output="$("${kubectl_ate}" --context=docker-desktop get access-policy --global -o yaml 2>&1)" ||
+  fail "could not read the global Substrate access policy: ${policy_output}"
+if grep --quiet 'has no access policy' <<<"${policy_output}"; then
   policy_file="$(mktemp)"
   trap 'rm -f -- "${policy_file}"' EXIT
   cat >"${policy_file}" <<'YAML'
