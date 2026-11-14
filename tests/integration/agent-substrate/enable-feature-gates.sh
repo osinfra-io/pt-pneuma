@@ -34,9 +34,25 @@ python3 "${SCRIPT_DIR}/feature_gate_config.py" \
   "${backup}/apiserver.yaml" "${backup}/kubelet.yaml" \
   "${backup}/apiserver-updated.yaml" "${backup}/kubelet-updated.yaml"
 
+wait_features() {
+  for _ in $(seq 1 60); do
+    if kubectl --request-timeout=5s get --raw=/apis/certificates.k8s.io/v1beta1 2>/dev/null |
+      jq -e '[.resources[].name] | index("podcertificaterequests") != null and index("clustertrustbundles") != null' >/dev/null &&
+      kubectl --request-timeout=5s get --raw="/api/v1/nodes/${node}/proxy/configz" 2>/dev/null |
+      jq -e '.kubeletconfig.featureGates | .ClusterTrustBundle == true and .ClusterTrustBundleProjection == true and .PodCertificateRequest == true' >/dev/null &&
+      kubectl wait --for=condition=Ready "node/${node}" --timeout=15s >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 3
+  done
+  echo "Timed out waiting for the certificate API and kubelet feature gates." >&2
+  return 1
+}
+
 if cmp -s "${backup}/apiserver.yaml" "${backup}/apiserver-updated.yaml" &&
   cmp -s "${backup}/kubelet.yaml" "${backup}/kubelet-updated.yaml"; then
-  echo "Feature gates are already configured; run Agent Substrate setup to verify the API."
+  wait_features
+  echo "Certificate APIs and kubelet feature gates are ready."
   exit 0
 fi
 
@@ -96,17 +112,6 @@ docker exec "${node}" sh -c '
   mv /etc/kubernetes/.local-apiserver-update.yaml /etc/kubernetes/manifests/kube-apiserver.yaml
 ' sh "${node_tmp}"
 
-for _ in $(seq 1 60); do
-  if kubectl --request-timeout=5s get --raw=/apis/certificates.k8s.io/v1beta1 2>/dev/null |
-    jq -e '[.resources[].name] | index("podcertificaterequests") != null and index("clustertrustbundles") != null' >/dev/null &&
-    kubectl --request-timeout=5s get --raw="/api/v1/nodes/${node}/proxy/configz" 2>/dev/null |
-    jq -e '.kubeletconfig.featureGates | .ClusterTrustBundle == true and .ClusterTrustBundleProjection == true and .PodCertificateRequest == true' >/dev/null &&
-    kubectl wait --for=condition=Ready "node/${node}" --timeout=15s >/dev/null 2>&1; then
-    complete=true
-    echo "Certificate APIs and kubelet feature gates are ready."
-    exit 0
-  fi
-  sleep 3
-done
-echo "Timed out waiting for the certificate API and kubelet feature gates." >&2
-exit 1
+wait_features
+complete=true
+echo "Certificate APIs and kubelet feature gates are ready."

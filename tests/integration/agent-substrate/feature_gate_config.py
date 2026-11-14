@@ -14,15 +14,21 @@ def prepare(apiserver, kubelet):
     api_lines = apiserver.splitlines()
     runtime = [line for line in api_lines if line.strip().startswith("- --runtime-config=")]
     flags = [line for line in api_lines if line.strip().startswith("- --feature-gates=")]
-    if "kind: Pod" not in api_lines or len(runtime) != 1:
+    if "\\" in apiserver or "\\" in kubelet:
+        raise ValueError("Escaped YAML needs manual review")
+    if "kind: Pod" not in api_lines or len(runtime) != 1 or apiserver.count("--runtime-config") != 1:
         raise ValueError("Unsupported API server manifest")
-    if runtime == [RUNTIME_FLAG] and flags == [API_FLAG] and KUBELET_GATES in kubelet:
-        return apiserver, kubelet
-    if runtime != ["    - --runtime-config="] or flags:
-        raise ValueError("Existing API server runtime or feature-gate configuration needs manual review")
-    if "kind: KubeletConfiguration" not in kubelet.splitlines() or any(
-        line.startswith("featureGates:") for line in kubelet.splitlines()
+    if "kind: KubeletConfiguration" not in kubelet.splitlines():
+        raise ValueError("Unsupported kubelet configuration")
+    if (
+        runtime == [RUNTIME_FLAG] and flags == [API_FLAG]
+        and apiserver.count("--feature-gates") == 1
+        and kubelet.count("featureGates") == 1 and KUBELET_GATES in kubelet
     ):
+        return apiserver, kubelet
+    if runtime != ["    - --runtime-config="] or "--feature-gates" in apiserver:
+        raise ValueError("Existing API server runtime or feature-gate configuration needs manual review")
+    if "featureGates" in kubelet:
         raise ValueError("Existing kubelet feature-gate configuration needs manual review")
     updated_api = apiserver.replace(runtime[0], f"{RUNTIME_FLAG}\n{API_FLAG}", 1)
     updated_kubelet = kubelet.rstrip("\n") + "\n" + KUBELET_GATES
