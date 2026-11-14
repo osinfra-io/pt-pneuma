@@ -2,7 +2,17 @@
 
 set -euo pipefail
 
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/owner.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+INTEGRATION_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+readonly INTEGRATION_DIR
+
+source "${SCRIPT_DIR}/owner.sh"
+
+if [ "$#" -ne 0 ]; then
+  echo "Usage: preflight.sh" >&2
+  exit 2
+fi
 
 for tool in curl docker helm jq kubectl openssl python3 tofu; do
   if ! command -v "${tool}" >/dev/null; then
@@ -46,16 +56,12 @@ if kubectl --context=docker-desktop get configmap "${OWNER_CONFIGMAP}" --namespa
   exit 0
 fi
 
-if [ "${1:-}" != "--claim" ]; then
-  echo "No ownership marker. Run preflight.sh --claim only on an empty dedicated test cluster." >&2
-  exit 1
-fi
 namespaces="$(kubectl --context=docker-desktop get namespaces --output=jsonpath='{.items[*].metadata.name}')"
 for namespace in ${namespaces}; do
   case "${namespace}" in
     default | kube-system | kube-public | kube-node-lease | local-path-storage) ;;
     *)
-      echo "Existing namespace ${namespace} has no fixture ownership record; refusing to adopt or overwrite it." >&2
+      echo "Existing namespace ${namespace} has no fixture ownership record; refusing setup on a non-empty cluster." >&2
       exit 1
       ;;
   esac
@@ -63,14 +69,22 @@ done
 helm_releases="$(helm --kube-context=docker-desktop list --all-namespaces --short \
   --deployed --failed --pending --uninstalled --superseded --uninstalling)"
 if [ -n "${helm_releases}" ]; then
-  echo "Existing Helm installations prevent claiming this cluster." >&2
+  echo "Existing Helm installations prevent setup on this unowned cluster." >&2
   exit 1
 fi
 existing_crds="$(kubectl --context=docker-desktop get crds --output=name)"
 if grep --quiet -E '\.(gateway\.networking\.k8s\.io|agentgateway\.dev|istio\.io)$' <<<"${existing_crds}"; then
-  echo "Existing gateway/mesh CRDs prevent claiming this cluster; do not purge them automatically." >&2
+  echo "Existing gateway/mesh CRDs prevent setup on this unowned cluster; do not purge them automatically." >&2
   exit 1
 fi
 kubectl --context=docker-desktop create configmap "${OWNER_CONFIGMAP}" \
   --namespace="${OWNER_NAMESPACE}" --from-literal=owner="${OWNER_VALUE}"
-echo "Dedicated local cluster claimed. Component setup must still validate its own local state."
+
+for component in istio authentik agentgateway agent-substrate kagent openbao; do
+  work_dir="${INTEGRATION_DIR}/${component}/.work"
+  if [ -e "${work_dir}" ] || [ -L "${work_dir}" ]; then
+    rm -rf -- "${work_dir}"
+  fi
+done
+
+echo "Empty Docker Desktop Kind cluster initialized; stale local fixture workdirs cleared."
