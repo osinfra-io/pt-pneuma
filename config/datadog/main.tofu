@@ -2,6 +2,10 @@
 # https://search.opentofu.org/provider/datadog/datadog/latest/docs/resources/monitor
 
 resource "datadog_monitor" "cloud_armor_anomalous_request_volume" {
+  lifecycle {
+    enabled = var.datadog_enable
+  }
+
   evaluation_delay = 900
   message          = <<-EOT
     {{#is_recovery}}
@@ -78,6 +82,10 @@ resource "datadog_monitor" "cloud_armor_anomalous_request_volume" {
 }
 
 resource "datadog_monitor" "cloud_armor_denied_request_rate" {
+  lifecycle {
+    enabled = var.datadog_enable
+  }
+
   evaluation_delay = 900
   message          = <<-EOT
     {{#is_alert}}
@@ -166,6 +174,10 @@ resource "datadog_monitor" "cloud_armor_denied_request_rate" {
 # https://search.opentofu.org/provider/datadog/datadog/latest/resources/synthetics_suite
 
 resource "datadog_synthetics_suite" "pneuma" {
+  lifecycle {
+    enabled = var.datadog_enable
+  }
+
   message = "One or more critical Pneuma global synthetic checks are failing. ${local.datadog_monitor_team_notification}"
   name    = "Pneuma: Global Health"
 
@@ -179,7 +191,7 @@ resource "datadog_synthetics_suite" "pneuma" {
   ]
 
   dynamic "tests" {
-    for_each = local.datadog_synthetic_team_global_tests
+    for_each = var.datadog_enable ? local.datadog_synthetic_team_global_tests : {}
 
     content {
       alerting_criticality = "critical"
@@ -192,7 +204,7 @@ resource "datadog_synthetics_suite" "pneuma" {
 # https://search.opentofu.org/provider/opentofu/datadog/latest/resources/synthetics_test
 
 resource "datadog_synthetics_test" "this" {
-  for_each = local.datadog_synthetic_tests
+  for_each = var.datadog_enable ? local.datadog_synthetic_tests : {}
 
   assertion {
     operator = "is"

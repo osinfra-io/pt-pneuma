@@ -1,3 +1,5 @@
+datadog_enable = false
+
 # The operator normally uses 44-72m CPU and 35-40Mi memory, but reconciliation bursts reached
 # 839m CPU and prior 64Mi memory limits caused repeated OOMKills. Reserve steady usage and leave
 # enough limit headroom for reconciliations without letting one controller dominate the node.
