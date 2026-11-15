@@ -52,10 +52,16 @@ def verify(work):
         "OpenBao": "https://docs.osinfra.io/img/authentik/applications/openbao.svg",
         "kagent": "https://docs.osinfra.io/img/authentik/applications/kagent.svg",
     }
-    if {application["name"] for application in applications} != set(expected_launches):
+    # floor-api is called by machines, so its application is hidden and carries no launch URL or icon.
+    hidden_applications = {"floor"}
+    if {application["name"] for application in applications} != set(expected_launches) | hidden_applications:
         raise ValueError("Browser applications do not have the expected descriptive names")
     for application in applications:
         actual = api(f"core/applications/{application['slug']}/")
+        if application["name"] in hidden_applications:
+            if not actual["meta_hide"] or actual["meta_launch_url"] or actual["meta_icon"]:
+                raise ValueError("Machine applications must be hidden and carry no launch URL or icon")
+            continue
         if (
             actual["name"] != application["name"]
             or actual["meta_launch_url"] != expected_launches[application["name"]]
@@ -72,6 +78,7 @@ def verify(work):
     browser_policies = objects("authentik_policy_expression", "browser_access")
     expected_policy_names = {
         "agentgateway-browser-access",
+        "floor-browser-access",
         "kagent-browser-access",
         "local-development-browser-access",
     }

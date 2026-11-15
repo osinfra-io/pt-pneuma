@@ -26,6 +26,13 @@ module "browser_auth" {
       public_paths = ["/istio-test/health", "/istio-test/metadata/*"]
     }
 
+    # floor-api enforces this group on every mutation; authentik only authenticates the caller.
+    floor = {
+      host            = "floor.localhost"
+      path            = "/"
+      required_groups = ["pt-techne: floor Approvers"]
+    }
+
     kagent = {
       host            = "kagent.localhost"
       path            = "/"
