@@ -22,5 +22,6 @@ fi
 "${SCRIPT_DIR}/agent-substrate/setup.sh"
 "${SCRIPT_DIR}/kagent/setup.sh"
 "${SCRIPT_DIR}/openbao/setup.sh"
+"${SCRIPT_DIR}/floor/setup.sh"
 
 echo "Local gateway stack is ready. Run tests/integration/verify.sh, then complete Google sign-in manually."
