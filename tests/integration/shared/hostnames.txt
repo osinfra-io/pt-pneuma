@@ -1,5 +1,6 @@
 agentgateway.localhost
 authentik.localhost
 dev.localhost
+floor.localhost
 kagent.localhost
 openbao.localhost

@@ -59,20 +59,20 @@ helm() {
 export -f docker kubectl helm
 
 create_workdirs() {
-  for component in istio authentik agentgateway agent-substrate kagent openbao; do
+  for component in istio authentik agentgateway agent-substrate kagent openbao floor; do
     mkdir -p "${INTEGRATION_DIR}/${component}/.work"
     : >"${INTEGRATION_DIR}/${component}/.work/state"
   done
 }
 
 assert_workdirs_exist() {
-  for component in istio authentik agentgateway agent-substrate kagent openbao; do
+  for component in istio authentik agentgateway agent-substrate kagent openbao floor; do
     [ -f "${INTEGRATION_DIR}/${component}/.work/state" ]
   done
 }
 
 assert_workdirs_removed() {
-  for component in istio authentik agentgateway agent-substrate kagent openbao; do
+  for component in istio authentik agentgateway agent-substrate kagent openbao floor; do
     [ ! -e "${INTEGRATION_DIR}/${component}/.work" ]
   done
 }

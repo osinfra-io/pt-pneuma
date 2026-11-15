@@ -27,6 +27,13 @@ module "authentik_config" {
       name        = "Istio"
       policy_name = "local-development-browser-access"
     }
+    floor = {
+      groups      = ["all"]
+      hidden      = true
+      host        = "https://floor.localhost"
+      name        = "floor"
+      policy_name = "floor-browser-access"
+    }
     kagent = {
       groups      = ["pt-pneuma: kagent Admins"]
       host        = "https://kagent.localhost"
