@@ -19,6 +19,12 @@ variable "authentik_service" {
   default     = "authentik-server"
 }
 
+variable "data_port" {
+  description = "AgentGateway proxy data port reachable only from the Istio ingress Gateway"
+  type        = number
+  default     = 80
+}
+
 variable "diagnostic_namespace" {
   description = "Namespace containing the diagnostic Service"
   type        = string
@@ -62,7 +68,7 @@ variable "istio_gateway_namespace" {
 }
 
 variable "istio_ingress_principal" {
-  description = "Istio principal allowed to reach the AgentGateway admin port"
+  description = "Istio principal allowed to reach the AgentGateway admin and data ports"
   type        = string
   default     = "cluster.local/ns/istio-ingress/sa/gateway-istio"
 }

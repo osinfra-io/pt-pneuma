@@ -249,6 +249,8 @@ resource "kubernetes_manifest" "floor_backend" {
   }
 }
 
+# Approving a pull request plan blocks while the planner re-plans at the head, so the
+# route timeout is set above floor-api's revision timeout.
 resource "kubernetes_manifest" "floor_ingress" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
@@ -281,6 +283,9 @@ resource "kubernetes_manifest" "floor_ingress" {
               }
             }
           ]
+          timeouts = {
+            request = var.request_timeout
+          }
         }
       ]
     }

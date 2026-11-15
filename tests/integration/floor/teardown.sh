@@ -69,6 +69,18 @@ fi
 kubectl delete kustomization floor-local --namespace=flux-system \
   --ignore-not-found --timeout=180s 2>/dev/null || true
 
+# Terraform objects carry a tofu-controller finalizer, so they are deleted while the
+# controller is still running; otherwise the fixture namespace stalls in Terminating
+# once the engine stage removes the controller that would clear them.
+kubectl delete terraforms --all --namespace="${FIXTURE_NAMESPACE}" \
+  --ignore-not-found --timeout=180s 2>/dev/null || true
+
+kubectl get terraforms --namespace="${FIXTURE_NAMESPACE}" --output=name 2>/dev/null |
+  while read -r object; do
+    kubectl patch "${object}" --namespace="${FIXTURE_NAMESPACE}" --type=merge \
+      --patch='{"metadata":{"finalizers":null}}' 2>/dev/null || true
+  done
+
 state_file="${WORK_DIR}/engine.tfstate"
 if [ -f "${state_file}" ]; then
   tofu_stage engine init -reconfigure -backend-config="path=${state_file}" -input=false
@@ -84,7 +96,9 @@ for crd in terraforms.infra.contrib.fluxcd.io fluxinstances.fluxcd.controlplane.
   kubectl delete crd "${crd}" --ignore-not-found --timeout=180s
 done
 
+# The local state files hold the authentik app passwords in plaintext.
 rm -f "${WORK_DIR}/auth/verify-token" "${WORK_DIR}/auth/visitor-token" "${WORK_DIR}/github-token" \
   "${WORK_DIR}/runner-encryption.hcl" "${WORK_DIR}/state-passphrase"
+rm -f "${WORK_DIR}"/*.tfstate*
 
 echo "floor-owned resources, Flux CRDs, and the local credentials were removed. The shared ownership marker was not deleted."

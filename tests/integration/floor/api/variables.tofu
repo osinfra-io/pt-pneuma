@@ -102,6 +102,12 @@ variable "namespace" {
   default     = "floor-system"
 }
 
+variable "request_timeout" {
+  description = "HTTPRoute request timeout, above the floor-api revision timeout so an approve is not cut short while the planner re-plans"
+  type        = string
+  default     = "240s"
+}
+
 variable "service_port" {
   description = "Port floor-api listens on"
   type        = number

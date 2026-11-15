@@ -161,6 +161,47 @@ resource "kubernetes_manifest" "agentgateway_backend" {
   }
 }
 
+# Only the Istio ingress Gateway may reach the data port, so an in-cluster workload cannot
+# call through AgentGateway with forged authentik identity headers. The hosts the data port
+# serves cannot be told apart here: agentgateway-proxy has no waypoint, so ztunnel enforces
+# this policy at layer 4 and ignores any host match. The ingress Gateway is its only client.
+resource "kubernetes_manifest" "agentgateway_data_authorization" {
+  manifest = {
+    apiVersion = "security.istio.io/v1"
+    kind       = "AuthorizationPolicy"
+    metadata = {
+      name      = "agentgateway-data"
+      namespace = var.namespace
+    }
+    spec = {
+      action = "DENY"
+      rules = [
+        {
+          from = [
+            {
+              source = {
+                notPrincipals = [var.istio_ingress_principal]
+              }
+            }
+          ]
+          to = [
+            {
+              operation = {
+                ports = [tostring(var.data_port)]
+              }
+            }
+          ]
+        }
+      ]
+      selector = {
+        matchLabels = {
+          "gateway.networking.k8s.io/gateway-name" = var.gateway_name
+        }
+      }
+    }
+  }
+}
+
 resource "kubernetes_manifest" "agentgateway_ingress" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"

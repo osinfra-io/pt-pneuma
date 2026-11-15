@@ -128,6 +128,8 @@ if [ "${MODE}" != install ]; then
   assert_routing_state_or_absent \
     'kubernetes_manifest.agentgateway_admin_authorization' authorizationpolicy agentgateway-admin agentgateway
   assert_routing_state_or_absent \
+    'kubernetes_manifest.agentgateway_data_authorization' authorizationpolicy agentgateway-data agentgateway
+  assert_routing_state_or_absent \
     'kubernetes_service_v1.agentgateway_admin' service agentgateway-proxy-admin agentgateway
 fi
 
