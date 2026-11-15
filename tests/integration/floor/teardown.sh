@@ -79,7 +79,7 @@ kubectl get terraforms --namespace="${FIXTURE_NAMESPACE}" --output=name 2>/dev/n
   while read -r object; do
     kubectl patch "${object}" --namespace="${FIXTURE_NAMESPACE}" --type=merge \
       --patch='{"metadata":{"finalizers":null}}' 2>/dev/null || true
-  done
+  done || true
 
 state_file="${WORK_DIR}/engine.tfstate"
 if [ -f "${state_file}" ]; then

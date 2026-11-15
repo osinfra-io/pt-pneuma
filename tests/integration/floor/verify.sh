@@ -89,6 +89,12 @@ settled() {
   has_pending_plan "$1" || is_applied "$1"
 }
 
+# Settled is only meaningful once the workspace has observed the merged main
+# revision; before that it still reports the previous pull request's status.
+settled_at_merged_main() {
+  [ "$(terraform_field "$1" '{.status.lastAttemptedRevision}')" = "${MERGED_REVISION}" ] && settled "$1"
+}
+
 exists() {
   kubectl get terraform "$1" --namespace="${FIXTURE_NAMESPACE}" >/dev/null 2>&1
 }
@@ -407,17 +413,24 @@ gh pr merge "${pull_request}" --repo="${FIXTURE_REPO}" --squash --delete-branch 
 
 trap - EXIT
 
+merged_sha="$(gh api "repos/${FIXTURE_REPO}/git/ref/heads/main" --jq '.object.sha')" ||
+  fail "could not read the merged main revision of ${FIXTURE_REPO}"
+MERGED_REVISION="main@sha1:${merged_sha}"
+readonly MERGED_REVISION
+echo "main merged at ${merged_sha}"
+
 merge_deadline=$((SECONDS + MERGE_WAIT_SECONDS))
-while [ "$(git_repository_field '{.spec.ref.branch}')" != "main" ]; do
+while [ "$(git_repository_field '{.spec.ref.branch}')" != "main" ] ||
+  [ "$(git_repository_field '{.status.artifact.revision}')" != "${MERGED_REVISION}" ]; do
   [ "${SECONDS}" -lt "${merge_deadline}" ] ||
-    fail "floor-api did not return the fixture GitRepository to main after the merge"
-  echo "waiting for the sandbox to return to main ..."
+    fail "the fixture GitRepository did not return to main at ${merged_sha} after the merge"
+  echo "waiting for the sandbox to return to main at ${merged_sha} ..."
   sleep "${POLL_SECONDS}"
 done
 
 # The stack is left applied at main so a second run starts from the same state.
 for terraform_name in main-sandbox regional-sandbox; do
-  wait_for settled "${terraform_name}" "${terraform_name} to settle at main"
+  wait_for settled_at_merged_main "${terraform_name}" "${terraform_name} to settle at main ${merged_sha}"
 
   if has_pending_plan "${terraform_name}"; then
     approve_pending_plan "${terraform_name}"

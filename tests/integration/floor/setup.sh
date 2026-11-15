@@ -215,6 +215,10 @@ tofu_stage api init -reconfigure -backend-config="path=${WORK_DIR}/api.tfstate" 
 tofu_stage api apply -auto-approve -input=false \
   -var="github_token_checksum=$(sha256sum "${TOKEN_FILE}" | cut -d' ' -f1)"
 
+# The image tag is constant, so restart to pick up a rebuilt local image.
+kubectl rollout restart deployment/floor-api --namespace=floor-system >/dev/null ||
+  fail "could not restart the floor-api deployment"
+
 # The browser authentication policy map gained the floor host.
 "${SCRIPT_DIR}/../istio/apply-auth.sh"
 
