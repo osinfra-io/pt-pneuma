@@ -104,6 +104,38 @@ kubectl create secret generic branch-planner-token \
 
 tofu_stage engine apply -auto-approve -input=false
 
-echo "The floor configuration stage will use FLOOR_CONFIG_REPO=${FLOOR_CONFIG_REPO} at FLOOR_CONFIG_REF=${FLOOR_CONFIG_REF}."
+echo "The floor configuration stage uses FLOOR_CONFIG_REPO=${FLOOR_CONFIG_REPO} at FLOOR_CONFIG_REF=${FLOOR_CONFIG_REF}."
+
+# Flux reconciles the floor configuration; the Terraform objects are not health-checkable,
+# so the Kustomization does not wait on them.
+if ! kubectl apply --filename=- >/dev/null <<YAML
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: pt-techne-floor
+  namespace: flux-system
+spec:
+  interval: 1m
+  ref:
+    branch: ${FLOOR_CONFIG_REF}
+  url: ${FLOOR_CONFIG_REPO}
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: floor-local
+  namespace: flux-system
+spec:
+  interval: 1m
+  path: ./floors/local
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: pt-techne-floor
+  wait: false
+YAML
+then
+  fail "could not apply the floor configuration source and kustomization"
+fi
 
 "${SCRIPT_DIR}/verify.sh"

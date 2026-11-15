@@ -19,7 +19,7 @@ assert_local_gateway_stack_owner "${OWNER_NAME}" kube-system "${OWNER_VALUE}" ||
   fail "cluster ownership marker is missing or belongs to another owner"
 
 # The floor configuration is reconciled by Flux, so it is removed before the engine.
-kubectl delete kustomization floor --namespace=flux-system \
+kubectl delete kustomization floor-local --namespace=flux-system \
   --ignore-not-found --timeout=180s 2>/dev/null || true
 
 state_file="${WORK_DIR}/engine.tfstate"
