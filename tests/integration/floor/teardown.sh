@@ -87,7 +87,8 @@ if [ -f "${state_file}" ]; then
   tofu_stage engine destroy -auto-approve -input=false
 fi
 
-for namespace in "${FIXTURE_NAMESPACE}" floor-system flux-system; do
+# floor-fixture is created by the fixture workspaces, which are not destroyed on deletion.
+for namespace in floor-fixture "${FIXTURE_NAMESPACE}" floor-system flux-system; do
   kubectl delete namespace "${namespace}" --ignore-not-found --timeout=300s
 done
 

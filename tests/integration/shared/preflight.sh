@@ -86,7 +86,7 @@ fi
 kubectl --context=docker-desktop create configmap "${OWNER_CONFIGMAP}" \
   --namespace="${OWNER_NAMESPACE}" --from-literal=owner="${OWNER_VALUE}"
 
-for component in istio authentik agentgateway agent-substrate kagent openbao; do
+for component in istio authentik agentgateway agent-substrate kagent openbao floor; do
   work_dir="${INTEGRATION_DIR}/${component}/.work"
   if [ -e "${work_dir}" ] || [ -L "${work_dir}" ]; then
     rm -rf -- "${work_dir}"
