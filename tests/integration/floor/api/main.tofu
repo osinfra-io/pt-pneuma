@@ -1,12 +1,32 @@
 # Kubernetes Role Binding
 # https://search.opentofu.org/provider/hashicorp/kubernetes/latest/docs/resources/role_binding_v1
 
-# Bound in the fixture namespace only, so the service account cannot reach
-# the Flux configuration in other namespaces.
+# Bind only in the fixture namespace and explicitly opted-in namespaces.
 resource "kubernetes_role_binding_v1" "floor_api" {
   metadata {
     name      = "floor-api"
     namespace = var.fixture_namespace
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role_v1.floor_api.metadata[0].name
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account_v1.floor_api.metadata[0].name
+    namespace = var.namespace
+  }
+}
+
+resource "kubernetes_role_binding_v1" "floor_api_additional_namespaces" {
+  for_each = var.additional_namespaces
+
+  metadata {
+    name      = "floor-api"
+    namespace = each.value
   }
 
   role_ref {
@@ -84,6 +104,11 @@ resource "kubernetes_deployment_v1" "floor_api" {
           image             = var.image
           image_pull_policy = "Never"
           name              = "floor-api"
+
+          env {
+            name  = "FLOOR_ADDITIONAL_NAMESPACES"
+            value = local.additional_namespaces
+          }
 
           env {
             name  = "FLOOR_APPROVER_GROUP"

@@ -1,6 +1,25 @@
 # Input Variables
 # https://opentofu.org/docs/language/values/variables
 
+variable "additional_namespaces" {
+  description = "Opt-in namespaces exposed by the local floor alongside its disposable fixture namespace"
+  type        = set(string)
+  default     = []
+
+  validation {
+    condition = alltrue([
+      for namespace in var.additional_namespaces :
+      can(regex("^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$", namespace))
+    ])
+    error_message = "Additional namespaces must be valid Kubernetes namespace names."
+  }
+
+  validation {
+    condition     = !contains(var.additional_namespaces, var.fixture_namespace)
+    error_message = "The fixture namespace is already exposed and must not be repeated."
+  }
+}
+
 variable "approver_group" {
   description = "Authentik group whose members may approve plans through floor-api"
   type        = string

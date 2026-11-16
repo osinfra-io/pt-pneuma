@@ -238,6 +238,26 @@ for terraform_name in main-sandbox regional-sandbox; do
 done
 echo "floor-api listed the floor workspaces as ${VERIFY_USER}"
 
+# Opted-in real workspaces are read-only verification targets, never fixtures to approve.
+if [ -n "${FLOOR_ADDITIONAL_NAMESPACES:-}" ]; then
+  while IFS= read -r namespace; do
+    names="$(jq --raw-output --arg namespace "${namespace}" \
+      '.workspaces[] | select(.namespace == $namespace) | .name' <<<"${workspaces}")"
+    [ -n "${names}" ] || fail "list_workspaces did not report any workspace in ${namespace}"
+
+    while IFS= read -r name; do
+      mcp_ok get_workspace "$(jq --null-input --compact-output --arg name "${name}" '{name: $name}')"
+      echo "floor-api exposed ${name} without approving it"
+    done <<<"${names}"
+
+    if kubectl auth can-i get secrets --namespace="${namespace}" \
+      --as=system:serviceaccount:floor-system:floor-api --quiet; then
+      fail "floor-api must not have access to Secrets in ${namespace}"
+    fi
+  done < <(printf '%s' "${FLOOR_ADDITIONAL_NAMESPACES}" |
+    jq --raw-input --raw-output 'split(",")[] | gsub("^\\s+|\\s+$"; "") | select(length > 0)')
+fi
+
 wait_for settled main-sandbox "main-sandbox to settle"
 
 if has_pending_plan main-sandbox; then
