@@ -213,6 +213,7 @@ kubectl create secret generic floor-github-token \
 
 tofu_stage api init -reconfigure -backend-config="path=${WORK_DIR}/api.tfstate" -input=false
 tofu_stage api apply -auto-approve -input=false \
+  -var="additional_namespaces=$(printf '%s' "${FLOOR_ADDITIONAL_NAMESPACES:-}" | jq --raw-input --compact-output 'split(",") | map(gsub("^\\s+|\\s+$"; "") | select(length > 0))')" \
   -var="github_token_checksum=$(sha256sum "${TOKEN_FILE}" | cut -d' ' -f1)"
 
 # The image tag is constant, so restart to pick up a rebuilt local image.

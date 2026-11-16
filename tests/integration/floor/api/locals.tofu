@@ -5,6 +5,8 @@
 # carries the Datadog unified service tagging labels alongside it.
 
 locals {
+  additional_namespaces = join(",", sort(tolist(var.additional_namespaces)))
+
   # Rolling the pods is the only way a changed token reaches the running process.
   pod_annotations = {
     "checksum/github-token" = var.github_token_checksum
