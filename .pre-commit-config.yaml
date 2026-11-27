@@ -27,7 +27,7 @@ repos:
         args: ["-x"]
 
   - repo: https://github.com/osinfra-io/pt-techne-pre-commit-hooks
-    rev: 7ee32c0b7ae3caa9124baa7d753e99fba719b203  # frozen: v0.2.8
+    rev: 11f29896c7f6cdb18c6fe8028a44dd724918ba58  # frozen: v0.2.9
     hooks:
       - id: tofu-fmt
         verbose: true
